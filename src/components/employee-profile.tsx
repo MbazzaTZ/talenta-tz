@@ -140,7 +140,7 @@ export function EmployeeProfile() {
         )
         .eq('employee_id', user.id)
         .order('requested_at', { ascending: false });
-      return (data ?? []) as ReferenceRequest[];
+      return ((data ?? []) as unknown) as ReferenceRequest[];
     },
   });
 

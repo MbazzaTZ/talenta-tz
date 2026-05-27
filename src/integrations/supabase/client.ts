@@ -1,17 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const SUPABASE_URL = 'https://qqbfvxlgqbspvybzsklv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxYmZ2eGxncWJzcHZ5Ynpza2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDMxNzcsImV4cCI6MjA5NTM3OTE3N30.ty9dUH9S-ZP1Xq8FuWJtSv38fZj7r8wSezYB5ix15MQ';
 
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
-
-// Placeholder values keep the app from crashing when env vars are missing.
-// All Supabase calls will fail gracefully — users will see auth errors rather than a blank crash.
-const url = SUPABASE_URL || 'https://placeholder.supabase.co';
-const key =
-  SUPABASE_PUBLISHABLE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2MDAwMDAwMDAsImV4cCI6MjAwMDAwMDAwMH0.placeholder';
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.error(
@@ -21,7 +14,7 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   );
 }
 
-export const supabase = createClient<Database>(url, key, {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: isBrowser ? localStorage : undefined,
     persistSession: isBrowser,

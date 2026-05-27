@@ -79,7 +79,7 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
         .eq('verified', true)
         .eq('is_current', true)
         .neq('user_id', user?.id ?? '');
-      return (data ?? []) as Employee[];
+      return ((data ?? []) as unknown) as Employee[];
     },
   });
 
