@@ -9,38 +9,288 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PostJobRouteImport } from './routes/post-job'
+import { Route as JobsRouteImport } from './routes/jobs'
+import { Route as JobSeekersRouteImport } from './routes/job-seekers'
+import { Route as EmployersRouteImport } from './routes/employers'
+import { Route as EmployerDashboardRouteImport } from './routes/employer-dashboard'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CvBuilderRouteImport } from './routes/cv-builder'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as JobIdRouteImport } from './routes/job.$id'
+import { Route as CompaniesIdRouteImport } from './routes/companies.$id'
 
+const PostJobRoute = PostJobRouteImport.update({
+  id: '/post-job',
+  path: '/post-job',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsRoute = JobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobSeekersRoute = JobSeekersRouteImport.update({
+  id: '/job-seekers',
+  path: '/job-seekers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployersRoute = EmployersRouteImport.update({
+  id: '/employers',
+  path: '/employers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployerDashboardRoute = EmployerDashboardRouteImport.update({
+  id: '/employer-dashboard',
+  path: '/employer-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CvBuilderRoute = CvBuilderRouteImport.update({
+  id: '/cv-builder',
+  path: '/cv-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JobIdRoute = JobIdRouteImport.update({
+  id: '/job/$id',
+  path: '/job/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesIdRoute = CompaniesIdRouteImport.update({
+  id: '/companies/$id',
+  path: '/companies/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cv-builder': typeof CvBuilderRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer-dashboard': typeof EmployerDashboardRoute
+  '/employers': typeof EmployersRoute
+  '/job-seekers': typeof JobSeekersRoute
+  '/jobs': typeof JobsRoute
+  '/post-job': typeof PostJobRoute
+  '/companies/$id': typeof CompaniesIdRoute
+  '/job/$id': typeof JobIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cv-builder': typeof CvBuilderRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer-dashboard': typeof EmployerDashboardRoute
+  '/employers': typeof EmployersRoute
+  '/job-seekers': typeof JobSeekersRoute
+  '/jobs': typeof JobsRoute
+  '/post-job': typeof PostJobRoute
+  '/companies/$id': typeof CompaniesIdRoute
+  '/job/$id': typeof JobIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cv-builder': typeof CvBuilderRoute
+  '/dashboard': typeof DashboardRoute
+  '/employer-dashboard': typeof EmployerDashboardRoute
+  '/employers': typeof EmployersRoute
+  '/job-seekers': typeof JobSeekersRoute
+  '/jobs': typeof JobsRoute
+  '/post-job': typeof PostJobRoute
+  '/companies/$id': typeof CompaniesIdRoute
+  '/job/$id': typeof JobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/auth'
+    | '/contact'
+    | '/cv-builder'
+    | '/dashboard'
+    | '/employer-dashboard'
+    | '/employers'
+    | '/job-seekers'
+    | '/jobs'
+    | '/post-job'
+    | '/companies/$id'
+    | '/job/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/auth'
+    | '/contact'
+    | '/cv-builder'
+    | '/dashboard'
+    | '/employer-dashboard'
+    | '/employers'
+    | '/job-seekers'
+    | '/jobs'
+    | '/post-job'
+    | '/companies/$id'
+    | '/job/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/auth'
+    | '/contact'
+    | '/cv-builder'
+    | '/dashboard'
+    | '/employer-dashboard'
+    | '/employers'
+    | '/job-seekers'
+    | '/jobs'
+    | '/post-job'
+    | '/companies/$id'
+    | '/job/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
+  CvBuilderRoute: typeof CvBuilderRoute
+  DashboardRoute: typeof DashboardRoute
+  EmployerDashboardRoute: typeof EmployerDashboardRoute
+  EmployersRoute: typeof EmployersRoute
+  JobSeekersRoute: typeof JobSeekersRoute
+  JobsRoute: typeof JobsRoute
+  PostJobRoute: typeof PostJobRoute
+  CompaniesIdRoute: typeof CompaniesIdRoute
+  JobIdRoute: typeof JobIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/post-job': {
+      id: '/post-job'
+      path: '/post-job'
+      fullPath: '/post-job'
+      preLoaderRoute: typeof PostJobRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/job-seekers': {
+      id: '/job-seekers'
+      path: '/job-seekers'
+      fullPath: '/job-seekers'
+      preLoaderRoute: typeof JobSeekersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employers': {
+      id: '/employers'
+      path: '/employers'
+      fullPath: '/employers'
+      preLoaderRoute: typeof EmployersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employer-dashboard': {
+      id: '/employer-dashboard'
+      path: '/employer-dashboard'
+      fullPath: '/employer-dashboard'
+      preLoaderRoute: typeof EmployerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cv-builder': {
+      id: '/cv-builder'
+      path: '/cv-builder'
+      fullPath: '/cv-builder'
+      preLoaderRoute: typeof CvBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +298,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/job/$id': {
+      id: '/job/$id'
+      path: '/job/$id'
+      fullPath: '/job/$id'
+      preLoaderRoute: typeof JobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/$id': {
+      id: '/companies/$id'
+      path: '/companies/$id'
+      fullPath: '/companies/$id'
+      preLoaderRoute: typeof CompaniesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
+  CvBuilderRoute: CvBuilderRoute,
+  DashboardRoute: DashboardRoute,
+  EmployerDashboardRoute: EmployerDashboardRoute,
+  EmployersRoute: EmployersRoute,
+  JobSeekersRoute: JobSeekersRoute,
+  JobsRoute: JobsRoute,
+  PostJobRoute: PostJobRoute,
+  CompaniesIdRoute: CompaniesIdRoute,
+  JobIdRoute: JobIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
