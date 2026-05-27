@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { GripVertical, ExternalLink, Calendar, Building2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
-import { toast } from 'sonner';
+import * as React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { GripVertical, ExternalLink, Calendar, Building2 } from "lucide-react";
+import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type ApplicationWithJob = {
   id: string;
   job_id: string;
-  status: Database['public']['Enums']['application_status'];
+  status: Database["public"]["Enums"]["application_status"];
   created_at: string;
   job?: {
     title: string;
@@ -23,13 +23,13 @@ type ApplicationWithJob = {
 };
 
 const STATUS_COLUMNS = [
-  { id: 'applied', label: 'Applied', color: 'bg-blue-50 border-blue-200' },
-  { id: 'under_review', label: 'Under Review', color: 'bg-yellow-50 border-yellow-200' },
-  { id: 'shortlisted', label: 'Shortlisted', color: 'bg-purple-50 border-purple-200' },
-  { id: 'interview', label: 'Interview', color: 'bg-indigo-50 border-indigo-200' },
-  { id: 'offer', label: 'Offer', color: 'bg-green-50 border-green-200' },
-  { id: 'hired', label: 'Hired', color: 'bg-emerald-100 border-emerald-300' },
-  { id: 'rejected', label: 'Rejected', color: 'bg-red-50 border-red-200' },
+  { id: "applied", label: "Applied", color: "bg-blue-50 border-blue-200" },
+  { id: "under_review", label: "Under Review", color: "bg-yellow-50 border-yellow-200" },
+  { id: "shortlisted", label: "Shortlisted", color: "bg-purple-50 border-purple-200" },
+  { id: "interview", label: "Interview", color: "bg-indigo-50 border-indigo-200" },
+  { id: "offer", label: "Offer", color: "bg-green-50 border-green-200" },
+  { id: "hired", label: "Hired", color: "bg-emerald-100 border-emerald-300" },
+  { id: "rejected", label: "Rejected", color: "bg-red-50 border-red-200" },
 ] as const;
 
 interface ApplicationCard {
@@ -56,12 +56,12 @@ export function ApplicationKanbanBoard() {
 
   // Fetch applications
   const applicationsQuery = useQuery({
-    queryKey: ['kanban-applications', user?.id],
+    queryKey: ["kanban-applications", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       if (!user?.id) return [];
       const { data, error } = await supabase
-        .from('applications')
+        .from("applications")
         .select(
           `
           id,
@@ -72,13 +72,13 @@ export function ApplicationKanbanBoard() {
             title,
             companies:company_id(name)
           )
-        `
+        `,
         )
-        .eq('applicant_id', user.id)
-        .order('created_at', { ascending: false });
+        .eq("applicant_id", user.id)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Error fetching applications:', error);
+        console.error("Error fetching applications:", error);
         return [];
       }
 
@@ -88,8 +88,8 @@ export function ApplicationKanbanBoard() {
         job_id: app.job_id,
         status: app.status,
         created_at: app.created_at,
-        job_title: app.jobs?.title || 'Job',
-        company_name: app.jobs?.companies?.name || 'Company',
+        job_title: app.jobs?.title || "Job",
+        company_name: app.jobs?.companies?.name || "Company",
       }));
     },
   });
@@ -104,18 +104,18 @@ export function ApplicationKanbanBoard() {
       newStatus: string;
     }) => {
       const { error } = await supabase
-        .from('applications')
-        .update({ status: newStatus as Database['public']['Enums']['application_status'] })
-        .eq('id', applicationId);
+        .from("applications")
+        .update({ status: newStatus as Database["public"]["Enums"]["application_status"] })
+        .eq("id", applicationId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Application status updated');
-      queryClient.invalidateQueries({ queryKey: ['kanban-applications', user?.id] });
+      toast.success("Application status updated");
+      queryClient.invalidateQueries({ queryKey: ["kanban-applications", user?.id] });
     },
     onError: () => {
-      toast.error('Failed to update application');
+      toast.error("Failed to update application");
     },
   });
 
@@ -134,12 +134,12 @@ export function ApplicationKanbanBoard() {
 
   const handleDragStart = (e: React.DragEvent, card: ApplicationCard) => {
     setDraggedCard(card);
-    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.effectAllowed = "move";
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
   };
 
   const handleDrop = (e: React.DragEvent, targetStatus: string) => {
@@ -155,10 +155,10 @@ export function ApplicationKanbanBoard() {
 
   const totalApplications = applicationsQuery.data?.length || 0;
   const stats = {
-    applied: columns.find((c) => c.id === 'applied')?.applications.length || 0,
-    shortlisted: columns.find((c) => c.id === 'shortlisted')?.applications.length || 0,
-    interviews: columns.find((c) => c.id === 'interview')?.applications.length || 0,
-    offers: columns.find((c) => c.id === 'offer')?.applications.length || 0,
+    applied: columns.find((c) => c.id === "applied")?.applications.length || 0,
+    shortlisted: columns.find((c) => c.id === "shortlisted")?.applications.length || 0,
+    interviews: columns.find((c) => c.id === "interview")?.applications.length || 0,
+    offers: columns.find((c) => c.id === "offer")?.applications.length || 0,
   };
 
   return (
@@ -196,14 +196,23 @@ export function ApplicationKanbanBoard() {
                     {column.applications.length}
                   </Badge>
                 </div>
-                <div className="h-1 bg-gradient-to-r rounded-full" 
+                <div
+                  className="h-1 bg-gradient-to-r rounded-full"
                   style={{
-                    background: column.id === 'applied' ? '#3b82f6' :
-                               column.id === 'under_review' ? '#eab308' :
-                               column.id === 'shortlisted' ? '#a855f7' :
-                               column.id === 'interview' ? '#6366f1' :
-                               column.id === 'offer' ? '#22c55e' :
-                               column.id === 'hired' ? '#10b981' : '#ef4444'
+                    background:
+                      column.id === "applied"
+                        ? "#3b82f6"
+                        : column.id === "under_review"
+                          ? "#eab308"
+                          : column.id === "shortlisted"
+                            ? "#a855f7"
+                            : column.id === "interview"
+                              ? "#6366f1"
+                              : column.id === "offer"
+                                ? "#22c55e"
+                                : column.id === "hired"
+                                  ? "#10b981"
+                                  : "#ef4444",
                   }}
                 />
               </div>
@@ -214,8 +223,8 @@ export function ApplicationKanbanBoard() {
                 onDrop={(e) => handleDrop(e, column.id)}
                 className={`flex-1 rounded-lg border-2 border-dashed transition-colors ${
                   draggedCard && draggedCard.status !== column.id
-                    ? 'border-blue-300 bg-blue-50'
-                    : 'border-gray-200 bg-gray-50'
+                    ? "border-blue-300 bg-blue-50"
+                    : "border-gray-200 bg-gray-50"
                 } space-y-3 p-3 min-h-96`}
               >
                 {column.applications.length === 0 ? (
@@ -241,9 +250,7 @@ export function ApplicationKanbanBoard() {
       {totalApplications === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-400 mb-2">No applications yet</div>
-          <div className="text-sm text-gray-500">
-            Start applying to jobs to track them here
-          </div>
+          <div className="text-sm text-gray-500">Start applying to jobs to track them here</div>
         </div>
       )}
     </div>
@@ -262,7 +269,7 @@ function ApplicationCard({ card, onDragStart, isDragging }: ApplicationCardProps
       draggable
       onDragStart={(e) => onDragStart(e, card)}
       className={`rounded-lg border bg-white p-3 cursor-grab active:cursor-grabbing transition-all ${
-        isDragging ? 'opacity-50 scale-95' : 'hover:shadow-md'
+        isDragging ? "opacity-50 scale-95" : "hover:shadow-md"
       }`}
     >
       <div className="flex gap-2 items-start">
@@ -275,7 +282,7 @@ function ApplicationCard({ card, onDragStart, isDragging }: ApplicationCardProps
           </p>
           <p className="text-xs text-gray-500 flex items-center gap-1 mt-2">
             <Calendar className="h-3 w-3" />
-            {format(new Date(card.created_at), 'MMM d, yyyy')}
+            {format(new Date(card.created_at), "MMM d, yyyy")}
           </p>
         </div>
       </div>

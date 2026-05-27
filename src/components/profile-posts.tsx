@@ -2,26 +2,26 @@
  * ProfilePosts — post feed for a user's profile overview.
  * Supports creating, liking, and deleting posts.
  */
-import * as React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Heart, Trash2, Briefcase, Trophy, Search, Users, FileText, Plus, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+import * as React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Heart, Trash2, Briefcase, Trophy, Search, Users, FileText, Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
-import { AvatarUpload } from '@/components/avatar-upload';
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { AvatarUpload } from "@/components/avatar-upload";
 
-type PostType = 'update' | 'achievement' | 'job_search' | 'hiring' | 'article';
+type PostType = "update" | "achievement" | "job_search" | "hiring" | "article";
 
 interface Post {
   id: string;
@@ -35,23 +35,23 @@ interface Post {
 }
 
 const POST_TYPES: { value: PostType; label: string; icon: React.ElementType; color: string }[] = [
-  { value: 'update', label: 'General update', icon: FileText, color: 'text-blue-600' },
-  { value: 'achievement', label: 'Achievement', icon: Trophy, color: 'text-amber-600' },
-  { value: 'job_search', label: 'Open to work', icon: Search, color: 'text-emerald-600' },
-  { value: 'hiring', label: 'Hiring', icon: Users, color: 'text-purple-600' },
-  { value: 'article', label: 'Article', icon: Briefcase, color: 'text-slate-600' },
+  { value: "update", label: "General update", icon: FileText, color: "text-blue-600" },
+  { value: "achievement", label: "Achievement", icon: Trophy, color: "text-amber-600" },
+  { value: "job_search", label: "Open to work", icon: Search, color: "text-emerald-600" },
+  { value: "hiring", label: "Hiring", icon: Users, color: "text-purple-600" },
+  { value: "article", label: "Article", icon: Briefcase, color: "text-slate-600" },
 ];
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
+  if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
   const days = Math.floor(hrs / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-TZ', { day: 'numeric', month: 'short' });
+  return new Date(dateStr).toLocaleDateString("en-TZ", { day: "numeric", month: "short" });
 }
 
 interface ProfilePostsProps {
@@ -72,20 +72,20 @@ export function ProfilePosts({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [composing, setComposing] = React.useState(false);
-  const [content, setContent] = React.useState('');
-  const [postType, setPostType] = React.useState<PostType>('update');
+  const [content, setContent] = React.useState("");
+  const [postType, setPostType] = React.useState<PostType>("update");
   const [posting, setPosting] = React.useState(false);
 
   const { data: posts, isLoading } = useQuery<Post[]>({
-    queryKey: ['profile-posts', profileUserId],
+    queryKey: ["profile-posts", profileUserId],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('posts')
+        .from("posts")
         .select(
-          'id,author_id,content,post_type,image_url,likes_count,created_at,profiles!author_id(full_name,headline,avatar_url)',
+          "id,author_id,content,post_type,image_url,likes_count,created_at,profiles!author_id(full_name,headline,avatar_url)",
         )
-        .eq('author_id', profileUserId)
-        .order('created_at', { ascending: false })
+        .eq("author_id", profileUserId)
+        .order("created_at", { ascending: false })
         .limit(20);
       if (error) throw error;
       return (data ?? []) as Post[];
@@ -94,13 +94,13 @@ export function ProfilePosts({
 
   // Which posts the current user has liked
   const { data: likedPostIds } = useQuery<string[]>({
-    queryKey: ['liked-posts', user?.id],
+    queryKey: ["liked-posts", user?.id],
     enabled: !!user,
     queryFn: async () => {
       const { data } = await (supabase as any)
-        .from('post_likes')
-        .select('post_id')
-        .eq('user_id', user!.id);
+        .from("post_likes")
+        .select("post_id")
+        .eq("user_id", user!.id);
       return (data ?? []).map((r: { post_id: string }) => r.post_id);
     },
   });
@@ -109,18 +109,18 @@ export function ProfilePosts({
     if (!content.trim() || !user) return;
     setPosting(true);
     try {
-      const { error } = await (supabase as any).from('posts').insert({
+      const { error } = await (supabase as any).from("posts").insert({
         author_id: user.id,
         content: content.trim(),
         post_type: postType,
       });
       if (error) throw error;
-      toast.success('Post shared');
-      setContent('');
+      toast.success("Post shared");
+      setContent("");
       setComposing(false);
-      queryClient.invalidateQueries({ queryKey: ['profile-posts', profileUserId] });
+      queryClient.invalidateQueries({ queryKey: ["profile-posts", profileUserId] });
     } catch (e) {
-      toast.error((e as Error).message || 'Could not post');
+      toast.error((e as Error).message || "Could not post");
     } finally {
       setPosting(false);
     }
@@ -128,27 +128,27 @@ export function ProfilePosts({
 
   const toggleLike = async (post: Post) => {
     if (!user) {
-      toast.error('Sign in to like posts');
+      toast.error("Sign in to like posts");
       return;
     }
     const liked = likedPostIds?.includes(post.id);
     if (liked) {
       await (supabase as any)
-        .from('post_likes')
+        .from("post_likes")
         .delete()
-        .eq('post_id', post.id)
-        .eq('user_id', user.id);
+        .eq("post_id", post.id)
+        .eq("user_id", user.id);
     } else {
-      await (supabase as any).from('post_likes').insert({ post_id: post.id, user_id: user.id });
+      await (supabase as any).from("post_likes").insert({ post_id: post.id, user_id: user.id });
     }
-    queryClient.invalidateQueries({ queryKey: ['profile-posts', profileUserId] });
-    queryClient.invalidateQueries({ queryKey: ['liked-posts', user.id] });
+    queryClient.invalidateQueries({ queryKey: ["profile-posts", profileUserId] });
+    queryClient.invalidateQueries({ queryKey: ["liked-posts", user.id] });
   };
 
   const deletePost = async (postId: string) => {
-    await (supabase as any).from('posts').delete().eq('id', postId);
-    toast.success('Post deleted');
-    queryClient.invalidateQueries({ queryKey: ['profile-posts', profileUserId] });
+    await (supabase as any).from("posts").delete().eq("id", postId);
+    toast.success("Post deleted");
+    queryClient.invalidateQueries({ queryKey: ["profile-posts", profileUserId] });
   };
 
   const getTypeInfo = (type: PostType) => POST_TYPES.find((t) => t.value === type) ?? POST_TYPES[0];
@@ -205,7 +205,7 @@ export function ProfilePosts({
                     size="sm"
                     onClick={() => {
                       setComposing(false);
-                      setContent('');
+                      setContent("");
                     }}
                   >
                     <X className="h-4 w-4 mr-1" /> Cancel
@@ -216,7 +216,7 @@ export function ProfilePosts({
                     onClick={submitPost}
                     className="bg-accent hover:bg-accent/90 text-accent-foreground"
                   >
-                    {posting ? 'Posting…' : 'Post'}
+                    {posting ? "Posting…" : "Post"}
                   </Button>
                 </div>
               </div>
@@ -250,14 +250,14 @@ export function ProfilePosts({
                 <div className="flex items-start gap-3">
                   <AvatarUpload
                     avatarUrl={post.profiles?.avatar_url}
-                    name={post.profiles?.full_name ?? 'U'}
+                    name={post.profiles?.full_name ?? "U"}
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="font-semibold text-sm leading-tight">
-                          {post.profiles?.full_name ?? 'Unknown'}
+                          {post.profiles?.full_name ?? "Unknown"}
                         </p>
                         {post.profiles?.headline && (
                           <p className="text-xs text-muted-foreground">{post.profiles.headline}</p>
@@ -291,16 +291,16 @@ export function ProfilePosts({
                     <div className="mt-3 flex items-center gap-4">
                       <button
                         onClick={() => toggleLike(post)}
-                        className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? 'text-accent' : 'text-muted-foreground hover:text-accent'}`}
+                        className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? "text-accent" : "text-muted-foreground hover:text-accent"}`}
                       >
-                        <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+                        <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                         <span>
-                          {post.likes_count > 0 ? post.likes_count : ''}{' '}
+                          {post.likes_count > 0 ? post.likes_count : ""}{" "}
                           {post.likes_count === 1
-                            ? 'Like'
+                            ? "Like"
                             : post.likes_count > 1
-                              ? 'Likes'
-                              : 'Like'}
+                              ? "Likes"
+                              : "Like"}
                         </span>
                       </button>
                     </div>
@@ -313,7 +313,7 @@ export function ProfilePosts({
       ) : (
         <Card className="p-8 text-center border-dashed">
           <p className="text-sm text-muted-foreground">
-            {isOwner ? 'Share your first post above.' : 'No posts yet.'}
+            {isOwner ? "Share your first post above." : "No posts yet."}
           </p>
         </Card>
       )}

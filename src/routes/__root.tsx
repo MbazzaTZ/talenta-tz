@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -6,14 +6,14 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-} from '@tanstack/react-router';
+} from "@tanstack/react-router";
 
-import appCss from '../styles.css?url';
-import { AuthProvider } from '@/lib/auth';
-import { LangProvider } from '@/lib/i18n';
-import { Toaster } from '@/components/ui/sonner';
-import { SupabaseMissingBanner } from '@/components/supabase-missing-banner';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import appCss from "../styles.css?url";
+import { AuthProvider } from "@/lib/auth";
+import { LangProvider } from "@/lib/i18n";
+import { Toaster } from "@/components/ui/sonner";
+import { SupabaseMissingBanner } from "@/components/supabase-missing-banner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
   return (
@@ -70,35 +70,55 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Talentra — Connecting Talent to Opportunity' },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Talentra — Connecting Talent to Opportunity" },
       {
-        name: 'description',
+        name: "description",
         content:
           "Tanzania's smarter job network. Browse thousands of jobs in tourism, ICT, finance, healthcare, agriculture and more — in English & Kiswahili.",
       },
-      { property: 'og:title', content: 'Talentra' },
+      { property: "og:title", content: "Talentra" },
       {
-        property: 'og:description',
-        content: 'Connecting employers and job seekers across Tanzania.',
+        property: "og:description",
+        content: "Connecting employers and job seekers across Tanzania.",
       },
-      { property: 'og:type', content: 'website' },
+      { property: "og:type", content: "website" },
       { title: "Talentra" },
       { property: "og:title", content: "Talentra" },
       { name: "twitter:title", content: "Talentra" },
-      { name: "description", content: "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios." },
-      { property: "og:description", content: "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios." },
-      { name: "twitter:description", content: "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/SiyQYghE1EZv61H1ooyrHaZaN8t1/social-images/social-1779899247526-Logo.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/SiyQYghE1EZv61H1ooyrHaZaN8t1/social-images/social-1779899247526-Logo.webp" },
+      {
+        name: "description",
+        content:
+          "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios.",
+      },
+      {
+        property: "og:description",
+        content:
+          "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Talent Showcase is a web application for showcasing and discovering creative projects and portfolios.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/SiyQYghE1EZv61H1ooyrHaZaN8t1/social-images/social-1779899247526-Logo.webp",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/SiyQYghE1EZv61H1ooyrHaZaN8t1/social-images/social-1779899247526-Logo.webp",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
     ],
     links: [
-      { rel: 'stylesheet', href: appCss },
-      { rel: 'icon', href: '/Logo.png' },
-      { rel: 'apple-touch-icon', href: '/Logo.png' },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/Logo.png" },
+      { rel: "apple-touch-icon", href: "/Logo.png" },
     ],
   }),
   shellComponent: RootShell,

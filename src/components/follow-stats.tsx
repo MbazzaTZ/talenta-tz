@@ -2,9 +2,9 @@
  * FollowStats — Instagram-style following/followers counts on a profile.
  * Shows breakdown by target type (companies, employers, employees, seekers, agencies).
  */
-import * as React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import * as React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FollowCounts {
   following_total: number;
@@ -22,9 +22,9 @@ interface FollowStatsProps {
 
 export function FollowStats({ userId }: FollowStatsProps) {
   const { data: counts } = useQuery<FollowCounts>({
-    queryKey: ['follow-counts', userId],
+    queryKey: ["follow-counts", userId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).rpc('get_follow_counts', {
+      const { data, error } = await (supabase as any).rpc("get_follow_counts", {
         p_user_id: userId,
       });
       if (error) throw error;
@@ -44,11 +44,11 @@ export function FollowStats({ userId }: FollowStatsProps) {
   };
 
   const BREAKDOWN = [
-    { label: 'Companies', value: c.following_companies },
-    { label: 'Employers', value: c.following_employers },
-    { label: 'Employees', value: c.following_employees },
-    { label: 'Agencies', value: c.following_agencies },
-    { label: 'Job seekers', value: c.following_seekers },
+    { label: "Companies", value: c.following_companies },
+    { label: "Employers", value: c.following_employers },
+    { label: "Employees", value: c.following_employees },
+    { label: "Agencies", value: c.following_agencies },
+    { label: "Job seekers", value: c.following_seekers },
   ];
 
   return (

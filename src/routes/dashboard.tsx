@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Briefcase,
   ShieldCheck,
@@ -22,27 +22,27 @@ import {
   X,
   Plus,
   AlertCircle,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
+} from "lucide-react";
+import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/select";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/lib/auth";
 import {
   fetchSavedJobs,
   fetchUserApplications,
@@ -50,41 +50,41 @@ import {
   saveUserProfile,
   uploadResumeFile,
   SeekerProfile,
-} from '@/lib/supabase-data';
-import { EmployeeProfile } from '@/components/employee-profile';
-import { EmployerBadge } from '@/components/employer-badge';
-import { AvatarUpload } from '@/components/avatar-upload';
-import { FollowStats } from '@/components/follow-stats';
-import { ProfilePosts } from '@/components/profile-posts';
-import { FollowButton } from '@/components/follow-button';
-import { REGIONS } from '@/lib/kazi-data';
+} from "@/lib/supabase-data";
+import { EmployeeProfile } from "@/components/employee-profile";
+import { EmployerBadge } from "@/components/employer-badge";
+import { AvatarUpload } from "@/components/avatar-upload";
+import { FollowStats } from "@/components/follow-stats";
+import { ProfilePosts } from "@/components/profile-posts";
+import { FollowButton } from "@/components/follow-button";
+import { REGIONS } from "@/lib/kazi-data";
 
-export const Route = createFileRoute('/dashboard')({ component: Dashboard });
+export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
 type EmployerJob = Pick<
-  Database['public']['Tables']['jobs']['Row'],
-  'id' | 'title' | 'status' | 'created_at'
+  Database["public"]["Tables"]["jobs"]["Row"],
+  "id" | "title" | "status" | "created_at"
 > & { companies: { name: string } | null };
 
 // ─── Status colour map ────────────────────────────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-  applied: 'bg-blue-100 text-blue-800',
-  under_review: 'bg-amber-100 text-amber-800',
-  shortlisted: 'bg-purple-100 text-purple-800',
-  interview: 'bg-indigo-100 text-indigo-800',
-  offer: 'bg-emerald-100 text-emerald-800',
-  hired: 'bg-emerald-200 text-emerald-900',
-  rejected: 'bg-red-100 text-red-800',
+  applied: "bg-blue-100 text-blue-800",
+  under_review: "bg-amber-100 text-amber-800",
+  shortlisted: "bg-purple-100 text-purple-800",
+  interview: "bg-indigo-100 text-indigo-800",
+  offer: "bg-emerald-100 text-emerald-800",
+  hired: "bg-emerald-200 text-emerald-900",
+  rejected: "bg-red-100 text-red-800",
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  applied: 'Applied',
-  under_review: 'Under review',
-  shortlisted: 'Shortlisted',
-  interview: 'Interview',
-  offer: 'Offer',
-  hired: 'Hired 🎉',
-  rejected: 'Not selected',
+  applied: "Applied",
+  under_review: "Under review",
+  shortlisted: "Shortlisted",
+  interview: "Interview",
+  offer: "Offer",
+  hired: "Hired 🎉",
+  rejected: "Not selected",
 };
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
@@ -94,13 +94,13 @@ function Dashboard() {
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    if (!loading && !user) navigate({ to: '/auth' });
+    if (!loading && !user) navigate({ to: "/auth" });
   }, [user, loading, navigate]);
 
-  const isEmployer = roles.includes('employer') || roles.includes('admin');
+  const isEmployer = roles.includes("employer") || roles.includes("admin");
 
   const { data: profile } = useQuery({
-    queryKey: ['supabase-profile', user?.id],
+    queryKey: ["supabase-profile", user?.id],
     enabled: !!user?.id,
     queryFn: () => getUserProfile(user!.id),
   });
@@ -111,16 +111,16 @@ function Dashboard() {
   const displayName =
     profile?.full_name ||
     (user.user_metadata as Record<string, string> | undefined)?.full_name ||
-    user.email?.split('@')[0] ||
-    'My Account';
+    user.email?.split("@")[0] ||
+    "My Account";
 
-  const roleLabel = roles.includes('admin')
-    ? 'Admin'
-    : roles.includes('employer')
-      ? 'Employer'
-      : roles.includes('employee')
-        ? 'Employee'
-        : 'Job seeker';
+  const roleLabel = roles.includes("admin")
+    ? "Admin"
+    : roles.includes("employer")
+      ? "Employer"
+      : roles.includes("employee")
+        ? "Employee"
+        : "Job seeker";
 
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0 bg-background">
@@ -186,7 +186,7 @@ function Dashboard() {
               roles={roles}
               isEmployer={isEmployer}
               refetch={() =>
-                queryClient.invalidateQueries({ queryKey: ['supabase-profile', user.id] })
+                queryClient.invalidateQueries({ queryKey: ["supabase-profile", user.id] })
               }
             />
           </TabsContent>
@@ -197,7 +197,7 @@ function Dashboard() {
               user={user}
               profile={profile ?? null}
               onSave={() =>
-                queryClient.invalidateQueries({ queryKey: ['supabase-profile', user.id] })
+                queryClient.invalidateQueries({ queryKey: ["supabase-profile", user.id] })
               }
             />
           </TabsContent>
@@ -247,25 +247,25 @@ function OverviewTab({
   refetch: () => void;
 }) {
   const { data: applications } = useQuery({
-    queryKey: ['supabase-applications', user.id],
+    queryKey: ["supabase-applications", user.id],
     queryFn: () => fetchUserApplications(user.id),
     enabled: !!user.id,
   });
   const { data: savedJobs } = useQuery({
-    queryKey: ['supabase-saved-jobs', user.id],
+    queryKey: ["supabase-saved-jobs", user.id],
     queryFn: () => fetchSavedJobs(user.id),
     enabled: !!user.id,
   });
 
   // Profile completion
   const completionItems = [
-    { label: 'Full name', done: !!profile?.full_name },
-    { label: 'Headline', done: !!profile?.headline },
-    { label: 'Bio', done: !!profile?.bio },
-    { label: 'Phone', done: !!profile?.phone },
-    { label: 'Location', done: !!profile?.location },
-    { label: 'Skills (3+)', done: (profile?.skills?.length ?? 0) >= 3 },
-    { label: 'Resume', done: !!profile?.resumeUrl },
+    { label: "Full name", done: !!profile?.full_name },
+    { label: "Headline", done: !!profile?.headline },
+    { label: "Bio", done: !!profile?.bio },
+    { label: "Phone", done: !!profile?.phone },
+    { label: "Location", done: !!profile?.location },
+    { label: "Skills (3+)", done: (profile?.skills?.length ?? 0) >= 3 },
+    { label: "Resume", done: !!profile?.resumeUrl },
   ];
   const completionPct = Math.round(
     (completionItems.filter((i) => i.done).length / completionItems.length) * 100,
@@ -280,12 +280,12 @@ function OverviewTab({
         {/* Quick stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: Send, value: applications?.length ?? 0, label: 'Applied' },
-            { icon: Bookmark, value: savedJobs?.length ?? 0, label: 'Saved' },
+            { icon: Send, value: applications?.length ?? 0, label: "Applied" },
+            { icon: Bookmark, value: savedJobs?.length ?? 0, label: "Saved" },
             {
               icon: Star,
-              value: applications?.filter((a) => a.status === 'shortlisted').length ?? 0,
-              label: 'Shortlisted',
+              value: applications?.filter((a) => a.status === "shortlisted").length ?? 0,
+              label: "Shortlisted",
             },
           ].map(({ icon: Icon, value, label }) => (
             <Card key={label} className="p-4 text-center">
@@ -301,7 +301,7 @@ function OverviewTab({
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display font-semibold">Recent applications</h3>
             <Button asChild variant="ghost" size="sm" className="text-accent h-7">
-              <Link to="/dashboard" search={{ tab: 'applications' } as never}>
+              <Link to="/dashboard" search={{ tab: "applications" } as never}>
                 View all
               </Link>
             </Button>
@@ -318,7 +318,7 @@ function OverviewTab({
                     <p className="text-xs text-muted-foreground">{app.companyName}</p>
                   </div>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUS_COLORS[app.status] ?? 'bg-muted text-muted-foreground'}`}
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUS_COLORS[app.status] ?? "bg-muted text-muted-foreground"}`}
                   >
                     {STATUS_LABELS[app.status] ?? app.status}
                   </span>
@@ -340,7 +340,7 @@ function OverviewTab({
         <ProfilePosts
           profileUserId={user.id}
           isOwner={true}
-          ownerName={profile?.full_name || user.email?.split('@')[0] || 'Me'}
+          ownerName={profile?.full_name || user.email?.split("@")[0] || "Me"}
           ownerAvatarUrl={profile?.avatarUrl}
         />
 
@@ -388,13 +388,13 @@ function OverviewTab({
           <div className="flex items-center gap-3 mb-4">
             <AvatarUpload
               avatarUrl={profile?.avatarUrl}
-              name={profile?.full_name ?? 'U'}
+              name={profile?.full_name ?? "U"}
               size="sm"
             />
             <div>
-              <p className="font-semibold text-sm">{profile?.full_name || 'Add your name'}</p>
+              <p className="font-semibold text-sm">{profile?.full_name || "Add your name"}</p>
               <p className="text-xs text-muted-foreground">
-                {profile?.headline || 'Add a headline'}
+                {profile?.headline || "Add a headline"}
               </p>
             </div>
           </div>
@@ -431,7 +431,7 @@ function OverviewTab({
             </div>
             <div className="h-1.5 rounded-full bg-muted overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${completionPct >= 80 ? 'bg-emerald-500' : completionPct >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
+                className={`h-full rounded-full transition-all ${completionPct >= 80 ? "bg-emerald-500" : completionPct >= 50 ? "bg-amber-500" : "bg-red-400"}`}
                 style={{ width: `${completionPct}%` }}
               />
             </div>
@@ -456,8 +456,8 @@ function OverviewTab({
           <h3 className="font-display font-semibold text-sm mb-3">Quick links</h3>
           <div className="space-y-1">
             {[
-              { label: 'CV Builder', to: '/cv-builder', icon: FileText },
-              { label: 'Browse jobs', to: '/jobs', icon: Briefcase },
+              { label: "CV Builder", to: "/cv-builder", icon: FileText },
+              { label: "Browse jobs", to: "/jobs", icon: Briefcase },
             ].map(({ label, to, icon: Icon }) => (
               <Link
                 key={label}
@@ -492,9 +492,9 @@ function VerificationCard({
 
   const sendVerification = async () => {
     if (!user.email) return;
-    const { error } = await supabase.auth.resend({ type: 'signup', email: user.email });
+    const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
     if (error) toast.error(error.message);
-    else toast.success('Verification email sent. Check your inbox.');
+    else toast.success("Verification email sent. Check your inbox.");
   };
 
   return (
@@ -502,12 +502,12 @@ function VerificationCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ShieldCheck
-            className={`h-5 w-5 ${verified ? 'text-emerald-500' : 'text-muted-foreground/40'}`}
+            className={`h-5 w-5 ${verified ? "text-emerald-500" : "text-muted-foreground/40"}`}
           />
           <div>
             <p className="text-sm font-medium">Email verified</p>
             <p className="text-xs text-muted-foreground">
-              {verified ? 'Account is verified' : 'Verify to build trust'}
+              {verified ? "Account is verified" : "Verify to build trust"}
             </p>
           </div>
         </div>
@@ -538,16 +538,16 @@ function ProfileTab({
   profile: SeekerProfile | null;
   onSave: () => void;
 }) {
-  const metaName = (user.user_metadata as Record<string, string> | undefined)?.full_name ?? '';
-  const metaPhone = (user.user_metadata as Record<string, string> | undefined)?.phone ?? '';
+  const metaName = (user.user_metadata as Record<string, string> | undefined)?.full_name ?? "";
+  const metaPhone = (user.user_metadata as Record<string, string> | undefined)?.phone ?? "";
 
-  const [fullName, setFullName] = React.useState(profile?.full_name || metaName || '');
-  const [headline, setHeadline] = React.useState(profile?.headline ?? '');
-  const [phone, setPhone] = React.useState(profile?.phone || metaPhone || '');
-  const [location, setLocation] = React.useState(profile?.location ?? '');
-  const [bio, setBio] = React.useState(profile?.bio ?? '');
-  const [portfolioUrl, setPortfolioUrl] = React.useState(profile?.portfolioUrl ?? '');
-  const [skillInput, setSkillInput] = React.useState('');
+  const [fullName, setFullName] = React.useState(profile?.full_name || metaName || "");
+  const [headline, setHeadline] = React.useState(profile?.headline ?? "");
+  const [phone, setPhone] = React.useState(profile?.phone || metaPhone || "");
+  const [location, setLocation] = React.useState(profile?.location ?? "");
+  const [bio, setBio] = React.useState(profile?.bio ?? "");
+  const [portfolioUrl, setPortfolioUrl] = React.useState(profile?.portfolioUrl ?? "");
+  const [skillInput, setSkillInput] = React.useState("");
   const [skills, setSkills] = React.useState<string[]>(profile?.skills ?? []);
   const [busy, setBusy] = React.useState(false);
 
@@ -563,13 +563,13 @@ function ProfileTab({
   }, [profile]);
 
   const completionItems = [
-    { label: 'Full name', done: !!fullName },
-    { label: 'Headline', done: !!headline },
-    { label: 'Bio', done: !!bio },
-    { label: 'Phone', done: !!phone },
-    { label: 'Location', done: !!location },
-    { label: 'Skills (3+)', done: skills.length >= 3 },
-    { label: 'Resume', done: !!profile?.resumeUrl },
+    { label: "Full name", done: !!fullName },
+    { label: "Headline", done: !!headline },
+    { label: "Bio", done: !!bio },
+    { label: "Phone", done: !!phone },
+    { label: "Location", done: !!location },
+    { label: "Skills (3+)", done: skills.length >= 3 },
+    { label: "Resume", done: !!profile?.resumeUrl },
   ];
   const completionPct = Math.round(
     (completionItems.filter((i) => i.done).length / completionItems.length) * 100,
@@ -579,12 +579,12 @@ function ProfileTab({
     const s = skillInput.trim();
     if (!s || skills.includes(s)) return;
     setSkills([...skills, s]);
-    setSkillInput('');
+    setSkillInput("");
   };
 
   const saveProfile = async () => {
     if (!fullName.trim()) {
-      toast.error('Full name is required');
+      toast.error("Full name is required");
       return;
     }
     setBusy(true);
@@ -598,10 +598,10 @@ function ProfileTab({
         portfolioUrl,
         skills,
       });
-      toast.success('Profile saved');
+      toast.success("Profile saved");
       onSave();
     } catch (e) {
-      toast.error((e as Error).message || 'Unable to save profile');
+      toast.error((e as Error).message || "Unable to save profile");
     } finally {
       setBusy(false);
     }
@@ -613,13 +613,13 @@ function ProfileTab({
     setBusy(true);
     try {
       await uploadResumeFile(user.id, file);
-      toast.success('Resume uploaded');
+      toast.success("Resume uploaded");
       onSave();
     } catch (err) {
-      toast.error((err as Error).message || 'Upload failed');
+      toast.error((err as Error).message || "Upload failed");
     } finally {
       setBusy(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -708,7 +708,7 @@ function ProfileTab({
               value={skillInput}
               onChange={(e) => setSkillInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   addSkill();
                 }
@@ -782,8 +782,8 @@ function ProfileTab({
           />
           <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Or{' '}
-              <Link to={'/cv-builder' as never} className="text-accent hover:underline">
+              Or{" "}
+              <Link to={"/cv-builder" as never} className="text-accent hover:underline">
                 build a CV with our CV builder →
               </Link>
             </p>
@@ -796,7 +796,7 @@ function ProfileTab({
             disabled={busy}
             className="bg-accent hover:bg-accent/90 text-accent-foreground px-8"
           >
-            {busy ? 'Saving…' : 'Save profile'}
+            {busy ? "Saving…" : "Save profile"}
           </Button>
         </div>
       </div>
@@ -824,7 +824,7 @@ function ProfileTab({
                   fill="none"
                   strokeWidth="3"
                   stroke={
-                    completionPct >= 80 ? '#10b981' : completionPct >= 50 ? '#f59e0b' : '#ef4444'
+                    completionPct >= 80 ? "#10b981" : completionPct >= 50 ? "#f59e0b" : "#ef4444"
                   }
                   strokeDasharray={`${completionPct} ${100 - completionPct}`}
                   strokeLinecap="round"
@@ -837,10 +837,10 @@ function ProfileTab({
             <div>
               <p className="font-semibold text-sm">
                 {completionPct >= 80
-                  ? 'Strong profile'
+                  ? "Strong profile"
                   : completionPct >= 50
-                    ? 'Getting there'
-                    : 'Needs work'}
+                    ? "Getting there"
+                    : "Needs work"}
               </p>
               <p className="text-xs text-muted-foreground">
                 {completionItems.filter((i) => !i.done).length} items missing
@@ -851,9 +851,9 @@ function ProfileTab({
             {completionItems.map(({ label, done }) => (
               <div key={label} className="flex items-center gap-2 text-xs">
                 <CheckCircle2
-                  className={`h-3.5 w-3.5 shrink-0 ${done ? 'text-emerald-500' : 'text-muted-foreground/30'}`}
+                  className={`h-3.5 w-3.5 shrink-0 ${done ? "text-emerald-500" : "text-muted-foreground/30"}`}
                 />
-                <span className={done ? 'text-foreground' : 'text-muted-foreground line-through'}>
+                <span className={done ? "text-foreground" : "text-muted-foreground line-through"}>
                   {label}
                 </span>
               </div>
@@ -868,7 +868,7 @@ function ProfileTab({
 // ─── Applications Tab ─────────────────────────────────────────────────────────
 function ApplicationsTab({ userId }: { userId: string }) {
   const { data: applications, isLoading } = useQuery({
-    queryKey: ['supabase-applications', userId],
+    queryKey: ["supabase-applications", userId],
     queryFn: () => fetchUserApplications(userId),
   });
 
@@ -905,15 +905,15 @@ function ApplicationsTab({ userId }: { userId: string }) {
               <p className="text-xs text-muted-foreground mt-0.5">{app.companyName}</p>
               <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                 <Clock className="h-3 w-3" />
-                {new Date(app.created_at).toLocaleDateString('en-TZ', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
+                {new Date(app.created_at).toLocaleDateString("en-TZ", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
                 })}
               </p>
             </div>
             <span
-              className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${STATUS_COLORS[app.status] ?? 'bg-muted text-muted-foreground'}`}
+              className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${STATUS_COLORS[app.status] ?? "bg-muted text-muted-foreground"}`}
             >
               {STATUS_LABELS[app.status] ?? app.status}
             </span>
@@ -928,14 +928,14 @@ function ApplicationsTab({ userId }: { userId: string }) {
 function SavedJobsTab({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const { data: savedJobs, isLoading } = useQuery({
-    queryKey: ['supabase-saved-jobs', userId],
+    queryKey: ["supabase-saved-jobs", userId],
     queryFn: () => fetchSavedJobs(userId),
   });
 
   const removeSaved = async (savedId: string) => {
-    await supabase.from('saved_jobs').delete().eq('id', savedId);
-    queryClient.invalidateQueries({ queryKey: ['supabase-saved-jobs', userId] });
-    toast.success('Removed from saved jobs');
+    await supabase.from("saved_jobs").delete().eq("id", savedId);
+    queryClient.invalidateQueries({ queryKey: ["supabase-saved-jobs", userId] });
+    toast.success("Removed from saved jobs");
   };
 
   if (isLoading)
@@ -1002,48 +1002,48 @@ function EmployerView({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
 
   const { data: pendingEmployees } = useQuery({
-    queryKey: ['pending-employees', userId],
+    queryKey: ["pending-employees", userId],
     queryFn: async () => {
       const { data: companies } = await supabase
-        .from('companies')
-        .select('id,name,logo_url')
-        .eq('owner_id', userId);
+        .from("companies")
+        .select("id,name,logo_url")
+        .eq("owner_id", userId);
       if (!companies?.length) return [];
       const companyIds = companies.map((c: { id: string }) => c.id);
-      const { data } = await (supabase as any)
-        .from('company_employees')
+      const { data } = await supabase
+        .from("company_employees")
         .select(
-          'id,user_id,job_title,department,verified,company_id,profiles!user_id(full_name,headline)',
+          "id,user_id,job_title,department,verified,company_id,profiles!user_id(full_name,headline)",
         )
-        .in('company_id', companyIds)
-        .order('verified', { ascending: true });
-      return (data ?? []).map((e: any) => ({
+        .in("company_id", companyIds)
+        .order("verified", { ascending: true });
+      return (data ?? []).map((e: { id: string; company_id: string; [key: string]: unknown }) => ({
         ...e,
-        companyName: companies.find((c: any) => c.id === e.company_id)?.name ?? '',
+        companyName: companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
       }));
     },
   });
 
   const { data: jobs } = useQuery({
-    queryKey: ['employer-jobs', userId],
+    queryKey: ["employer-jobs", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('jobs')
-        .select('id,title,status,created_at,companies(name)')
-        .eq('posted_by', userId)
-        .order('created_at', { ascending: false })
+        .from("jobs")
+        .select("id,title,status,created_at,companies(name)")
+        .eq("posted_by", userId)
+        .order("created_at", { ascending: false })
         .limit(10);
       return (data ?? []) as EmployerJob[];
     },
   });
 
   const handleVerifyEmployee = async (employeeId: string, verify: boolean) => {
-    await (supabase as any)
-      .from('company_employees')
+    await supabase
+      .from("company_employees")
       .update({ verified: verify })
-      .eq('id', employeeId);
-    toast.success(verify ? 'Employee verified — badge awarded!' : 'Verification removed');
-    queryClient.invalidateQueries({ queryKey: ['pending-employees', userId] });
+      .eq("id", employeeId);
+    toast.success(verify ? "Employee verified — badge awarded!" : "Verification removed");
+    queryClient.invalidateQueries({ queryKey: ["pending-employees", userId] });
   };
 
   return (
@@ -1055,16 +1055,16 @@ function EmployerView({ userId }: { userId: string }) {
             <ShieldCheck className="h-4 w-4 text-accent" /> Employee verification
           </h3>
           <div className="space-y-3">
-            {pendingEmployees!.map((emp: any) => (
+            {pendingEmployees!.map((emp: { id: string; profiles?: { full_name?: string }; [key: string]: unknown }) => (
               <div
                 key={emp.id}
                 className="flex items-center justify-between rounded-xl border border-border p-3 gap-3"
               >
                 <div className="min-w-0">
-                  <p className="font-medium text-sm">{emp.profiles?.full_name ?? 'User'}</p>
+                  <p className="font-medium text-sm">{emp.profiles?.full_name ?? "User"}</p>
                   <p className="text-xs text-muted-foreground">
                     {emp.job_title}
-                    {emp.department ? ` · ${emp.department}` : ''} at {emp.companyName}
+                    {emp.department ? ` · ${emp.department}` : ""} at {emp.companyName}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -1134,7 +1134,7 @@ function EmployerView({ userId }: { userId: string }) {
                 </div>
                 <Badge
                   variant="outline"
-                  className={`text-xs shrink-0 ${job.status === 'published' ? 'border-emerald-300 text-emerald-700' : ''}`}
+                  className={`text-xs shrink-0 ${job.status === "published" ? "border-emerald-300 text-emerald-700" : ""}`}
                 >
                   {job.status}
                 </Badge>

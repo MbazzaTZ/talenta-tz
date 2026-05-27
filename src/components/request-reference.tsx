@@ -2,15 +2,15 @@
  * RequestReference — lets a job seeker browse verified employees at a company
  * and send them a reference request.
  */
-import * as React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Users, Star, BadgeCheck, Send, CheckCircle2, Clock, XCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import * as React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Users, Star, BadgeCheck, Send, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -18,16 +18,16 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 interface Employee {
   id: string;
@@ -62,37 +62,37 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [selectedEmployee, setSelectedEmployee] = React.useState<Employee | null>(null);
-  const [jobTitle, setJobTitle] = React.useState('');
-  const [relationship, setRelationship] = React.useState('');
-  const [message, setMessage] = React.useState('');
+  const [jobTitle, setJobTitle] = React.useState("");
+  const [relationship, setRelationship] = React.useState("");
+  const [message, setMessage] = React.useState("");
   const [sending, setSending] = React.useState(false);
 
   // Verified employees at this company
   const { data: employees } = useQuery({
-    queryKey: ['company-verified-employees', companyId],
+    queryKey: ["company-verified-employees", companyId],
     enabled: open && !!companyId,
     queryFn: async () => {
       const { data } = await supabase
-        .from('company_employees')
-        .select('id,user_id,job_title,department,profiles!user_id(full_name,headline)')
-        .eq('company_id', companyId)
-        .eq('verified', true)
-        .eq('is_current', true)
-        .neq('user_id', user?.id ?? '');
-      return ((data ?? []) as unknown) as Employee[];
+        .from("company_employees")
+        .select("id,user_id,job_title,department,profiles!user_id(full_name,headline)")
+        .eq("company_id", companyId)
+        .eq("verified", true)
+        .eq("is_current", true)
+        .neq("user_id", user?.id ?? "");
+      return (data ?? []) as unknown as Employee[];
     },
   });
 
   // Already sent requests for this company
   const { data: existingRequests } = useQuery({
-    queryKey: ['sent-references-company', user?.id, companyId],
+    queryKey: ["sent-references-company", user?.id, companyId],
     enabled: !!user && open,
     queryFn: async () => {
       const { data } = await supabase
-        .from('reference_requests')
-        .select('id,employee_id,company_id,status,recommendation,rating,requested_at')
-        .eq('seeker_id', user!.id)
-        .eq('company_id', companyId);
+        .from("reference_requests")
+        .select("id,employee_id,company_id,status,recommendation,rating,requested_at")
+        .eq("seeker_id", user!.id)
+        .eq("company_id", companyId);
       return (data ?? []) as SentRequest[];
     },
   });
@@ -101,7 +101,7 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
     if (!user || !selectedEmployee) return;
     setSending(true);
     try {
-      const { error } = await (supabase as any).from('reference_requests').insert({
+      const { error } = await (supabase as any).from("reference_requests").insert({
         seeker_id: user.id,
         employee_id: selectedEmployee.user_id,
         company_id: companyId,
@@ -110,19 +110,19 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
         message: message.trim() || null,
       });
       if (error) {
-        if (error.message.includes('duplicate')) {
-          toast.info('You already sent a request to this person at this company');
+        if (error.message.includes("duplicate")) {
+          toast.info("You already sent a request to this person at this company");
         } else {
           toast.error(error.message);
         }
         return;
       }
-      toast.success('Reference request sent!');
-      queryClient.invalidateQueries({ queryKey: ['sent-references-company', user.id, companyId] });
+      toast.success("Reference request sent!");
+      queryClient.invalidateQueries({ queryKey: ["sent-references-company", user.id, companyId] });
       setSelectedEmployee(null);
-      setJobTitle('');
-      setRelationship('');
-      setMessage('');
+      setJobTitle("");
+      setRelationship("");
+      setMessage("");
       setOpen(false);
     } finally {
       setSending(false);
@@ -132,7 +132,7 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
   const alreadyRequested = (employeeUserId: string) =>
     existingRequests?.some(
       (r) =>
-        r.employee_id === employeeUserId && r.status !== 'declined' && r.status !== 'withdrawn',
+        r.employee_id === employeeUserId && r.status !== "declined" && r.status !== "withdrawn",
     );
 
   if (!user) return null;
@@ -173,10 +173,10 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
                     className="flex items-center justify-between rounded-xl border border-border p-3 gap-3"
                   >
                     <div className="min-w-0">
-                      <p className="font-medium text-sm">{emp.profiles?.full_name ?? 'Employee'}</p>
+                      <p className="font-medium text-sm">{emp.profiles?.full_name ?? "Employee"}</p>
                       <p className="text-xs text-muted-foreground">
                         {emp.job_title}
-                        {emp.department ? ` · ${emp.department}` : ''}
+                        {emp.department ? ` · ${emp.department}` : ""}
                       </p>
                       {emp.profiles?.headline && (
                         <p className="text-xs text-muted-foreground truncate">
@@ -214,17 +214,17 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
                     className="flex items-center justify-between text-xs py-2 border-b border-border/50 last:border-0"
                   >
                     <span className="text-foreground/70">
-                      {req.company_employees?.profiles?.full_name ?? 'Employee'}
+                      {req.company_employees?.profiles?.full_name ?? "Employee"}
                     </span>
                     <span
                       className={`px-2 py-0.5 rounded-full font-medium ${
-                        req.status === 'completed'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : req.status === 'accepted'
-                            ? 'bg-blue-100 text-blue-800'
-                            : req.status === 'pending'
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-muted text-muted-foreground'
+                        req.status === "completed"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : req.status === "accepted"
+                            ? "bg-blue-100 text-blue-800"
+                            : req.status === "pending"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {req.status}
@@ -297,7 +297,7 @@ export function RequestReference({ companyId, companyName }: RequestReferencePro
                 disabled={sending}
               >
                 {sending ? (
-                  'Sending…'
+                  "Sending…"
                 ) : (
                   <>
                     <Send className="h-4 w-4 mr-1" /> Send request

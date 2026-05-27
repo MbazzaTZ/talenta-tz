@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { SiteHeader, SiteFooter } from '@/components/site-chrome';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 
-export const Route = createFileRoute('/about')({ component: About });
+export const Route = createFileRoute("/about")({ component: About });
 
 function About() {
   return (

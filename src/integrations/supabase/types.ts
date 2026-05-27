@@ -2,7 +2,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type Database = {
   __InternalSupabase: {
-    PostgrestVersion: '14.5';
+    PostgrestVersion: "14.5";
   };
   public: {
     Tables: {
@@ -14,7 +14,7 @@ export type Database = {
           cv_url: string | null;
           id: string;
           job_id: string;
-          status: Database['public']['Enums']['application_status'];
+          status: Database["public"]["Enums"]["application_status"];
           remarks: string | null;
           qualifications: string | null;
           experience_note: string | null;
@@ -35,7 +35,7 @@ export type Database = {
           cv_url?: string | null;
           id?: string;
           job_id: string;
-          status?: Database['public']['Enums']['application_status'];
+          status?: Database["public"]["Enums"]["application_status"];
           remarks?: string | null;
           qualifications?: string | null;
           experience_note?: string | null;
@@ -56,7 +56,7 @@ export type Database = {
           cv_url?: string | null;
           id?: string;
           job_id?: string;
-          status?: Database['public']['Enums']['application_status'];
+          status?: Database["public"]["Enums"]["application_status"];
           remarks?: string | null;
           qualifications?: string | null;
           experience_note?: string | null;
@@ -72,11 +72,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'applications_job_id_fkey';
-            columns: ['job_id'];
+            foreignKeyName: "applications_job_id_fkey";
+            columns: ["job_id"];
             isOneToOne: false;
-            referencedRelation: 'jobs';
-            referencedColumns: ['id'];
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -137,9 +137,9 @@ export type Database = {
       jobs: {
         Row: {
           company_id: string;
-          contract_type: Database['public']['Enums']['contract_type'];
+          contract_type: Database["public"]["Enums"]["contract_type"];
           created_at: string;
-          created_by_role: Database['public']['Enums']['app_role'];
+          created_by_role: Database["public"]["Enums"]["app_role"];
           currency: string | null;
           deadline: string | null;
           description: string;
@@ -147,22 +147,22 @@ export type Database = {
           id: string;
           industry: string;
           location: string;
-          position_level: Database['public']['Enums']['position_level'];
+          position_level: Database["public"]["Enums"]["position_level"];
           posted_by: string;
-          qualification: Database['public']['Enums']['qualification_level'] | null;
+          qualification: Database["public"]["Enums"]["qualification_level"] | null;
           region: string | null;
           salary_max: number | null;
           salary_min: number | null;
           salary_negotiable: boolean | null;
-          status: Database['public']['Enums']['job_status'];
+          status: Database["public"]["Enums"]["job_status"];
           title: string;
           views_count: number;
         };
         Insert: {
           company_id: string;
-          contract_type: Database['public']['Enums']['contract_type'];
+          contract_type: Database["public"]["Enums"]["contract_type"];
           created_at?: string;
-          created_by_role?: Database['public']['Enums']['app_role'];
+          created_by_role?: Database["public"]["Enums"]["app_role"];
           currency?: string | null;
           deadline?: string | null;
           description: string;
@@ -170,22 +170,22 @@ export type Database = {
           id?: string;
           industry: string;
           location: string;
-          position_level: Database['public']['Enums']['position_level'];
+          position_level: Database["public"]["Enums"]["position_level"];
           posted_by: string;
-          qualification?: Database['public']['Enums']['qualification_level'] | null;
+          qualification?: Database["public"]["Enums"]["qualification_level"] | null;
           region?: string | null;
           salary_max?: number | null;
           salary_min?: number | null;
           salary_negotiable?: boolean | null;
-          status?: Database['public']['Enums']['job_status'];
+          status?: Database["public"]["Enums"]["job_status"];
           title: string;
           views_count?: number;
         };
         Update: {
           company_id?: string;
-          contract_type?: Database['public']['Enums']['contract_type'];
+          contract_type?: Database["public"]["Enums"]["contract_type"];
           created_at?: string;
-          created_by_role?: Database['public']['Enums']['app_role'];
+          created_by_role?: Database["public"]["Enums"]["app_role"];
           currency?: string | null;
           deadline?: string | null;
           description?: string;
@@ -193,24 +193,24 @@ export type Database = {
           id?: string;
           industry?: string;
           location?: string;
-          position_level?: Database['public']['Enums']['position_level'];
+          position_level?: Database["public"]["Enums"]["position_level"];
           posted_by?: string;
-          qualification?: Database['public']['Enums']['qualification_level'] | null;
+          qualification?: Database["public"]["Enums"]["qualification_level"] | null;
           region?: string | null;
           salary_max?: number | null;
           salary_min?: number | null;
           salary_negotiable?: boolean | null;
-          status?: Database['public']['Enums']['job_status'];
+          status?: Database["public"]["Enums"]["job_status"];
           title?: string;
           views_count?: number;
         };
         Relationships: [
           {
-            foreignKeyName: 'jobs_company_id_fkey';
-            columns: ['company_id'];
+            foreignKeyName: "jobs_company_id_fkey";
+            columns: ["company_id"];
             isOneToOne: false;
-            referencedRelation: 'companies';
-            referencedColumns: ['id'];
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -331,11 +331,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'saved_jobs_job_id_fkey';
-            columns: ['job_id'];
+            foreignKeyName: "saved_jobs_job_id_fkey";
+            columns: ["job_id"];
             isOneToOne: false;
-            referencedRelation: 'jobs';
-            referencedColumns: ['id'];
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -347,7 +347,7 @@ export type Database = {
           job_id: string;
           reporter_id: string;
           reason: string;
-          status: Database['public']['Enums']['report_status'];
+          status: Database["public"]["Enums"]["report_status"];
         };
         Insert: {
           created_at?: string;
@@ -356,7 +356,7 @@ export type Database = {
           job_id: string;
           reporter_id: string;
           reason: string;
-          status?: Database['public']['Enums']['report_status'];
+          status?: Database["public"]["Enums"]["report_status"];
         };
         Update: {
           created_at?: string;
@@ -365,15 +365,15 @@ export type Database = {
           job_id?: string;
           reporter_id?: string;
           reason?: string;
-          status?: Database['public']['Enums']['report_status'];
+          status?: Database["public"]["Enums"]["report_status"];
         };
         Relationships: [
           {
-            foreignKeyName: 'job_reports_job_id_fkey';
-            columns: ['job_id'];
+            foreignKeyName: "job_reports_job_id_fkey";
+            columns: ["job_id"];
             isOneToOne: false;
-            referencedRelation: 'jobs';
-            referencedColumns: ['id'];
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -381,19 +381,19 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
-          role: Database['public']['Enums']['app_role'];
+          role: Database["public"]["Enums"]["app_role"];
           user_id: string;
         };
         Insert: {
           created_at?: string;
           id?: string;
-          role: Database['public']['Enums']['app_role'];
+          role: Database["public"]["Enums"]["app_role"];
           user_id: string;
         };
         Update: {
           created_at?: string;
           id?: string;
-          role?: Database['public']['Enums']['app_role'];
+          role?: Database["public"]["Enums"]["app_role"];
           user_id?: string;
         };
         Relationships: [];
@@ -437,11 +437,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'company_employees_company_id_fkey';
-            columns: ['company_id'];
+            foreignKeyName: "company_employees_company_id_fkey";
+            columns: ["company_id"];
             isOneToOne: false;
-            referencedRelation: 'companies';
-            referencedColumns: ['id'];
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -454,7 +454,7 @@ export type Database = {
           job_title: string | null;
           relationship: string | null;
           message: string | null;
-          status: Database['public']['Enums']['reference_status'];
+          status: Database["public"]["Enums"]["reference_status"];
           recommendation: string | null;
           rating: number | null;
           recommender_title: string | null;
@@ -471,7 +471,7 @@ export type Database = {
           job_title?: string | null;
           relationship?: string | null;
           message?: string | null;
-          status?: Database['public']['Enums']['reference_status'];
+          status?: Database["public"]["Enums"]["reference_status"];
           recommendation?: string | null;
           rating?: number | null;
           recommender_title?: string | null;
@@ -488,7 +488,7 @@ export type Database = {
           job_title?: string | null;
           relationship?: string | null;
           message?: string | null;
-          status?: Database['public']['Enums']['reference_status'];
+          status?: Database["public"]["Enums"]["reference_status"];
           recommendation?: string | null;
           rating?: number | null;
           recommender_title?: string | null;
@@ -499,11 +499,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'reference_requests_company_id_fkey';
-            columns: ['company_id'];
+            foreignKeyName: "reference_requests_company_id_fkey";
+            columns: ["company_id"];
             isOneToOne: false;
-            referencedRelation: 'companies';
-            referencedColumns: ['id'];
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -514,7 +514,7 @@ export type Database = {
           keywords: string[];
           regions: string[];
           industries: string[];
-          position_levels: Database['public']['Enums']['position_level'][];
+          position_levels: Database["public"]["Enums"]["position_level"][];
           enabled: boolean;
           email_frequency: string;
           last_sent_at: string | null;
@@ -527,7 +527,7 @@ export type Database = {
           keywords?: string[];
           regions?: string[];
           industries?: string[];
-          position_levels?: Database['public']['Enums']['position_level'][];
+          position_levels?: Database["public"]["Enums"]["position_level"][];
           enabled?: boolean;
           email_frequency?: string;
           last_sent_at?: string | null;
@@ -540,7 +540,7 @@ export type Database = {
           keywords?: string[];
           regions?: string[];
           industries?: string[];
-          position_levels?: Database['public']['Enums']['position_level'][];
+          position_levels?: Database["public"]["Enums"]["position_level"][];
           enabled?: boolean;
           email_frequency?: string;
           last_sent_at?: string | null;
@@ -597,7 +597,7 @@ export type Database = {
           follower_id: string;
           target_user_id: string | null;
           target_company_id: string | null;
-          target_type: Database['public']['Enums']['follow_target_type'];
+          target_type: Database["public"]["Enums"]["follow_target_type"];
           created_at: string;
         };
         Insert: {
@@ -605,7 +605,7 @@ export type Database = {
           follower_id: string;
           target_user_id?: string | null;
           target_company_id?: string | null;
-          target_type: Database['public']['Enums']['follow_target_type'];
+          target_type: Database["public"]["Enums"]["follow_target_type"];
           created_at?: string;
         };
         Update: {
@@ -613,16 +613,16 @@ export type Database = {
           follower_id?: string;
           target_user_id?: string | null;
           target_company_id?: string | null;
-          target_type?: Database['public']['Enums']['follow_target_type'];
+          target_type?: Database["public"]["Enums"]["follow_target_type"];
           created_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'follows_target_company_id_fkey';
-            columns: ['target_company_id'];
+            foreignKeyName: "follows_target_company_id_fkey";
+            columns: ["target_company_id"];
             isOneToOne: false;
-            referencedRelation: 'companies';
-            referencedColumns: ['id'];
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -665,18 +665,18 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'posts_related_job_id_fkey';
-            columns: ['related_job_id'];
+            foreignKeyName: "posts_related_job_id_fkey";
+            columns: ["related_job_id"];
             isOneToOne: false;
-            referencedRelation: 'jobs';
-            referencedColumns: ['id'];
+            referencedRelation: "jobs";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: 'posts_related_company_id_fkey';
-            columns: ['related_company_id'];
+            foreignKeyName: "posts_related_company_id_fkey";
+            columns: ["related_company_id"];
             isOneToOne: false;
-            referencedRelation: 'companies';
-            referencedColumns: ['id'];
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -701,11 +701,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'post_likes_post_id_fkey';
-            columns: ['post_id'];
+            foreignKeyName: "post_likes_post_id_fkey";
+            columns: ["post_id"];
             isOneToOne: false;
-            referencedRelation: 'posts';
-            referencedColumns: ['id'];
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -713,34 +713,34 @@ export type Database = {
         Row: {
           id: string;
           application_id: string;
-          old_status: Database['public']['Enums']['application_status'];
-          new_status: Database['public']['Enums']['application_status'];
+          old_status: Database["public"]["Enums"]["application_status"];
+          new_status: Database["public"]["Enums"]["application_status"];
           changed_by: string | null;
           changed_at: string;
         };
         Insert: {
           id?: string;
           application_id: string;
-          old_status: Database['public']['Enums']['application_status'];
-          new_status: Database['public']['Enums']['application_status'];
+          old_status: Database["public"]["Enums"]["application_status"];
+          new_status: Database["public"]["Enums"]["application_status"];
           changed_by?: string | null;
           changed_at?: string;
         };
         Update: {
           id?: string;
           application_id?: string;
-          old_status?: Database['public']['Enums']['application_status'];
-          new_status?: Database['public']['Enums']['application_status'];
+          old_status?: Database["public"]["Enums"]["application_status"];
+          new_status?: Database["public"]["Enums"]["application_status"];
           changed_by?: string | null;
           changed_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'application_status_history_application_id_fkey';
-            columns: ['application_id'];
+            foreignKeyName: "application_status_history_application_id_fkey";
+            columns: ["application_id"];
             isOneToOne: false;
-            referencedRelation: 'applications';
-            referencedColumns: ['id'];
+            referencedRelation: "applications";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -816,11 +816,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'skill_quiz_questions_skill_id_fkey';
-            columns: ['skill_id'];
+            foreignKeyName: "skill_quiz_questions_skill_id_fkey";
+            columns: ["skill_id"];
             isOneToOne: false;
-            referencedRelation: 'skills';
-            referencedColumns: ['id'];
+            referencedRelation: "skills";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -863,11 +863,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'user_skill_assessments_skill_id_fkey';
-            columns: ['skill_id'];
+            foreignKeyName: "user_skill_assessments_skill_id_fkey";
+            columns: ["skill_id"];
             isOneToOne: false;
-            referencedRelation: 'skills';
-            referencedColumns: ['id'];
+            referencedRelation: "skills";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -898,11 +898,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'user_verified_skills_skill_id_fkey';
-            columns: ['skill_id'];
+            foreignKeyName: "user_verified_skills_skill_id_fkey";
+            columns: ["skill_id"];
             isOneToOne: false;
-            referencedRelation: 'skills';
-            referencedColumns: ['id'];
+            referencedRelation: "skills";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -913,7 +913,7 @@ export type Database = {
     Functions: {
       has_role: {
         Args: {
-          _role: Database['public']['Enums']['app_role'];
+          _role: Database["public"]["Enums"]["app_role"];
           _user_id: string;
         };
         Returns: boolean;
@@ -962,7 +962,7 @@ export type Database = {
           cv_snapshot: Json | null;
           employer_notes: string | null;
           employer_score: number | null;
-          status: Database['public']['Enums']['application_status'];
+          status: Database["public"]["Enums"]["application_status"];
           created_at: string;
         };
       };
@@ -985,43 +985,43 @@ export type Database = {
       };
     };
     Enums: {
-      app_role: 'job_seeker' | 'employer' | 'admin' | 'employee';
+      app_role: "job_seeker" | "employer" | "admin" | "employee";
       application_status:
-        | 'applied'
-        | 'under_review'
-        | 'shortlisted'
-        | 'interview'
-        | 'offer'
-        | 'hired'
-        | 'rejected';
-      report_status: 'open' | 'reviewed' | 'dismissed';
+        | "applied"
+        | "under_review"
+        | "shortlisted"
+        | "interview"
+        | "offer"
+        | "hired"
+        | "rejected";
+      report_status: "open" | "reviewed" | "dismissed";
       contract_type:
-        | 'permanent'
-        | 'contract'
-        | 'temporary'
-        | 'freelance'
-        | 'internship'
-        | 'volunteer'
-        | 'consultancy';
-      job_status: 'draft' | 'published' | 'closed';
+        | "permanent"
+        | "contract"
+        | "temporary"
+        | "freelance"
+        | "internship"
+        | "volunteer"
+        | "consultancy";
+      job_status: "draft" | "published" | "closed";
       position_level:
-        | 'intern'
-        | 'graduate_trainee'
-        | 'entry'
-        | 'mid'
-        | 'senior'
-        | 'manager'
-        | 'director'
-        | 'executive';
+        | "intern"
+        | "graduate_trainee"
+        | "entry"
+        | "mid"
+        | "senior"
+        | "manager"
+        | "director"
+        | "executive";
       qualification_level:
-        | 'certificate'
-        | 'diploma'
-        | 'bachelors'
-        | 'masters'
-        | 'phd'
-        | 'professional';
-      reference_status: 'pending' | 'accepted' | 'completed' | 'declined' | 'withdrawn';
-      follow_target_type: 'job_seeker' | 'employer' | 'employee' | 'company' | 'agency';
+        | "certificate"
+        | "diploma"
+        | "bachelors"
+        | "masters"
+        | "phd"
+        | "professional";
+      reference_status: "pending" | "accepted" | "completed" | "declined" | "withdrawn";
+      follow_target_type: "job_seeker" | "employer" | "employee" | "company" | "agency";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1029,31 +1029,31 @@ export type Database = {
   };
 };
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -1062,23 +1062,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I;
       }
       ? I
@@ -1087,23 +1087,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U;
       }
       ? U
@@ -1112,82 +1112,82 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;
 
 export const Constants = {
   public: {
     Enums: {
-      app_role: ['job_seeker', 'employer', 'admin', 'employee'],
+      app_role: ["job_seeker", "employer", "admin", "employee"],
       application_status: [
-        'applied',
-        'under_review',
-        'shortlisted',
-        'interview',
-        'offer',
-        'hired',
-        'rejected',
+        "applied",
+        "under_review",
+        "shortlisted",
+        "interview",
+        "offer",
+        "hired",
+        "rejected",
       ],
-      report_status: ['open', 'reviewed', 'dismissed'],
+      report_status: ["open", "reviewed", "dismissed"],
       contract_type: [
-        'permanent',
-        'contract',
-        'temporary',
-        'freelance',
-        'internship',
-        'volunteer',
-        'consultancy',
+        "permanent",
+        "contract",
+        "temporary",
+        "freelance",
+        "internship",
+        "volunteer",
+        "consultancy",
       ],
-      job_status: ['draft', 'published', 'closed'],
+      job_status: ["draft", "published", "closed"],
       position_level: [
-        'intern',
-        'graduate_trainee',
-        'entry',
-        'mid',
-        'senior',
-        'manager',
-        'director',
-        'executive',
+        "intern",
+        "graduate_trainee",
+        "entry",
+        "mid",
+        "senior",
+        "manager",
+        "director",
+        "executive",
       ],
       qualification_level: [
-        'certificate',
-        'diploma',
-        'bachelors',
-        'masters',
-        'phd',
-        'professional',
+        "certificate",
+        "diploma",
+        "bachelors",
+        "masters",
+        "phd",
+        "professional",
       ],
-      reference_status: ['pending', 'accepted', 'completed', 'declined', 'withdrawn'],
-      follow_target_type: ['job_seeker', 'employer', 'employee', 'company', 'agency'],
+      reference_status: ["pending", "accepted", "completed", "declined", "withdrawn"],
+      follow_target_type: ["job_seeker", "employer", "employee", "company", "agency"],
     },
   },
 };

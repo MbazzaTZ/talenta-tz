@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Briefcase,
   Users,
@@ -18,29 +18,29 @@ import {
   Send,
   Building2,
   Loader2,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+} from "lucide-react";
+import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
-import { timeAgo } from '@/lib/kazi-data';
-import { AvatarUpload } from '@/components/avatar-upload';
+} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { timeAgo } from "@/lib/kazi-data";
+import { AvatarUpload } from "@/components/avatar-upload";
 
-export const Route = createFileRoute('/employer-dashboard')({
+export const Route = createFileRoute("/employer-dashboard")({
   component: EmployerDashboardPage,
 });
 
@@ -94,23 +94,23 @@ interface Application {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  applied: 'bg-blue-100 text-blue-800',
-  under_review: 'bg-amber-100 text-amber-800',
-  shortlisted: 'bg-purple-100 text-purple-800',
-  interview: 'bg-indigo-100 text-indigo-800',
-  offer: 'bg-emerald-100 text-emerald-800',
-  hired: 'bg-emerald-200 text-emerald-900',
-  rejected: 'bg-red-100 text-red-800',
+  applied: "bg-blue-100 text-blue-800",
+  under_review: "bg-amber-100 text-amber-800",
+  shortlisted: "bg-purple-100 text-purple-800",
+  interview: "bg-indigo-100 text-indigo-800",
+  offer: "bg-emerald-100 text-emerald-800",
+  hired: "bg-emerald-200 text-emerald-900",
+  rejected: "bg-red-100 text-red-800",
 };
 
 const APP_STATUSES = [
-  { value: 'applied', label: 'Applied' },
-  { value: 'under_review', label: 'Under review' },
-  { value: 'shortlisted', label: 'Shortlisted' },
-  { value: 'interview', label: 'Interview' },
-  { value: 'offer', label: 'Offer extended' },
-  { value: 'hired', label: 'Hired' },
-  { value: 'rejected', label: 'Not selected' },
+  { value: "applied", label: "Applied" },
+  { value: "under_review", label: "Under review" },
+  { value: "shortlisted", label: "Shortlisted" },
+  { value: "interview", label: "Interview" },
+  { value: "offer", label: "Offer extended" },
+  { value: "hired", label: "Hired" },
+  { value: "rejected", label: "Not selected" },
 ];
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -119,9 +119,9 @@ function EmployerDashboardPage() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (!loading && !user) navigate({ to: '/auth' });
-    if (!loading && user && !roles.includes('employer') && !roles.includes('admin')) {
-      navigate({ to: '/dashboard' });
+    if (!loading && !user) navigate({ to: "/auth" });
+    if (!loading && user && !roles.includes("employer") && !roles.includes("admin")) {
+      navigate({ to: "/dashboard" });
     }
   }, [user, loading, roles, navigate]);
 
@@ -181,23 +181,23 @@ function EmployerDashboardPage() {
 // ─── Overview Tab ─────────────────────────────────────────────────────────────
 function OverviewTab({ userId }: { userId: string }) {
   const { data: stats } = useQuery({
-    queryKey: ['employer-stats', userId],
+    queryKey: ["employer-stats", userId],
     queryFn: async () => {
       const { data: companies } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('owner_id', userId);
+        .from("companies")
+        .select("id")
+        .eq("owner_id", userId);
       const companyIds = (companies ?? []).map((c: { id: string }) => c.id);
 
       const [jobsRes, appsRes] = await Promise.all([
-        supabase.from('jobs').select('id,status,views_count').eq('posted_by', userId),
+        supabase.from("jobs").select("id,status,views_count").eq("posted_by", userId),
         companyIds.length
           ? supabase
-              .from('applications')
-              .select('id,status,created_at')
+              .from("applications")
+              .select("id,status,created_at")
               .in(
-                'job_id',
-                (await supabase.from('jobs').select('id').eq('posted_by', userId)).data?.map(
+                "job_id",
+                (await supabase.from("jobs").select("id").eq("posted_by", userId)).data?.map(
                   (j) => j.id,
                 ) ?? [],
               )
@@ -209,11 +209,11 @@ function OverviewTab({ userId }: { userId: string }) {
 
       return {
         totalJobs: jobs.length,
-        activeJobs: jobs.filter((j) => j.status === 'published').length,
+        activeJobs: jobs.filter((j) => j.status === "published").length,
         totalViews: jobs.reduce((s, j) => s + (j.views_count ?? 0), 0),
         totalApps: apps.length,
-        newApps: apps.filter((a) => a.status === 'applied').length,
-        shortlisted: apps.filter((a) => a.status === 'shortlisted').length,
+        newApps: apps.filter((a) => a.status === "applied").length,
+        shortlisted: apps.filter((a) => a.status === "shortlisted").length,
         companies: companies?.length ?? 0,
       };
     },
@@ -236,13 +236,13 @@ function OverviewTab({ userId }: { userId: string }) {
         {[
           {
             icon: Briefcase,
-            label: 'Active jobs',
+            label: "Active jobs",
             value: s.activeJobs,
             sub: `${s.totalJobs} total`,
           },
-          { icon: Eye, label: 'Total views', value: s.totalViews, sub: 'across all jobs' },
-          { icon: Send, label: 'Applications', value: s.totalApps, sub: `${s.newApps} new` },
-          { icon: Star, label: 'Shortlisted', value: s.shortlisted, sub: 'candidates' },
+          { icon: Eye, label: "Total views", value: s.totalViews, sub: "across all jobs" },
+          { icon: Send, label: "Applications", value: s.totalApps, sub: `${s.newApps} new` },
+          { icon: Star, label: "Shortlisted", value: s.shortlisted, sub: "candidates" },
         ].map(({ icon: Icon, label, value, sub }) => (
           <Card key={label} className="p-4">
             <div className="flex items-center gap-3">
@@ -263,22 +263,22 @@ function OverviewTab({ userId }: { userId: string }) {
       <div className="grid sm:grid-cols-3 gap-3">
         {[
           {
-            label: 'Post a new job',
-            to: '/post-job',
+            label: "Post a new job",
+            to: "/post-job",
             icon: Plus,
-            desc: 'Reach thousands of candidates',
+            desc: "Reach thousands of candidates",
           },
           {
-            label: 'View company profile',
-            to: '/companies' as never,
+            label: "View company profile",
+            to: "/companies" as never,
             icon: Building2,
-            desc: 'See how candidates see you',
+            desc: "See how candidates see you",
           },
           {
-            label: 'Browse candidates',
-            to: '/jobs' as never,
+            label: "Browse candidates",
+            to: "/jobs" as never,
             icon: Users,
-            desc: 'Find talent proactively',
+            desc: "Find talent proactively",
           },
         ].map(({ label, to, icon: Icon, desc }) => (
           <Link key={label} to={to} className="group">
@@ -306,13 +306,13 @@ function OverviewTab({ userId }: { userId: string }) {
 function CompaniesTab({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const { data: companies, isLoading } = useQuery({
-    queryKey: ['my-companies', userId],
+    queryKey: ["my-companies", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('companies')
-        .select('id,name,logo_url,industry,location,website,verified,description,employees_count')
-        .eq('owner_id', userId)
-        .order('created_at', { ascending: false });
+        .from("companies")
+        .select("id,name,logo_url,industry,location,website,verified,description,employees_count")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false });
       return (data ?? []) as Company[];
     },
   });
@@ -401,24 +401,24 @@ function CompaniesTab({ userId }: { userId: string }) {
 function JobsTab({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const { data: jobs, isLoading } = useQuery({
-    queryKey: ['employer-jobs-full', userId],
+    queryKey: ["employer-jobs-full", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('jobs')
-        .select('id,title,status,created_at,views_count,deadline,companies(name)')
-        .eq('posted_by', userId)
-        .order('created_at', { ascending: false });
+        .from("jobs")
+        .select("id,title,status,created_at,views_count,deadline,companies(name)")
+        .eq("posted_by", userId)
+        .order("created_at", { ascending: false });
       return (data ?? []) as Job[];
     },
   });
 
   const updateStatus = async (jobId: string, status: string) => {
     await supabase
-      .from('jobs')
+      .from("jobs")
       .update({ status } as never)
-      .eq('id', jobId);
-    toast.success('Job status updated');
-    queryClient.invalidateQueries({ queryKey: ['employer-jobs-full', userId] });
+      .eq("id", jobId);
+    toast.success("Job status updated");
+    queryClient.invalidateQueries({ queryKey: ["employer-jobs-full", userId] });
   };
 
   if (isLoading)
@@ -451,10 +451,10 @@ function JobsTab({ userId }: { userId: string }) {
                   </span>
                   {job.deadline && (
                     <span>
-                      Deadline:{' '}
-                      {new Date(job.deadline).toLocaleDateString('en-TZ', {
-                        day: 'numeric',
-                        month: 'short',
+                      Deadline:{" "}
+                      {new Date(job.deadline).toLocaleDateString("en-TZ", {
+                        day: "numeric",
+                        month: "short",
                       })}
                     </span>
                   )}
@@ -467,7 +467,7 @@ function JobsTab({ userId }: { userId: string }) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {['draft', 'published', 'closed'].map((s) => (
+                    {["draft", "published", "closed"].map((s) => (
                       <SelectItem key={s} value={s}>
                         {s.charAt(0).toUpperCase() + s.slice(1)}
                       </SelectItem>
@@ -500,19 +500,19 @@ function JobsTab({ userId }: { userId: string }) {
 function ApplicationsTab({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const [selected, setSelected] = React.useState<Application | null>(null);
-  const [notes, setNotes] = React.useState('');
+  const [notes, setNotes] = React.useState("");
   const [score, setScore] = React.useState<number>(0);
   const [saving, setSaving] = React.useState(false);
 
   const { data: applications, isLoading } = useQuery({
-    queryKey: ['employer-applications', userId],
+    queryKey: ["employer-applications", userId],
     queryFn: async () => {
       // Get all job IDs posted by this user
-      const { data: jobIds } = await supabase.from('jobs').select('id').eq('posted_by', userId);
+      const { data: jobIds } = await supabase.from("jobs").select("id").eq("posted_by", userId);
       if (!jobIds?.length) return [];
 
       const { data } = await supabase
-        .from('applications')
+        .from("applications")
         .select(
           `
           id, applicant_id, job_id, status, created_at,
@@ -524,21 +524,21 @@ function ApplicationsTab({ userId }: { userId: string }) {
         `,
         )
         .in(
-          'job_id',
+          "job_id",
           jobIds.map((j) => j.id),
         )
-        .order('created_at', { ascending: false });
+        .order("created_at", { ascending: false });
       return (data ?? []) as unknown as Application[];
     },
   });
 
   const updateStatus = async (appId: string, status: string) => {
     await supabase
-      .from('applications')
+      .from("applications")
       .update({ status } as never)
-      .eq('id', appId);
-    toast.success('Status updated');
-    queryClient.invalidateQueries({ queryKey: ['employer-applications', userId] });
+      .eq("id", appId);
+    toast.success("Status updated");
+    queryClient.invalidateQueries({ queryKey: ["employer-applications", userId] });
     if (selected?.id === appId) setSelected((prev) => (prev ? { ...prev, status } : null));
   };
 
@@ -546,15 +546,15 @@ function ApplicationsTab({ userId }: { userId: string }) {
     if (!selected) return;
     setSaving(true);
     await supabase
-      .from('applications')
+      .from("applications")
       .update({
         employer_notes: notes || null,
         employer_score: score || null,
       } as never)
-      .eq('id', selected.id);
-    toast.success('Notes saved');
+      .eq("id", selected.id);
+    toast.success("Notes saved");
     setSaving(false);
-    queryClient.invalidateQueries({ queryKey: ['employer-applications', userId] });
+    queryClient.invalidateQueries({ queryKey: ["employer-applications", userId] });
   };
 
   if (isLoading)
@@ -574,10 +574,10 @@ function ApplicationsTab({ userId }: { userId: string }) {
           applications.map((app) => (
             <Card
               key={app.id}
-              className={`p-4 cursor-pointer hover:shadow-md transition-all ${selected?.id === app.id ? 'border-accent ring-1 ring-accent/30' : ''}`}
+              className={`p-4 cursor-pointer hover:shadow-md transition-all ${selected?.id === app.id ? "border-accent ring-1 ring-accent/30" : ""}`}
               onClick={() => {
                 setSelected(app);
-                setNotes(app.employer_notes ?? '');
+                setNotes(app.employer_notes ?? "");
                 setScore(app.employer_score ?? 0);
               }}
             >
@@ -592,7 +592,7 @@ function ApplicationsTab({ userId }: { userId: string }) {
                     />
                   ) : (
                     <span className="font-bold text-accent">
-                      {app.profiles?.full_name?.[0]?.toUpperCase() ?? 'U'}
+                      {app.profiles?.full_name?.[0]?.toUpperCase() ?? "U"}
                     </span>
                   )}
                 </div>
@@ -600,7 +600,7 @@ function ApplicationsTab({ userId }: { userId: string }) {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-semibold text-sm">
-                        {app.profiles?.full_name ?? 'Applicant'}
+                        {app.profiles?.full_name ?? "Applicant"}
                       </p>
                       <p className="text-xs text-muted-foreground">{app.profiles?.headline}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -609,9 +609,9 @@ function ApplicationsTab({ userId }: { userId: string }) {
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[app.status] ?? 'bg-muted text-muted-foreground'}`}
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[app.status] ?? "bg-muted text-muted-foreground"}`}
                       >
-                        {app.status.replace('_', ' ')}
+                        {app.status.replace("_", " ")}
                       </span>
                       <span className="text-[10px] text-muted-foreground">
                         {timeAgo(app.created_at)}
@@ -633,7 +633,7 @@ function ApplicationsTab({ userId }: { userId: string }) {
                     )}
                     {app.employer_score && (
                       <Badge variant="outline" className="text-[10px]">
-                        {'★'.repeat(app.employer_score)}
+                        {"★".repeat(app.employer_score)}
                       </Badge>
                     )}
                   </div>
@@ -666,7 +666,7 @@ function ApplicationsTab({ userId }: { userId: string }) {
                   />
                 ) : (
                   <span className="font-bold text-xl text-accent">
-                    {selected.profiles?.full_name?.[0]?.toUpperCase() ?? 'U'}
+                    {selected.profiles?.full_name?.[0]?.toUpperCase() ?? "U"}
                   </span>
                 )}
               </div>
@@ -768,7 +768,7 @@ function ApplicationsTab({ userId }: { userId: string }) {
                     key={n}
                     type="button"
                     onClick={() => setScore(n)}
-                    className={`text-lg transition-transform hover:scale-110 ${n <= score ? 'text-amber-400' : 'text-muted-foreground/20'}`}
+                    className={`text-lg transition-transform hover:scale-110 ${n <= score ? "text-amber-400" : "text-muted-foreground/20"}`}
                   >
                     ★
                   </button>
@@ -813,36 +813,36 @@ function EmployeesTab({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
 
   const { data: employees } = useQuery({
-    queryKey: ['employer-employees', userId],
+    queryKey: ["employer-employees", userId],
     queryFn: async () => {
       const { data: companies } = await supabase
-        .from('companies')
-        .select('id,name')
-        .eq('owner_id', userId);
+        .from("companies")
+        .select("id,name")
+        .eq("owner_id", userId);
       if (!companies?.length) return [];
       const ids = companies.map((c: { id: string }) => c.id);
-      const { data } = await (supabase as any)
-        .from('company_employees')
+      const { data } = await supabase
+        .from("company_employees")
         .select(
-          'id,user_id,job_title,department,verified,company_id,created_at,profiles!user_id(full_name,headline,avatar_url)',
+          "id,user_id,job_title,department,verified,company_id,created_at,profiles!user_id(full_name,headline,avatar_url)",
         )
-        .in('company_id', ids)
-        .order('verified', { ascending: true });
-      return (data ?? []).map((e: any) => ({
+        .in("company_id", ids)
+        .order("verified", { ascending: true });
+      return (data ?? []).map((e: { id: string; company_id: string; [key: string]: unknown }) => ({
         ...e,
-        companyName: companies.find((c: any) => c.id === e.company_id)?.name ?? '',
+        companyName: companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
       }));
     },
   });
 
   const verify = async (id: string, verified: boolean) => {
-    await (supabase as any).from('company_employees').update({ verified }).eq('id', id);
-    toast.success(verified ? 'Verified — badge awarded!' : 'Verification revoked');
-    queryClient.invalidateQueries({ queryKey: ['employer-employees', userId] });
+    await supabase.from("company_employees").update({ verified }).eq("id", id);
+    toast.success(verified ? "Verified — badge awarded!" : "Verification revoked");
+    queryClient.invalidateQueries({ queryKey: ["employer-employees", userId] });
   };
 
-  const pending = employees?.filter((e: any) => !e.verified) ?? [];
-  const verified = employees?.filter((e: any) => e.verified) ?? [];
+  const pending = employees?.filter((e: { verified?: boolean }) => !e.verified) ?? [];
+  const verified = employees?.filter((e: { verified?: boolean }) => e.verified) ?? [];
 
   return (
     <div className="space-y-5">
@@ -853,7 +853,7 @@ function EmployeesTab({ userId }: { userId: string }) {
             Pending verification ({pending.length})
           </h3>
           <div className="space-y-3">
-            {pending.map((emp: any) => (
+            {pending.map((emp: { id: string; [key: string]: unknown }) => (
               <EmployeeRow
                 key={emp.id}
                 emp={emp}
@@ -872,7 +872,7 @@ function EmployeesTab({ userId }: { userId: string }) {
             Verified employees ({verified.length})
           </h3>
           <div className="space-y-3">
-            {verified.map((emp: any) => (
+            {verified.map((emp: { id: string; [key: string]: unknown }) => (
               <EmployeeRow
                 key={emp.id}
                 emp={emp}
@@ -902,7 +902,7 @@ function EmployeeRow({
   onVerify,
   onRevoke,
 }: {
-  emp: any;
+  emp: { id: string; profiles?: { full_name?: string; headline?: string; avatar_url?: string }; [key: string]: unknown };
   onVerify: () => void;
   onRevoke: () => void;
 }) {
@@ -914,15 +914,15 @@ function EmployeeRow({
             <img src={emp.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
           ) : (
             <span className="font-bold text-sm text-accent">
-              {emp.profiles?.full_name?.[0]?.toUpperCase() ?? 'U'}
+              {emp.profiles?.full_name?.[0]?.toUpperCase() ?? "U"}
             </span>
           )}
         </div>
         <div className="min-w-0">
-          <p className="font-medium text-sm truncate">{emp.profiles?.full_name ?? 'User'}</p>
+          <p className="font-medium text-sm truncate">{emp.profiles?.full_name ?? "User"}</p>
           <p className="text-xs text-muted-foreground truncate">
             {emp.job_title}
-            {emp.department ? ` · ${emp.department}` : ''} at {emp.companyName}
+            {emp.department ? ` · ${emp.department}` : ""} at {emp.companyName}
           </p>
         </div>
       </div>

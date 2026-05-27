@@ -3,14 +3,14 @@
  * When a company is selected from Talentra, auto-creates a company_employee
  * record and notifies the company owner for verification.
  */
-import * as React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Building2, BadgeCheck, Loader2, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
+import * as React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Building2, BadgeCheck, Loader2, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 interface Company {
   id: string;
@@ -23,7 +23,7 @@ interface Company {
 interface CVCompanySearchProps {
   value: string; // current company name text
   companyId?: string; // linked company id if any
-  verificationStatus: 'none' | 'pending' | 'verified';
+  verificationStatus: "none" | "pending" | "verified";
   jobTitle: string;
   onSelect: (name: string, id: string) => void;
   onClear: () => void;
@@ -46,13 +46,13 @@ export function CVCompanySearch({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: results } = useQuery({
-    queryKey: ['company-search-cv', value],
+    queryKey: ["company-search-cv", value],
     enabled: open && value.length >= 2 && !companyId,
     queryFn: async () => {
       const { data } = await supabase
-        .from('companies')
-        .select('id,name,location,verified,owner_id')
-        .ilike('name', `%${value}%`)
+        .from("companies")
+        .select("id,name,location,verified,owner_id")
+        .ilike("name", `%${value}%`)
         .limit(6);
       return (data ?? []) as Company[];
     },
@@ -68,7 +68,7 @@ export function CVCompanySearch({
     try {
       // Create company_employee record (pending verification)
       const { data: empRecord, error } = await (supabase as any)
-        .from('company_employees')
+        .from("company_employees")
         .upsert(
           {
             user_id: user.id,
@@ -77,33 +77,33 @@ export function CVCompanySearch({
             is_current: true,
             verified: false,
           },
-          { onConflict: 'user_id,company_id' },
+          { onConflict: "user_id,company_id" },
         )
-        .select('id')
+        .select("id")
         .single();
 
       if (error) throw error;
 
       // Get employee's name
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
         .single();
 
       // Notify company owner
-      await (supabase as any).rpc('notify_employment_verification', {
+      await (supabase as any).rpc("notify_employment_verification", {
         p_company_owner_id: co.owner_id,
-        p_employee_name: profile?.full_name ?? user.email ?? 'Someone',
+        p_employee_name: profile?.full_name ?? user.email ?? "Someone",
         p_company_name: co.name,
         p_employee_record_id: empRecord.id,
       });
 
       toast.success(`Verification request sent to ${co.name}. You'll get a badge once approved.`);
-      queryClient.invalidateQueries({ queryKey: ['employee-records', user.id] });
+      queryClient.invalidateQueries({ queryKey: ["employee-records", user.id] });
     } catch (e) {
       // Non-critical — company link still saved
-      console.warn('Could not send verification request:', e);
+      console.warn("Could not send verification request:", e);
     } finally {
       setRequesting(false);
     }
@@ -137,7 +137,7 @@ export function CVCompanySearch({
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
             placeholder="Company name"
-            className={companyId ? 'pr-8 border-emerald-300 bg-emerald-50/30' : ''}
+            className={companyId ? "pr-8 border-emerald-300 bg-emerald-50/30" : ""}
           />
           {companyId && (
             <button
@@ -154,12 +154,12 @@ export function CVCompanySearch({
       </div>
 
       {/* Company is linked */}
-      {companyId && verificationStatus !== 'none' && (
+      {companyId && verificationStatus !== "none" && (
         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
           <Building2 className="h-3 w-3" />
-          {verificationStatus === 'pending'
-            ? 'Awaiting employer verification — badge will appear once approved'
-            : 'Verified by employer — badge active on your profile'}
+          {verificationStatus === "pending"
+            ? "Awaiting employer verification — badge will appear once approved"
+            : "Verified by employer — badge active on your profile"}
         </p>
       )}
 

@@ -1,7 +1,7 @@
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-export type Role = 'job_seeker' | 'employer' | 'admin';
+export type Role = "job_seeker" | "employer" | "admin";
 
 export interface SeekerProfile {
   id: string;
@@ -42,10 +42,10 @@ export interface SavedJobRecord {
   created_at: string;
 }
 
-type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 export async function getUserProfile(uid: string): Promise<SeekerProfile | null> {
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', uid).single();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", uid).single();
 
   if (error || !data) return null;
 
@@ -78,7 +78,7 @@ export async function getUserProfile(uid: string): Promise<SeekerProfile | null>
 }
 
 export async function saveUserProfile(uid: string, profile: Partial<SeekerProfile>) {
-  type ProfileUpdate = Database['public']['Tables']['profiles']['Update'] & {
+  type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"] & {
     skills?: string[];
     experience?: string[];
     education?: string[];
@@ -101,28 +101,32 @@ export async function saveUserProfile(uid: string, profile: Partial<SeekerProfil
   if (profile.portfolioUrl !== undefined) updateData.portfolio_url = profile.portfolioUrl;
   if (profile.resumeUrl !== undefined) updateData.resume_url = profile.resumeUrl;
   if ((profile as { avatarUrl?: string | null }).avatarUrl !== undefined)
-    (updateData as Record<string, unknown>).avatar_url = (profile as { avatarUrl?: string | null }).avatarUrl;
+    (updateData as Record<string, unknown>).avatar_url = (
+      profile as { avatarUrl?: string | null }
+    ).avatarUrl;
 
   const { error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .update(updateData as never)
-    .eq('id', uid);
+    .eq("id", uid);
 
   if (error) throw error;
 }
 
 export async function uploadResumeFile(uid: string, file: File) {
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const timestamp = Date.now();
   // Path inside the bucket: uid/timestamp.ext
   // The bucket is 'resumes', so do NOT prefix with 'resumes/'
   const filePath = `${uid}/${timestamp}.${fileExt}`;
 
-  const { error: uploadError } = await supabase.storage.from('resumes').upload(filePath, file);
+  const { error: uploadError } = await supabase.storage.from("resumes").upload(filePath, file);
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabase.storage.from('resumes').getPublicUrl(filePath);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("resumes").getPublicUrl(filePath);
 
   await saveUserProfile(uid, { resumeUrl: publicUrl });
   return publicUrl;
@@ -144,7 +148,7 @@ interface ApplicationRow {
 
 export async function fetchUserApplications(uid: string): Promise<ApplicationRecord[]> {
   const { data, error } = await supabase
-    .from('applications')
+    .from("applications")
     .select(
       `
       id,
@@ -160,11 +164,11 @@ export async function fetchUserApplications(uid: string): Promise<ApplicationRec
       )
     `,
     )
-    .eq('applicant_id', uid)
-    .order('created_at', { ascending: false });
+    .eq("applicant_id", uid)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error('Error fetching applications:', error);
+    console.error("Error fetching applications:", error);
     return [];
   }
 
@@ -172,8 +176,8 @@ export async function fetchUserApplications(uid: string): Promise<ApplicationRec
     id: item.id,
     applicant_id: item.applicant_id,
     job_id: item.job_id,
-    jobTitle: item.jobs?.title ?? '',
-    companyName: item.jobs?.companies?.name ?? '',
+    jobTitle: item.jobs?.title ?? "",
+    companyName: item.jobs?.companies?.name ?? "",
     status: item.status,
     created_at: item.created_at,
   }));
@@ -194,7 +198,7 @@ interface SavedJobRow {
 
 export async function fetchSavedJobs(uid: string): Promise<SavedJobRecord[]> {
   const { data, error } = await supabase
-    .from('saved_jobs')
+    .from("saved_jobs")
     .select(
       `
       id,
@@ -209,11 +213,11 @@ export async function fetchSavedJobs(uid: string): Promise<SavedJobRecord[]> {
       )
     `,
     )
-    .eq('user_id', uid)
-    .order('created_at', { ascending: false });
+    .eq("user_id", uid)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error('Error fetching saved jobs:', error);
+    console.error("Error fetching saved jobs:", error);
     return [];
   }
 
@@ -221,41 +225,46 @@ export async function fetchSavedJobs(uid: string): Promise<SavedJobRecord[]> {
     id: item.id,
     user_id: item.user_id,
     job_id: item.job_id,
-    jobTitle: item.jobs?.title ?? '',
-    companyName: item.jobs?.companies?.name ?? '',
+    jobTitle: item.jobs?.title ?? "",
+    companyName: item.jobs?.companies?.name ?? "",
     created_at: item.created_at,
   }));
 }
 
 export async function uploadAvatarFile(uid: string, file: File): Promise<string> {
-  const fileExt = file.name.split('.').pop() ?? 'jpg';
+  const fileExt = file.name.split(".").pop() ?? "jpg";
   const filePath = `${uid}/avatar.${fileExt}`;
 
   // Upsert (overwrite existing avatar)
   const { error: uploadError } = await supabase.storage
-    .from('avatars')
+    .from("avatars")
     .upload(filePath, file, { upsert: true });
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
   // Save to profile
-  await supabase.from('profiles').update({ avatar_url: publicUrl, updated_at: new Date().toISOString() }).eq('id', uid);
+  await supabase
+    .from("profiles")
+    .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+    .eq("id", uid);
   return publicUrl;
 }
 
 export async function ensureUserDocument(uid: string, email: string, role: Role, fullName: string) {
   // Check if profile exists
   const { data: existingProfile } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('id', uid)
+    .from("profiles")
+    .select("id")
+    .eq("id", uid)
     .single();
 
   if (!existingProfile) {
     // Create profile
-    await supabase.from('profiles').insert({
+    await supabase.from("profiles").insert({
       id: uid,
       full_name: fullName,
     });
@@ -263,14 +272,14 @@ export async function ensureUserDocument(uid: string, email: string, role: Role,
 
   // Ensure user role
   const { data: existingRole } = await supabase
-    .from('user_roles')
-    .select('id')
-    .eq('user_id', uid)
-    .eq('role', role)
+    .from("user_roles")
+    .select("id")
+    .eq("user_id", uid)
+    .eq("role", role)
     .single();
 
   if (!existingRole) {
-    await supabase.from('user_roles').insert({
+    await supabase.from("user_roles").insert({
       user_id: uid,
       role: role,
     });

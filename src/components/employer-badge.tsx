@@ -2,13 +2,13 @@
  * EmployerBadge — shows the verified company logo badge on a user's profile.
  * Fetches the user's current verified employer from profiles + companies.
  */
-import { useQuery } from '@tanstack/react-query';
-import { BadgeCheck } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from "@tanstack/react-query";
+import { BadgeCheck } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EmployerBadgeProps {
   userId: string;
-  size?: 'sm' | 'md';
+  size?: "sm" | "md";
 }
 
 interface EmployerData {
@@ -23,16 +23,16 @@ interface EmployerData {
   } | null;
 }
 
-export function EmployerBadge({ userId, size = 'md' }: EmployerBadgeProps) {
+export function EmployerBadge({ userId, size = "md" }: EmployerBadgeProps) {
   const { data } = useQuery({
-    queryKey: ['employer-badge', userId],
+    queryKey: ["employer-badge", userId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('profiles')
+        .from("profiles")
         .select(
-          'current_job_title,current_department,show_employer_badge,companies:current_company_id(id,name,logo_url,verified)',
+          "current_job_title,current_department,show_employer_badge,companies:current_company_id(id,name,logo_url,verified)",
         )
-        .eq('id', userId)
+        .eq("id", userId)
         .single();
       return data as EmployerData | null;
     },
@@ -43,8 +43,8 @@ export function EmployerBadge({ userId, size = 'md' }: EmployerBadgeProps) {
   if (!data.companies.verified) return null;
 
   const co = data.companies;
-  const logoSize = size === 'sm' ? 'h-5 w-5' : 'h-7 w-7';
-  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
+  const logoSize = size === "sm" ? "h-5 w-5" : "h-7 w-7";
+  const textSize = size === "sm" ? "text-xs" : "text-sm";
 
   return (
     <div

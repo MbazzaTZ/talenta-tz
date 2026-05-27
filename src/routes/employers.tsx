@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { SiteHeader, SiteFooter } from '@/components/site-chrome';
-import { BadgeCheck, Rocket, BarChart3, Users } from 'lucide-react';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { BadgeCheck, Rocket, BarChart3, Users } from "lucide-react";
 
-export const Route = createFileRoute('/employers')({
+export const Route = createFileRoute("/employers")({
   component: EmployersPage,
 });
 
@@ -43,23 +43,23 @@ function EmployersPage() {
             {[
               {
                 icon: Users,
-                title: 'Verified candidates',
-                body: 'Connect with applicants who are actively searching, experienced, and ready to grow.',
+                title: "Verified candidates",
+                body: "Connect with applicants who are actively searching, experienced, and ready to grow.",
               },
               {
                 icon: Rocket,
-                title: 'Post in minutes',
-                body: 'Create targeted listings for jobs across Dar es Salaam, Arusha, Mwanza, and beyond.',
+                title: "Post in minutes",
+                body: "Create targeted listings for jobs across Dar es Salaam, Arusha, Mwanza, and beyond.",
               },
               {
                 icon: BarChart3,
-                title: 'Track applications',
-                body: 'Review candidates, save favorites, and stay organised from a central dashboard.',
+                title: "Track applications",
+                body: "Review candidates, save favorites, and stay organised from a central dashboard.",
               },
               {
                 icon: BadgeCheck,
-                title: 'Verified badge',
-                body: 'Build trust with candidates through verified employer profiles and listings.',
+                title: "Verified badge",
+                body: "Build trust with candidates through verified employer profiles and listings.",
               },
             ].map(({ icon: Icon, title, body }) => (
               <div key={title} className="rounded-3xl border border-border bg-background p-6">

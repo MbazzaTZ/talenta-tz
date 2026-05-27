@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { SiteHeader, SiteFooter } from '@/components/site-chrome';
-import { Search, Bookmark, Send, ShieldCheck } from 'lucide-react';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { Search, Bookmark, Send, ShieldCheck } from "lucide-react";
 
-export const Route = createFileRoute('/job-seekers')({
+export const Route = createFileRoute("/job-seekers")({
   component: JobSeekersPage,
 });
 
@@ -42,23 +42,23 @@ function JobSeekersPage() {
             {[
               {
                 icon: Search,
-                title: 'Search fast',
-                body: 'Filter by role, region, and industry so you see the right jobs quickly.',
+                title: "Search fast",
+                body: "Filter by role, region, and industry so you see the right jobs quickly.",
               },
               {
                 icon: ShieldCheck,
-                title: 'Trusted employers',
-                body: 'Apply to verified companies and stay in control of your job search.',
+                title: "Trusted employers",
+                body: "Apply to verified companies and stay in control of your job search.",
               },
               {
                 icon: Bookmark,
-                title: 'Save roles',
-                body: 'Bookmark listings you want to revisit and apply when you are ready.',
+                title: "Save roles",
+                body: "Bookmark listings you want to revisit and apply when you are ready.",
               },
               {
                 icon: Send,
-                title: 'Apply directly',
-                body: 'Reach employers through the platform and track your applications.',
+                title: "Apply directly",
+                body: "Reach employers through the platform and track your applications.",
               },
             ].map(({ icon: Icon, title, body }) => (
               <div key={title} className="rounded-3xl border border-border bg-background p-6">
@@ -76,19 +76,19 @@ function JobSeekersPage() {
             <ol className="mt-6 space-y-5 text-sm text-foreground/80">
               {[
                 {
-                  step: '01',
-                  title: 'Create a free account',
-                  body: 'Sign up in under a minute — no credit card required.',
+                  step: "01",
+                  title: "Create a free account",
+                  body: "Sign up in under a minute — no credit card required.",
                 },
                 {
-                  step: '02',
-                  title: 'Build your profile',
-                  body: 'Add your headline, skills, and resume so employers can find you.',
+                  step: "02",
+                  title: "Build your profile",
+                  body: "Add your headline, skills, and resume so employers can find you.",
                 },
                 {
-                  step: '03',
-                  title: 'Search & apply',
-                  body: 'Use keywords, regions, and industries to find and apply to relevant roles.',
+                  step: "03",
+                  title: "Search & apply",
+                  body: "Use keywords, regions, and industries to find and apply to relevant roles.",
                 },
               ].map(({ step, title, body }) => (
                 <li key={step} className="flex gap-5">

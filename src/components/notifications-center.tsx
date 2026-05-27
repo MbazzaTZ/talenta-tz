@@ -1,21 +1,21 @@
-import * as React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, Mail, CheckCircle2, AlertCircle, Trash2, Check } from 'lucide-react';
-import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import * as React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bell, Mail, CheckCircle2, AlertCircle, Trash2, Check } from "lucide-react";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
   Notification,
-} from '@/lib/supabase-alerts';
-import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+} from "@/lib/supabase-alerts";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 
 interface NotificationsCenterProps {
   open?: boolean;
@@ -27,7 +27,7 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
   const [unreadOnly, setUnreadOnly] = React.useState(false);
 
   const notificationsQuery = useQuery({
-    queryKey: ['notifications', user?.id, unreadOnly],
+    queryKey: ["notifications", user?.id, unreadOnly],
     enabled: !!user?.id && open,
     queryFn: () => getNotifications(user!.id, unreadOnly),
     refetchInterval: 30000, // Refetch every 30 seconds
@@ -36,22 +36,22 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId: string) => markNotificationAsRead(notificationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => (user?.id ? markAllNotificationsAsRead(user.id) : Promise.reject()),
     onSuccess: () => {
-      toast.success('All notifications marked as read');
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      toast.success("All notifications marked as read");
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
   });
 
   const deleteNotificationMutation = useMutation({
     mutationFn: (notificationId: string) => deleteNotification(notificationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
     },
   });
 
@@ -60,11 +60,11 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'application_status':
+      case "application_status":
         return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
-      case 'job_alert':
+      case "job_alert":
         return <Mail className="h-4 w-4 text-green-500" />;
-      case 'profile_view':
+      case "profile_view":
         return <AlertCircle className="h-4 w-4 text-purple-500" />;
       default:
         return <Bell className="h-4 w-4 text-gray-500" />;
@@ -73,14 +73,14 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'application_status':
-        return 'Application';
-      case 'job_alert':
-        return 'Job Alert';
-      case 'profile_view':
-        return 'Profile View';
+      case "application_status":
+        return "Application";
+      case "job_alert":
+        return "Job Alert";
+      case "profile_view":
+        return "Profile View";
       default:
-        return 'Notification';
+        return "Notification";
     }
   };
 
@@ -94,7 +94,7 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
               Notifications {unreadCount > 0 && <Badge className="ml-2">{unreadCount}</Badge>}
             </CardTitle>
             <CardDescription>
-              {notifications.length === 0 ? 'No notifications yet' : 'Your latest notifications'}
+              {notifications.length === 0 ? "No notifications yet" : "Your latest notifications"}
             </CardDescription>
           </div>
           {unreadCount > 0 && (
@@ -123,7 +123,7 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
                 <div
                   key={notification.id}
                   className={`flex gap-3 rounded-lg border p-3 transition ${
-                    notification.read ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                    notification.read ? "bg-gray-50" : "bg-blue-50 border-blue-200"
                   }`}
                 >
                   <div className="mt-1">{getNotificationIcon(notification.type)}</div>
@@ -138,7 +138,7 @@ export function NotificationsCenter({ open = true }: NotificationsCenterProps) {
                         </div>
                         <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
                         <p className="text-xs text-gray-400 mt-2">
-                          {format(new Date(notification.created_at), 'MMM d, yyyy h:mm a')}
+                          {format(new Date(notification.created_at), "MMM d, yyyy h:mm a")}
                         </p>
                       </div>
                     </div>

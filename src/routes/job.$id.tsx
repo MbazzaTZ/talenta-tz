@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   MapPin,
   Clock,
@@ -22,28 +22,28 @@ import {
   BookmarkCheck,
   Building2,
   Sparkles,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { ApplyDialog } from '@/components/apply-dialog';
-import { FollowButton } from '@/components/follow-button';
-import { supabase, supabaseConfigured } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
-import { getUserProfile } from '@/lib/supabase-data';
-import { formatSalary, industryLabel, timeAgo } from '@/lib/kazi-data';
+} from "@/components/ui/dialog";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { ApplyDialog } from "@/components/apply-dialog";
+import { FollowButton } from "@/components/follow-button";
+import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { getUserProfile } from "@/lib/supabase-data";
+import { formatSalary, industryLabel, timeAgo } from "@/lib/kazi-data";
 
-export const Route = createFileRoute('/job/$id')({
+export const Route = createFileRoute("/job/$id")({
   component: JobDetail,
 });
 
@@ -60,8 +60,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function BulletList({ text }: { text: string }) {
   const items = text
-    .split('\n')
-    .map((l) => l.replace(/^[-•*]\s*/, '').trim())
+    .split("\n")
+    .map((l) => l.replace(/^[-•*]\s*/, "").trim())
     .filter(Boolean);
   if (!items.length)
     return <p className="text-sm text-foreground/80 whitespace-pre-wrap">{text}</p>;
@@ -85,48 +85,48 @@ function JobDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [reportOpen, setReportOpen] = React.useState(false);
-  const [reportReason, setReportReason] = React.useState('scam');
-  const [reportDetails, setReportDetails] = React.useState('');
+  const [reportReason, setReportReason] = React.useState("scam");
+  const [reportDetails, setReportDetails] = React.useState("");
   const [reporting, setReporting] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
 
   // Increment view count once per mount
   React.useEffect(() => {
-    supabase.rpc('increment_job_views' as never, { job_id: id } as never).then(() => {});
+    supabase.rpc("increment_job_views" as never, { job_id: id } as never).then(() => {});
   }, [id]);
 
   const { data: job, isLoading } = useQuery({
-    queryKey: ['job', id],
+    queryKey: ["job", id],
     queryFn: async () => {
       if (!supabaseConfigured) {
         return {
           id,
           title: `Sample Job ${id}`,
-          location: 'Dar es Salaam',
-          region: 'Dar es Salaam',
-          industry: 'ict',
-          contract_type: 'Full-time',
-          position_level: 'Mid-level',
+          location: "Dar es Salaam",
+          region: "Dar es Salaam",
+          industry: "ict",
+          contract_type: "Full-time",
+          position_level: "Mid-level",
           salary_min: 1500000,
           salary_max: 3000000,
           salary_negotiable: false,
-          currency: 'TZS',
+          currency: "TZS",
           created_at: new Date().toISOString(),
           deadline: null,
           featured: false,
           description:
-            'This is a sample job description used during development when Supabase is not configured.',
+            "This is a sample job description used during development when Supabase is not configured.",
           requirements:
-            '- Bachelor degree in relevant field\n- 3+ years experience\n- Strong communication skills',
+            "- Bachelor degree in relevant field\n- 3+ years experience\n- Strong communication skills",
           responsibilities:
-            '- Lead key projects\n- Collaborate with cross-functional teams\n- Report to management',
-          apply_method: 'internal',
+            "- Lead key projects\n- Collaborate with cross-functional teams\n- Report to management",
+          apply_method: "internal",
           apply_email: null,
           apply_url: null,
           views_count: 42,
           companies: {
-            id: 'dev',
-            name: 'Dev Company',
+            id: "dev",
+            name: "Dev Company",
             logo_url: null,
             description: null,
             location: null,
@@ -136,11 +136,11 @@ function JobDetail() {
         } as never;
       }
       const { data, error } = await supabase
-        .from('jobs')
+        .from("jobs")
         .select(
-          '*,companies(id,name,logo_url,description,location,industry,website,verified,owner_id)',
+          "*,companies(id,name,logo_url,description,location,industry,website,verified,owner_id)",
         )
-        .eq('id', id)
+        .eq("id", id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -148,60 +148,60 @@ function JobDetail() {
   });
 
   const { data: applicantCount } = useQuery({
-    queryKey: ['job-applicants-count', id],
+    queryKey: ["job-applicants-count", id],
     queryFn: async () => {
       const { count } = await supabase
-        .from('applications')
-        .select('id', { count: 'exact', head: true })
-        .eq('job_id', id);
+        .from("applications")
+        .select("id", { count: "exact", head: true })
+        .eq("job_id", id);
       return count ?? 0;
     },
   });
 
   const { data: hasApplied } = useQuery({
-    queryKey: ['application', id, user?.id],
+    queryKey: ["application", id, user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('job_id', id)
-        .eq('applicant_id', user!.id)
+        .from("applications")
+        .select("id")
+        .eq("job_id", id)
+        .eq("applicant_id", user!.id)
         .maybeSingle();
       return !!data;
     },
   });
 
   const { data: isSaved } = useQuery({
-    queryKey: ['saved-job', id, user?.id],
+    queryKey: ["saved-job", id, user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
-        .from('saved_jobs')
-        .select('id')
-        .eq('job_id', id)
-        .eq('user_id', user!.id)
+        .from("saved_jobs")
+        .select("id")
+        .eq("job_id", id)
+        .eq("user_id", user!.id)
         .maybeSingle();
       return !!data;
     },
   });
 
   const { data: existingReport } = useQuery({
-    queryKey: ['job-report', id, user?.id],
+    queryKey: ["job-report", id, user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
-        .from('job_reports')
-        .select('id')
-        .eq('job_id', id)
-        .eq('reporter_id', user!.id)
+        .from("job_reports")
+        .select("id")
+        .eq("job_id", id)
+        .eq("reporter_id", user!.id)
         .maybeSingle();
       return data;
     },
   });
 
   const { data: profile } = useQuery({
-    queryKey: ['profile', user?.id],
+    queryKey: ["profile", user?.id],
     enabled: !!user?.id,
     queryFn: () => getUserProfile(user!.id),
   });
@@ -211,20 +211,20 @@ function JobDetail() {
     if (!profile || !job) return { score: 0, items: [] as { label: string; ok: boolean }[] };
     const items = [
       {
-        label: 'Location match',
+        label: "Location match",
         ok: !!(profile.location && job.region && profile.location === job.region),
       },
       {
-        label: 'Industry match',
+        label: "Industry match",
         ok: !!(
-          profile.headline?.toLowerCase().includes(job.industry?.toLowerCase() ?? '') ||
+          profile.headline?.toLowerCase().includes(job.industry?.toLowerCase() ?? "") ||
           profile.skills?.some((s: string) =>
-            s.toLowerCase().includes(job.industry?.toLowerCase() ?? ''),
+            s.toLowerCase().includes(job.industry?.toLowerCase() ?? ""),
           )
         ),
       },
       {
-        label: 'Skills match',
+        label: "Skills match",
         ok: !!(
           profile.skills?.length &&
           job.description &&
@@ -234,7 +234,7 @@ function JobDetail() {
         ),
       },
       {
-        label: 'Resume uploaded',
+        label: "Resume uploaded",
         ok: !!profile.resumeUrl,
       },
     ];
@@ -243,16 +243,16 @@ function JobDetail() {
   }, [profile, job]);
 
   const handleSave = async () => {
-    if (!user) return navigate({ to: '/auth' });
+    if (!user) return navigate({ to: "/auth" });
     if (isSaved) {
-      await supabase.from('saved_jobs').delete().eq('job_id', id).eq('user_id', user.id);
-      toast.success('Removed from saved');
+      await supabase.from("saved_jobs").delete().eq("job_id", id).eq("user_id", user.id);
+      toast.success("Removed from saved");
     } else {
-      const { error } = await supabase.from('saved_jobs').insert({ user_id: user.id, job_id: id });
-      if (error && !error.message.includes('duplicate')) toast.error(error.message);
-      else toast.success('Saved to your list');
+      const { error } = await supabase.from("saved_jobs").insert({ user_id: user.id, job_id: id });
+      if (error && !error.message.includes("duplicate")) toast.error(error.message);
+      else toast.success("Saved to your list");
     }
-    queryClient.invalidateQueries({ queryKey: ['saved-job', id, user.id] });
+    queryClient.invalidateQueries({ queryKey: ["saved-job", id, user.id] });
   };
 
   const handleShare = () => {
@@ -260,7 +260,7 @@ function JobDetail() {
       navigator.share({ title: job?.title, url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
+      toast.success("Link copied to clipboard");
     }
   };
 
@@ -296,7 +296,7 @@ function JobDetail() {
   }
 
   const co = (job as any).companies;
-  const applyMethod: string = (job as any).apply_method ?? 'internal';
+  const applyMethod: string = (job as any).apply_method ?? "internal";
   const applyEmail: string | null = (job as any).apply_email ?? null;
   const applyUrl: string | null = (job as any).apply_url ?? null;
   const requirements: string | null = (job as any).requirements ?? null;
@@ -323,7 +323,7 @@ function JobDetail() {
             <Card className="p-6">
               <div className="flex items-start gap-4">
                 {/* Company logo */}
-                <Link to="/companies/$id" params={{ id: co?.id ?? '' }}>
+                <Link to="/companies/$id" params={{ id: co?.id ?? "" }}>
                   {co?.logo_url ? (
                     <img
                       src={co.logo_url}
@@ -332,7 +332,7 @@ function JobDetail() {
                     />
                   ) : (
                     <div className="h-16 w-16 rounded-xl bg-accent/10 grid place-items-center font-display font-bold text-xl text-accent border border-border">
-                      {co?.name?.[0]?.toUpperCase() ?? 'C'}
+                      {co?.name?.[0]?.toUpperCase() ?? "C"}
                     </div>
                   )}
                 </Link>
@@ -344,7 +344,7 @@ function JobDetail() {
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <Link
                       to="/companies/$id"
-                      params={{ id: co?.id ?? '' }}
+                      params={{ id: co?.id ?? "" }}
                       className="text-muted-foreground hover:text-accent transition-colors font-medium text-sm"
                     >
                       {co?.name}
@@ -380,12 +380,12 @@ function JobDetail() {
                 {job.deadline && (
                   <Badge
                     variant="secondary"
-                    className={`gap-1 ${isExpired ? 'bg-red-100 text-red-700 border-red-200' : 'bg-cream border border-border'}`}
+                    className={`gap-1 ${isExpired ? "bg-red-100 text-red-700 border-red-200" : "bg-cream border border-border"}`}
                   >
                     <Calendar className="h-3 w-3" />
                     {isExpired
-                      ? 'Expired'
-                      : `Deadline ${new Date(job.deadline).toLocaleDateString('en-TZ', { day: 'numeric', month: 'short', year: 'numeric' })}`}
+                      ? "Expired"
+                      : `Deadline ${new Date(job.deadline).toLocaleDateString("en-TZ", { day: "numeric", month: "short", year: "numeric" })}`}
                   </Badge>
                 )}
                 <Badge variant="secondary" className="bg-cream border border-border gap-1">
@@ -403,7 +403,7 @@ function JobDetail() {
                     {formatSalary(
                       job.salary_min,
                       job.salary_max,
-                      job.currency ?? 'TZS',
+                      job.currency ?? "TZS",
                       job.salary_negotiable ?? false,
                     )}
                   </p>
@@ -436,7 +436,7 @@ function JobDetail() {
             </Card>
 
             {/* ── How to apply ───────────────────────────────────── */}
-            <Card className={`p-6 ${isExpired ? 'opacity-60' : 'border-accent/30 bg-accent/5'}`}>
+            <Card className={`p-6 ${isExpired ? "opacity-60" : "border-accent/30 bg-accent/5"}`}>
               <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-accent" />
                 How to apply
@@ -444,15 +444,15 @@ function JobDetail() {
 
               {isExpired ? (
                 <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                  This job listing has expired. The application deadline was{' '}
-                  {new Date(job.deadline!).toLocaleDateString('en-TZ', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
+                  This job listing has expired. The application deadline was{" "}
+                  {new Date(job.deadline!).toLocaleDateString("en-TZ", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
                   })}
                   .
                 </div>
-              ) : applyMethod === 'email' && applyEmail ? (
+              ) : applyMethod === "email" && applyEmail ? (
                 <div className="space-y-4">
                   <p className="text-sm text-foreground/80">
                     Send your CV and cover letter directly to the employer's email address below.
@@ -488,11 +488,11 @@ function JobDetail() {
                   <ApplyDialog
                     jobId={id}
                     jobTitle={job.title}
-                    companyName={co?.name ?? ''}
+                    companyName={co?.name ?? ""}
                     hasApplied={!!hasApplied}
                   />
                 </div>
-              ) : applyMethod === 'url' && applyUrl ? (
+              ) : applyMethod === "url" && applyUrl ? (
                 <div className="space-y-4">
                   <p className="text-sm text-foreground/80">
                     This job uses an external application portal. Click the button below to apply on
@@ -506,7 +506,7 @@ function JobDetail() {
                       <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">External application portal</p>
                         <p className="font-semibold text-sm truncate">
-                          {new URL(applyUrl).hostname.replace('www.', '')}
+                          {new URL(applyUrl).hostname.replace("www.", "")}
                         </p>
                       </div>
                     </div>
@@ -526,7 +526,7 @@ function JobDetail() {
                   <ApplyDialog
                     jobId={id}
                     jobTitle={job.title}
-                    companyName={co?.name ?? ''}
+                    companyName={co?.name ?? ""}
                     hasApplied={!!hasApplied}
                   />
                 </div>
@@ -546,25 +546,25 @@ function JobDetail() {
                         <ul className="space-y-1 mt-1">
                           {[
                             {
-                              text: 'Complete your profile (name, location, headline)',
+                              text: "Complete your profile (name, location, headline)",
                               done: !!(
                                 profile?.full_name &&
                                 profile?.location &&
                                 profile?.headline
                               ),
                             },
-                            { text: 'Add your skills', done: (profile?.skills?.length ?? 0) >= 3 },
-                            { text: 'Upload your resume', done: !!profile?.resumeUrl },
+                            { text: "Add your skills", done: (profile?.skills?.length ?? 0) >= 3 },
+                            { text: "Upload your resume", done: !!profile?.resumeUrl },
                             {
-                              text: 'Build your CV in CV Builder',
+                              text: "Build your CV in CV Builder",
                               done: !!(profile as any)?.cv_summary,
                             },
                           ].map(({ text, done }) => (
                             <li key={text} className="flex items-center gap-2">
                               <CheckCircle2
-                                className={`h-3.5 w-3.5 shrink-0 ${done ? 'text-emerald-500' : 'text-muted-foreground/30'}`}
+                                className={`h-3.5 w-3.5 shrink-0 ${done ? "text-emerald-500" : "text-muted-foreground/30"}`}
                               />
-                              <span className={done ? 'line-through text-muted-foreground' : ''}>
+                              <span className={done ? "line-through text-muted-foreground" : ""}>
                                 {text}
                               </span>
                             </li>
@@ -577,12 +577,12 @@ function JobDetail() {
                     <ApplyDialog
                       jobId={id}
                       jobTitle={job.title}
-                      companyName={co?.name ?? ''}
+                      companyName={co?.name ?? ""}
                       hasApplied={!!hasApplied}
                     />
                     {!profile?.resumeUrl && (
                       <Button asChild variant="outline" size="sm">
-                        <Link to={'/cv-builder' as never}>Build CV first →</Link>
+                        <Link to={"/cv-builder" as never}>Build CV first →</Link>
                       </Button>
                     )}
                   </div>
@@ -684,7 +684,7 @@ function JobDetail() {
                     {formatSalary(
                       job.salary_min,
                       job.salary_max,
-                      job.currency ?? 'TZS',
+                      job.currency ?? "TZS",
                       job.salary_negotiable ?? false,
                     )}
                   </span>
@@ -693,10 +693,10 @@ function JobDetail() {
                   <div className="flex items-center gap-2 text-amber-700">
                     <Calendar className="h-4 w-4 shrink-0" />
                     <span>
-                      Deadline:{' '}
-                      {new Date(job.deadline).toLocaleDateString('en-TZ', {
-                        day: 'numeric',
-                        month: 'short',
+                      Deadline:{" "}
+                      {new Date(job.deadline).toLocaleDateString("en-TZ", {
+                        day: "numeric",
+                        month: "short",
                       })}
                     </span>
                   </div>
@@ -707,7 +707,7 @@ function JobDetail() {
                 <ApplyDialog
                   jobId={id}
                   jobTitle={job.title}
-                  companyName={co?.name ?? ''}
+                  companyName={co?.name ?? ""}
                   hasApplied={!!hasApplied}
                 />
                 <Button variant="outline" size="sm" className="w-full" onClick={handleSave}>
@@ -729,14 +729,14 @@ function JobDetail() {
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-medium">Your match</p>
                     <span
-                      className={`text-xs font-bold ${match.score >= 75 ? 'text-emerald-600' : match.score >= 50 ? 'text-amber-600' : 'text-muted-foreground'}`}
+                      className={`text-xs font-bold ${match.score >= 75 ? "text-emerald-600" : match.score >= 50 ? "text-amber-600" : "text-muted-foreground"}`}
                     >
                       {match.score}%
                     </span>
                   </div>
                   <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-2">
                     <div
-                      className={`h-full rounded-full ${match.score >= 75 ? 'bg-emerald-500' : match.score >= 50 ? 'bg-amber-500' : 'bg-muted-foreground/40'}`}
+                      className={`h-full rounded-full ${match.score >= 75 ? "bg-emerald-500" : match.score >= 50 ? "bg-amber-500" : "bg-muted-foreground/40"}`}
                       style={{ width: `${match.score}%` }}
                     />
                   </div>
@@ -744,9 +744,9 @@ function JobDetail() {
                     {match.items.map(({ label, ok }) => (
                       <div key={label} className="flex items-center gap-1.5 text-[11px]">
                         <CheckCircle2
-                          className={`h-3 w-3 shrink-0 ${ok ? 'text-emerald-500' : 'text-muted-foreground/30'}`}
+                          className={`h-3 w-3 shrink-0 ${ok ? "text-emerald-500" : "text-muted-foreground/30"}`}
                         />
-                        <span className={ok ? 'text-foreground' : 'text-muted-foreground'}>
+                        <span className={ok ? "text-foreground" : "text-muted-foreground"}>
                           {label}
                         </span>
                       </div>
@@ -759,7 +759,7 @@ function JobDetail() {
                       size="sm"
                       className="mt-2 h-auto p-0 text-xs text-accent"
                     >
-                      <Link to={'/cv-builder' as never}>Improve your profile →</Link>
+                      <Link to={"/cv-builder" as never}>Improve your profile →</Link>
                     </Button>
                   )}
                 </div>
@@ -771,7 +771,7 @@ function JobDetail() {
               <p className="text-sm font-medium mb-3">More in {industryLabel(job.industry)}</p>
               <Button asChild variant="outline" size="sm" className="w-full">
                 <Link to="/jobs" search={{ industry: job.industry } as never}>
-                  Browse {industryLabel(job.industry)} jobs{' '}
+                  Browse {industryLabel(job.industry)} jobs{" "}
                   <ChevronRight className="h-3.5 w-3.5 ml-1" />
                 </Link>
               </Button>
@@ -789,7 +789,7 @@ function JobDetail() {
         <ApplyDialog
           jobId={id}
           jobTitle={job.title}
-          companyName={co?.name ?? ''}
+          companyName={co?.name ?? ""}
           hasApplied={!!hasApplied}
         />
       </div>
@@ -823,7 +823,7 @@ function JobDetail() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">
-                Additional details{' '}
+                Additional details{" "}
                 <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               <Textarea
@@ -842,10 +842,10 @@ function JobDetail() {
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               disabled={reporting || !!existingReport}
               onClick={async () => {
-                if (!user) return navigate({ to: '/auth' });
-                if (existingReport) return toast.info('You have already reported this job.');
+                if (!user) return navigate({ to: "/auth" });
+                if (existingReport) return toast.info("You have already reported this job.");
                 setReporting(true);
-                const { error } = await supabase.from('job_reports').insert({
+                const { error } = await supabase.from("job_reports").insert({
                   job_id: id,
                   reporter_id: user.id,
                   reason: reportReason,
@@ -854,12 +854,12 @@ function JobDetail() {
                 setReporting(false);
                 if (error) toast.error(error.message);
                 else {
-                  toast.success('Report submitted. Our team will review it.');
+                  toast.success("Report submitted. Our team will review it.");
                   setReportOpen(false);
                 }
               }}
             >
-              {reporting ? 'Submitting…' : existingReport ? 'Already reported' : 'Submit report'}
+              {reporting ? "Submitting…" : existingReport ? "Already reported" : "Submit report"}
             </Button>
           </DialogFooter>
         </DialogContent>

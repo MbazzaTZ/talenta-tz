@@ -1,6 +1,4 @@
-// @ts-nocheck
-// Types will be regenerated after migration runs
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Skill {
   id: string;
@@ -33,9 +31,9 @@ export interface SkillAssessment {
   completed_at: string | null;
   score: number | null;
   passed: boolean | null;
-  status: 'in_progress' | 'completed' | 'abandoned';
+  status: "in_progress" | "completed" | "abandoned";
   time_taken_seconds: number | null;
-  answers: Record<string, any> | null;
+  answers: Record<string, unknown> | null;
 }
 
 export interface VerifiedSkill {
@@ -48,13 +46,10 @@ export interface VerifiedSkill {
 
 // Fetch all available skills
 export async function getAvailableSkills(): Promise<Skill[]> {
-  const { data, error } = await supabase
-    .from('skills')
-    .select('*')
-    .order('name');
+  const { data, error } = await supabase.from("skills").select("*").order("name");
 
   if (error) {
-    console.error('Error fetching skills:', error);
+    console.error("Error fetching skills:", error);
     return [];
   }
   return (data || []) as Skill[];
@@ -66,21 +61,21 @@ export async function getSkillWithQuestions(skillId: string): Promise<{
   questions: QuizQuestion[];
 } | null> {
   const { data: skill, error: skillError } = await supabase
-    .from('skills')
-    .select('*')
-    .eq('id', skillId)
+    .from("skills")
+    .select("*")
+    .eq("id", skillId)
     .single();
 
   if (skillError || !skill) return null;
 
   const { data: questions, error: questionsError } = await supabase
-    .from('skill_quiz_questions')
-    .select('*')
-    .eq('skill_id', skillId)
-    .order('order_number');
+    .from("skill_quiz_questions")
+    .select("*")
+    .eq("skill_id", skillId)
+    .order("order_number");
 
   if (questionsError) {
-    console.error('Error fetching questions:', questionsError);
+    console.error("Error fetching questions:", questionsError);
     return { skill: skill as Skill, questions: [] };
   }
 
@@ -91,21 +86,24 @@ export async function getSkillWithQuestions(skillId: string): Promise<{
 }
 
 // Start a new assessment
-export async function startAssessment(userId: string, skillId: string): Promise<SkillAssessment | null> {
+export async function startAssessment(
+  userId: string,
+  skillId: string,
+): Promise<SkillAssessment | null> {
   const { data, error } = await supabase
-    .from('user_skill_assessments')
+    .from("user_skill_assessments")
     .insert([
       {
         user_id: userId,
         skill_id: skillId,
-        status: 'in_progress',
+        status: "in_progress",
       },
     ])
     .select()
     .single();
 
   if (error) {
-    console.error('Error starting assessment:', error);
+    console.error("Error starting assessment:", error);
     return null;
   }
   return data as SkillAssessment;
@@ -115,22 +113,22 @@ export async function startAssessment(userId: string, skillId: string): Promise<
 export async function submitAssessment(
   assessmentId: string,
   answers: Record<string, string>,
-  timeTakenSeconds: number
+  timeTakenSeconds: number,
 ): Promise<SkillAssessment | null> {
   // Fetch the assessment and skill to calculate score
   const { data: assessment, error: assessmentError } = await supabase
-    .from('user_skill_assessments')
-    .select('*')
-    .eq('id', assessmentId)
+    .from("user_skill_assessments")
+    .select("*")
+    .eq("id", assessmentId)
     .single();
 
   if (assessmentError || !assessment) return null;
 
   // Fetch correct answers from questions
   const { data: questions, error: questionsError } = await supabase
-    .from('skill_quiz_questions')
-    .select('*')
-    .eq('skill_id', assessment.skill_id);
+    .from("skill_quiz_questions")
+    .select("*")
+    .eq("skill_id", assessment.skill_id);
 
   if (questionsError || !questions) return null;
 
@@ -138,7 +136,7 @@ export async function submitAssessment(
   let correctCount = 0;
   let totalPoints = 0;
 
-  questions.forEach((q: any) => {
+  questions.forEach((q: QuizQuestion) => {
     totalPoints += q.points || 10;
     if (answers[q.id] === q.correct_answer) {
       correctCount += q.points || 10;
@@ -146,26 +144,32 @@ export async function submitAssessment(
   });
 
   const score = totalPoints > 0 ? Math.round((correctCount / totalPoints) * 100) : 0;
-  const skill = (await (supabase as any).from('skills').select('passing_score').eq('id', assessment.skill_id).single()).data;
+  const skill = (
+    await supabase
+      .from("skills")
+      .select("passing_score")
+      .eq("id", assessment.skill_id)
+      .single()
+  ).data;
   const passed = score >= (skill?.passing_score || 70);
 
   // Update assessment
   const { data, error } = await supabase
-    .from('user_skill_assessments')
+    .from("user_skill_assessments")
     .update({
-      status: 'completed',
+      status: "completed",
       completed_at: new Date().toISOString(),
       score,
       passed,
       answers,
       time_taken_seconds: timeTakenSeconds,
     })
-    .eq('id', assessmentId)
+    .eq("id", assessmentId)
     .select()
     .single();
 
   if (error) {
-    console.error('Error submitting assessment:', error);
+    console.error("Error submitting assessment:", error);
     return null;
   }
   return data as SkillAssessment;
@@ -174,7 +178,7 @@ export async function submitAssessment(
 // Get user's verified skills
 export async function getUserVerifiedSkills(userId: string): Promise<VerifiedSkill[]> {
   const { data, error } = await supabase
-    .from('user_verified_skills')
+    .from("user_verified_skills")
     .select(
       `
       id,
@@ -182,26 +186,29 @@ export async function getUserVerifiedSkills(userId: string): Promise<VerifiedSki
       skill_id,
       verified_at,
       skills(id, name, description, difficulty)
-    `
+    `,
     )
-    .eq('user_id', userId)
-    .order('verified_at', { ascending: false });
+    .eq("user_id", userId)
+    .order("verified_at", { ascending: false });
 
   if (error) {
-    console.error('Error fetching verified skills:', error);
+    console.error("Error fetching verified skills:", error);
     return [];
   }
   return (data || []) as VerifiedSkill[];
 }
 
 // Get user's current assessment (if any)
-export async function getUserCurrentAssessment(userId: string, skillId: string): Promise<SkillAssessment | null> {
+export async function getUserCurrentAssessment(
+  userId: string,
+  skillId: string,
+): Promise<SkillAssessment | null> {
   const { data, error } = await supabase
-    .from('user_skill_assessments')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('skill_id', skillId)
-    .eq('status', 'in_progress')
+    .from("user_skill_assessments")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("skill_id", skillId)
+    .eq("status", "in_progress")
     .single();
 
   if (error) return null;
@@ -211,14 +218,14 @@ export async function getUserCurrentAssessment(userId: string, skillId: string):
 // Get assessment history for a user
 export async function getUserAssessmentHistory(userId: string): Promise<SkillAssessment[]> {
   const { data, error } = await supabase
-    .from('user_skill_assessments')
-    .select('*')
-    .eq('user_id', userId)
-    .neq('status', 'abandoned')
-    .order('completed_at', { ascending: false, nullsFirst: false });
+    .from("user_skill_assessments")
+    .select("*")
+    .eq("user_id", userId)
+    .neq("status", "abandoned")
+    .order("completed_at", { ascending: false, nullsFirst: false });
 
   if (error) {
-    console.error('Error fetching assessment history:', error);
+    console.error("Error fetching assessment history:", error);
     return [];
   }
   return (data || []) as SkillAssessment[];

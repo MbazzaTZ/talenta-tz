@@ -1,24 +1,24 @@
-import * as React from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { SiteHeader, SiteFooter } from '@/components/site-chrome';
-import { supabase } from '@/integrations/supabase/client';
-import { Mail, MapPin, Clock } from 'lucide-react';
+import * as React from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { supabase } from "@/integrations/supabase/client";
+import { Mail, MapPin, Clock } from "lucide-react";
 
-export const Route = createFileRoute('/contact')({ component: Contact });
+export const Route = createFileRoute("/contact")({ component: Contact });
 
 const schema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Enter a valid email'),
-  message: z.string().min(10, 'Message must be at least 10 characters').max(2000),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Enter a valid email"),
+  message: z.string().min(10, "Message must be at least 10 characters").max(2000),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -40,7 +40,7 @@ function Contact() {
           };
         }
       )
-        .from('contact_messages')
+        .from("contact_messages")
         .insert({ name: data.name, email: data.email, message: data.message });
 
       if (error) throw new Error(error.message);
@@ -115,7 +115,7 @@ function Contact() {
                     id="contact-name"
                     className="mt-1"
                     placeholder="Your name"
-                    {...register('name')}
+                    {...register("name")}
                   />
                   {errors.name && (
                     <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
@@ -128,7 +128,7 @@ function Contact() {
                     type="email"
                     className="mt-1"
                     placeholder="you@example.com"
-                    {...register('email')}
+                    {...register("email")}
                   />
                   {errors.email && (
                     <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>
@@ -141,7 +141,7 @@ function Contact() {
                     rows={5}
                     className="mt-1"
                     placeholder="How can we help?"
-                    {...register('message')}
+                    {...register("message")}
                   />
                   {errors.message && (
                     <p className="mt-1 text-xs text-destructive">{errors.message.message}</p>
@@ -152,7 +152,7 @@ function Contact() {
                   disabled={isSubmitting}
                   className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
                 >
-                  {isSubmitting ? 'Sending…' : 'Send message'}
+                  {isSubmitting ? "Sending…" : "Send message"}
                 </Button>
               </form>
             )}

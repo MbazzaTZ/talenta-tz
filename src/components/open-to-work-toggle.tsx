@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Briefcase, Check } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toggleOpenToWork, getOpenToWorkStatus } from '@/lib/supabase-alerts';
-import { useAuth } from '@/lib/auth';
+import * as React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Briefcase, Check } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toggleOpenToWork, getOpenToWorkStatus } from "@/lib/supabase-alerts";
+import { useAuth } from "@/lib/auth";
 
 export function OpenToWorkToggle() {
   const { user } = useAuth();
@@ -14,7 +14,7 @@ export function OpenToWorkToggle() {
 
   // Fetch current status
   const statusQuery = useQuery({
-    queryKey: ['openToWork', user?.id],
+    queryKey: ["openToWork", user?.id],
     enabled: !!user?.id,
     queryFn: () => (user?.id ? getOpenToWorkStatus(user.id) : Promise.resolve(false)),
   });
@@ -22,23 +22,23 @@ export function OpenToWorkToggle() {
   // Toggle mutation
   const toggleMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.id) throw new Error('User not found');
+      if (!user?.id) throw new Error("User not found");
       const currentStatus = statusQuery.data ?? false;
       return toggleOpenToWork(user.id, !currentStatus);
     },
     onSuccess: (success) => {
       if (success) {
-        queryClient.invalidateQueries({ queryKey: ['openToWork', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ["openToWork", user?.id] });
         const newStatus = !(statusQuery.data ?? false);
         toast.success(
-          newStatus ? 'You are now visible to employers!' : 'Your profile is now private'
+          newStatus ? "You are now visible to employers!" : "Your profile is now private",
         );
       } else {
-        toast.error('Failed to update profile visibility');
+        toast.error("Failed to update profile visibility");
       }
     },
     onError: () => {
-      toast.error('Failed to update profile visibility');
+      toast.error("Failed to update profile visibility");
     },
   });
 
@@ -55,8 +55,8 @@ export function OpenToWorkToggle() {
             </CardTitle>
             <CardDescription>
               {isOpen
-                ? 'Your profile is visible to employers looking for candidates'
-                : 'Your profile is private. Employers cannot search for you.'}
+                ? "Your profile is visible to employers looking for candidates"
+                : "Your profile is private. Employers cannot search for you."}
             </CardDescription>
           </div>
           {isOpen && (
@@ -84,10 +84,14 @@ export function OpenToWorkToggle() {
           <Button
             onClick={() => toggleMutation.mutate()}
             disabled={toggleMutation.isPending || statusQuery.isLoading}
-            variant={isOpen ? 'destructive' : 'default'}
+            variant={isOpen ? "destructive" : "default"}
             className="w-full"
           >
-            {toggleMutation.isPending ? 'Updating...' : isOpen ? 'Disable Profile Visibility' : 'Make Profile Visible'}
+            {toggleMutation.isPending
+              ? "Updating..."
+              : isOpen
+                ? "Disable Profile Visibility"
+                : "Make Profile Visible"}
           </Button>
         </div>
       </CardContent>

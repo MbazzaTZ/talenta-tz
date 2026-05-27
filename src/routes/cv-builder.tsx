@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import {
   Plus,
   Trash2,
@@ -22,48 +22,48 @@ import {
   ChevronUp,
   CheckCircle2,
   FileText,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { SiteHeader, SiteFooter } from '@/components/site-chrome';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
-import { getUserProfile, saveUserProfile } from '@/lib/supabase-data';
-import { REGIONS } from '@/lib/kazi-data';
-import { CVCompanySearch } from '@/components/cv-company-search';
-import { CVReferenceSearch } from '@/components/cv-reference-search';
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { getUserProfile, saveUserProfile } from "@/lib/supabase-data";
+import { REGIONS } from "@/lib/kazi-data";
+import { CVCompanySearch } from "@/components/cv-company-search";
+import { CVReferenceSearch } from "@/components/cv-reference-search";
 
-export const Route = createFileRoute('/cv-builder')({ component: CVBuilderPage });
+export const Route = createFileRoute("/cv-builder")({ component: CVBuilderPage });
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
 const workSchema = z.object({
-  title: z.string().min(1, 'Job title required'),
-  company: z.string().min(1, 'Company required'),
+  title: z.string().min(1, "Job title required"),
+  company: z.string().min(1, "Company required"),
   location: z.string().optional(),
-  start_date: z.string().min(1, 'Start date required'),
+  start_date: z.string().min(1, "Start date required"),
   end_date: z.string().optional(),
   current: z.boolean(),
   description: z.string().max(1000).optional(),
 });
 
 const educationSchema = z.object({
-  institution: z.string().min(1, 'Institution required'),
-  degree: z.string().min(1, 'Degree required'),
+  institution: z.string().min(1, "Institution required"),
+  degree: z.string().min(1, "Degree required"),
   field: z.string().optional(),
   start_year: z.string().optional(),
   end_year: z.string().optional(),
@@ -72,37 +72,37 @@ const educationSchema = z.object({
 });
 
 const certSchema = z.object({
-  name: z.string().min(1, 'Name required'),
+  name: z.string().min(1, "Name required"),
   issuer: z.string().optional(),
   issue_date: z.string().optional(),
   expiry_date: z.string().optional(),
   credential_id: z.string().optional(),
-  url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 const referenceSchema = z.object({
-  name: z.string().min(1, 'Name required'),
+  name: z.string().min(1, "Name required"),
   title: z.string().optional(),
   company: z.string().optional(),
-  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
   phone: z.string().optional(),
   relationship: z.string().optional(),
 });
 
 const langSchema = z.object({
   language: z.string().min(1),
-  proficiency: z.enum(['basic', 'conversational', 'fluent', 'native']),
+  proficiency: z.enum(["basic", "conversational", "fluent", "native"]),
 });
 
 const cvSchema = z.object({
-  full_name: z.string().min(2, 'Full name required'),
+  full_name: z.string().min(2, "Full name required"),
   headline: z.string().max(150).optional(),
   cv_summary: z.string().max(800).optional(),
   phone: z.string().optional(),
   location: z.string().optional(),
-  linkedin_url: z.string().url().optional().or(z.literal('')),
-  github_url: z.string().url().optional().or(z.literal('')),
-  portfolio_url: z.string().url().optional().or(z.literal('')),
+  linkedin_url: z.string().url().optional().or(z.literal("")),
+  github_url: z.string().url().optional().or(z.literal("")),
+  portfolio_url: z.string().url().optional().or(z.literal("")),
   nationality: z.string().optional(),
   skills: z.array(z.string()),
   work_experience: z.array(workSchema),
@@ -166,7 +166,7 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
     >
       {/* Header */}
       <div className="border-b-2 border-slate-900 pb-4 mb-5">
-        <h1 className="text-2xl font-bold tracking-tight">{data.full_name || 'Your Name'}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{data.full_name || "Your Name"}</h1>
         {data.headline && <p className="text-base text-slate-600 mt-1">{data.headline}</p>}
         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-slate-500">
           {email && <span>{email}</span>}
@@ -202,11 +202,11 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
                     <p className="font-semibold">{w.title}</p>
                     <p className="text-slate-600">
                       {w.company}
-                      {w.location ? ` · ${w.location}` : ''}
+                      {w.location ? ` · ${w.location}` : ""}
                     </p>
                   </div>
                   <p className="text-xs text-slate-400 shrink-0 ml-4">
-                    {w.start_date} – {w.current ? 'Present' : w.end_date || ''}
+                    {w.start_date} – {w.current ? "Present" : w.end_date || ""}
                   </p>
                 </div>
                 {w.description && <p className="text-slate-600 mt-1 text-xs">{w.description}</p>}
@@ -228,15 +228,15 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
                 <div>
                   <p className="font-semibold">
                     {e.degree}
-                    {e.field ? ` in ${e.field}` : ''}
+                    {e.field ? ` in ${e.field}` : ""}
                   </p>
                   <p className="text-slate-600">
                     {e.institution}
-                    {e.grade ? ` · ${e.grade}` : ''}
+                    {e.grade ? ` · ${e.grade}` : ""}
                   </p>
                 </div>
                 <p className="text-xs text-slate-400 shrink-0 ml-4">
-                  {e.start_year} – {e.current ? 'Present' : e.end_year || ''}
+                  {e.start_year} – {e.current ? "Present" : e.end_year || ""}
                 </p>
               </div>
             ))}
@@ -250,7 +250,7 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
             Skills
           </h2>
-          <p className="text-slate-700">{data.skills.join(' · ')}</p>
+          <p className="text-slate-700">{data.skills.join(" · ")}</p>
         </div>
       )}
 
@@ -268,7 +268,7 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
                   {c.issuer && (
                     <p className="text-slate-500 text-xs">
                       {c.issuer}
-                      {c.credential_id ? ` · ID: ${c.credential_id}` : ''}
+                      {c.credential_id ? ` · ID: ${c.credential_id}` : ""}
                     </p>
                   )}
                 </div>
@@ -286,7 +286,7 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
             Languages
           </h2>
           <p className="text-slate-700">
-            {data.languages.map((l) => `${l.language} (${l.proficiency})`).join(' · ')}
+            {data.languages.map((l) => `${l.language} (${l.proficiency})`).join(" · ")}
           </p>
         </div>
       )}
@@ -304,7 +304,7 @@ function CVPreview({ data, email }: { data: CVFormValues; email: string }) {
                 {r.title && (
                   <p className="text-slate-600 text-xs">
                     {r.title}
-                    {r.company ? `, ${r.company}` : ''}
+                    {r.company ? `, ${r.company}` : ""}
                   </p>
                 )}
                 {r.email && <p className="text-slate-500 text-xs">{r.email}</p>}
@@ -328,15 +328,15 @@ export default function CVBuilderPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [previewMode, setPreviewMode] = React.useState(false);
-  const [skillInput, setSkillInput] = React.useState('');
+  const [skillInput, setSkillInput] = React.useState("");
   const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {
-    if (!loading && !user) navigate({ to: '/auth' });
+    if (!loading && !user) navigate({ to: "/auth" });
   }, [user, loading, navigate]);
 
   const { data: profile, isLoading } = useQuery({
-    queryKey: ['supabase-profile', user?.id],
+    queryKey: ["supabase-profile", user?.id],
     enabled: !!user?.id,
     queryFn: () => getUserProfile(user!.id),
   });
@@ -344,15 +344,15 @@ export default function CVBuilderPage() {
   const form = useForm<CVFormValues>({
     resolver: zodResolver(cvSchema),
     defaultValues: {
-      full_name: '',
-      headline: '',
-      cv_summary: '',
-      phone: '',
-      location: '',
-      linkedin_url: '',
-      github_url: '',
-      portfolio_url: '',
-      nationality: '',
+      full_name: "",
+      headline: "",
+      cv_summary: "",
+      phone: "",
+      location: "",
+      linkedin_url: "",
+      github_url: "",
+      portfolio_url: "",
+      nationality: "",
       skills: [],
       work_experience: [],
       education_items: [],
@@ -377,15 +377,15 @@ export default function CVBuilderPage() {
   React.useEffect(() => {
     if (!profile) return;
     reset({
-      full_name: profile.full_name ?? '',
-      headline: profile.headline ?? '',
-      cv_summary: (profile as never as { cv_summary?: string }).cv_summary ?? '',
-      phone: profile.phone ?? '',
-      location: profile.location ?? '',
-      linkedin_url: (profile as never as { linkedin_url?: string }).linkedin_url ?? '',
-      github_url: (profile as never as { github_url?: string }).github_url ?? '',
-      portfolio_url: profile.portfolioUrl ?? '',
-      nationality: (profile as never as { nationality?: string }).nationality ?? '',
+      full_name: profile.full_name ?? "",
+      headline: profile.headline ?? "",
+      cv_summary: (profile as never as { cv_summary?: string }).cv_summary ?? "",
+      phone: profile.phone ?? "",
+      location: profile.location ?? "",
+      linkedin_url: (profile as never as { linkedin_url?: string }).linkedin_url ?? "",
+      github_url: (profile as never as { github_url?: string }).github_url ?? "",
+      portfolio_url: profile.portfolioUrl ?? "",
+      nationality: (profile as never as { nationality?: string }).nationality ?? "",
       skills: profile.skills ?? [],
       work_experience:
         (profile as never as { work_experience?: z.infer<typeof workSchema>[] }).work_experience ??
@@ -403,11 +403,11 @@ export default function CVBuilderPage() {
     });
   }, [profile, user, reset]);
 
-  const workFields = useFieldArray({ control, name: 'work_experience' });
-  const eduFields = useFieldArray({ control, name: 'education_items' });
-  const certFields = useFieldArray({ control, name: 'certifications' });
-  const refFields = useFieldArray({ control, name: 'references_list' });
-  const langFields = useFieldArray({ control, name: 'languages' });
+  const workFields = useFieldArray({ control, name: "work_experience" });
+  const eduFields = useFieldArray({ control, name: "education_items" });
+  const certFields = useFieldArray({ control, name: "certifications" });
+  const refFields = useFieldArray({ control, name: "references_list" });
+  const langFields = useFieldArray({ control, name: "languages" });
 
   const onSave = async (data: CVFormValues) => {
     if (!user) return;
@@ -423,7 +423,7 @@ export default function CVBuilderPage() {
       });
       // Save extended fields directly
       await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           cv_summary: data.cv_summary || null,
           linkedin_url: data.linkedin_url || null,
@@ -435,11 +435,11 @@ export default function CVBuilderPage() {
           references_list: data.references_list,
           languages: data.languages,
         } as never)
-        .eq('id', user.id);
-      queryClient.invalidateQueries({ queryKey: ['supabase-profile', user.id] });
-      toast.success('CV saved successfully');
+        .eq("id", user.id);
+      queryClient.invalidateQueries({ queryKey: ["supabase-profile", user.id] });
+      toast.success("CV saved successfully");
     } catch (e) {
-      toast.error((e as Error).message || 'Failed to save');
+      toast.error((e as Error).message || "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -453,8 +453,8 @@ export default function CVBuilderPage() {
   const addSkill = () => {
     const s = skillInput.trim();
     if (!s || values.skills.includes(s)) return;
-    setValue('skills', [...values.skills, s]);
-    setSkillInput('');
+    setValue("skills", [...values.skills, s]);
+    setSkillInput("");
   };
 
   if (loading || isLoading || !user) {
@@ -495,7 +495,7 @@ export default function CVBuilderPage() {
         @media screen { #print-root { display: none; } }
       `}</style>
       <div id="print-root">
-        <CVPreview data={values} email={user.email ?? ''} />
+        <CVPreview data={values} email={user.email ?? ""} />
       </div>
 
       <div className="min-h-screen flex flex-col pb-16 md:pb-0">
@@ -525,7 +525,7 @@ export default function CVBuilderPage() {
                 ) : (
                   <Eye className="h-4 w-4 mr-1" />
                 )}
-                {previewMode ? 'Edit' : 'Preview'}
+                {previewMode ? "Edit" : "Preview"}
               </Button>
               <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="h-4 w-4 mr-1" /> Download PDF
@@ -536,14 +536,14 @@ export default function CVBuilderPage() {
                 onClick={handleSubmit(onSave)}
                 disabled={saving}
               >
-                {saving ? 'Saving…' : 'Save CV'}
+                {saving ? "Saving…" : "Save CV"}
               </Button>
             </div>
           </div>
 
           {previewMode ? (
             <div className="border border-border rounded-2xl overflow-hidden shadow-sm">
-              <CVPreview data={values} email={user.email ?? ''} />
+              <CVPreview data={values} email={user.email ?? ""} />
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSave)} className="grid lg:grid-cols-[1fr_340px] gap-6">
@@ -553,7 +553,7 @@ export default function CVBuilderPage() {
                   <div className="grid gap-4 sm:grid-cols-2 mt-4">
                     <div>
                       <Label>Full name *</Label>
-                      <Input className="mt-1" {...register('full_name')} />
+                      <Input className="mt-1" {...register("full_name")} />
                       <FieldErr msg={errors.full_name?.message} />
                     </div>
                     <div>
@@ -561,7 +561,7 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="e.g. Senior Software Engineer"
-                        {...register('headline')}
+                        {...register("headline")}
                       />
                     </div>
                     <div>
@@ -569,14 +569,14 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="+255 7XX XXX XXX"
-                        {...register('phone')}
+                        {...register("phone")}
                       />
                     </div>
                     <div>
                       <Label>Location / Region</Label>
                       <Select
                         value={values.location}
-                        onValueChange={(v) => setValue('location', v)}
+                        onValueChange={(v) => setValue("location", v)}
                       >
                         <SelectTrigger className="mt-1">
                           <SelectValue placeholder="Select region" />
@@ -595,7 +595,7 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="Tanzanian"
-                        {...register('nationality')}
+                        {...register("nationality")}
                       />
                     </div>
                     <div>
@@ -603,7 +603,7 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="https://linkedin.com/in/..."
-                        {...register('linkedin_url')}
+                        {...register("linkedin_url")}
                       />
                       <FieldErr msg={errors.linkedin_url?.message} />
                     </div>
@@ -612,7 +612,7 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="https://"
-                        {...register('portfolio_url')}
+                        {...register("portfolio_url")}
                       />
                     </div>
                     <div>
@@ -620,7 +620,7 @@ export default function CVBuilderPage() {
                       <Input
                         className="mt-1"
                         placeholder="https://github.com/..."
-                        {...register('github_url')}
+                        {...register("github_url")}
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -629,10 +629,10 @@ export default function CVBuilderPage() {
                         className="mt-1"
                         rows={4}
                         placeholder="2–4 sentences summarising your experience, strengths, and career goals."
-                        {...register('cv_summary')}
+                        {...register("cv_summary")}
                       />
                       <p className="text-xs text-muted-foreground mt-1 text-right">
-                        {(values.cv_summary ?? '').length}/800
+                        {(values.cv_summary ?? "").length}/800
                       </p>
                     </div>
                   </div>
@@ -718,13 +718,13 @@ export default function CVBuilderPage() {
                       size="sm"
                       onClick={() =>
                         workFields.append({
-                          title: '',
-                          company: '',
-                          location: '',
-                          start_date: '',
-                          end_date: '',
+                          title: "",
+                          company: "",
+                          location: "",
+                          start_date: "",
+                          end_date: "",
                           current: false,
-                          description: '',
+                          description: "",
                         })
                       }
                     >
@@ -815,13 +815,13 @@ export default function CVBuilderPage() {
                       size="sm"
                       onClick={() =>
                         eduFields.append({
-                          institution: '',
-                          degree: '',
-                          field: '',
-                          start_year: '',
-                          end_year: '',
+                          institution: "",
+                          degree: "",
+                          field: "",
+                          start_year: "",
+                          end_year: "",
                           current: false,
-                          grade: '',
+                          grade: "",
                         })
                       }
                     >
@@ -894,12 +894,12 @@ export default function CVBuilderPage() {
                       size="sm"
                       onClick={() =>
                         certFields.append({
-                          name: '',
-                          issuer: '',
-                          issue_date: '',
-                          expiry_date: '',
-                          credential_id: '',
-                          url: '',
+                          name: "",
+                          issuer: "",
+                          issue_date: "",
+                          expiry_date: "",
+                          credential_id: "",
+                          url: "",
                         })
                       }
                     >
@@ -932,14 +932,14 @@ export default function CVBuilderPage() {
                             <Label>Full name *</Label>
                             <div className="mt-1">
                               <CVReferenceSearch
-                                value={values.references_list?.[idx]?.name ?? ''}
+                                value={values.references_list?.[idx]?.name ?? ""}
                                 userId={
                                   (values.references_list?.[idx] as Record<string, string>)?.user_id
                                 }
                                 verificationStatus={
                                   ((values.references_list?.[idx] as Record<string, string>)
-                                    ?.verification_status as 'none' | 'pending' | 'approved') ??
-                                  'none'
+                                    ?.verification_status as "none" | "pending" | "approved") ??
+                                  "none"
                                 }
                                 jobApplyingFor={undefined}
                                 relationship={
@@ -951,14 +951,14 @@ export default function CVBuilderPage() {
                                   setValue(`references_list.${idx}.user_id` as never, id as never);
                                   setValue(
                                     `references_list.${idx}.verification_status` as never,
-                                    'pending' as never,
+                                    "pending" as never,
                                   );
                                 }}
                                 onClear={() => {
-                                  setValue(`references_list.${idx}.user_id` as never, '' as never);
+                                  setValue(`references_list.${idx}.user_id` as never, "" as never);
                                   setValue(
                                     `references_list.${idx}.verification_status` as never,
-                                    'none' as never,
+                                    "none" as never,
                                   );
                                 }}
                               />
@@ -1004,12 +1004,12 @@ export default function CVBuilderPage() {
                       size="sm"
                       onClick={() =>
                         refFields.append({
-                          name: '',
-                          title: '',
-                          company: '',
-                          email: '',
-                          phone: '',
-                          relationship: '',
+                          name: "",
+                          title: "",
+                          company: "",
+                          email: "",
+                          phone: "",
+                          relationship: "",
                         })
                       }
                     >
@@ -1039,7 +1039,7 @@ export default function CVBuilderPage() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {(['basic', 'conversational', 'fluent', 'native'] as const).map((p) => (
+                            {(["basic", "conversational", "fluent", "native"] as const).map((p) => (
                               <SelectItem key={p} value={p}>
                                 {p.charAt(0).toUpperCase() + p.slice(1)}
                               </SelectItem>
@@ -1060,7 +1060,7 @@ export default function CVBuilderPage() {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        langFields.append({ language: '', proficiency: 'conversational' })
+                        langFields.append({ language: "", proficiency: "conversational" })
                       }
                     >
                       <Plus className="h-4 w-4 mr-1" /> Add language
@@ -1079,7 +1079,7 @@ export default function CVBuilderPage() {
                       onChange={(e) => setSkillInput(e.target.value)}
                       placeholder="Add a skill"
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           addSkill();
                         }
@@ -1097,7 +1097,7 @@ export default function CVBuilderPage() {
                         className="cursor-pointer hover:bg-destructive/10 hover:text-destructive"
                         onClick={() =>
                           setValue(
-                            'skills',
+                            "skills",
                             values.skills.filter((s) => s !== skill),
                           )
                         }
@@ -1116,20 +1116,20 @@ export default function CVBuilderPage() {
                   <h3 className="font-display font-semibold mb-3">CV strength</h3>
                   <div className="space-y-2">
                     {[
-                      { label: 'Full name', done: !!values.full_name },
-                      { label: 'Headline', done: !!values.headline },
-                      { label: 'Summary', done: !!values.cv_summary },
-                      { label: 'Phone & location', done: !!(values.phone && values.location) },
-                      { label: 'Work experience', done: values.work_experience.length > 0 },
-                      { label: 'Education', done: values.education_items.length > 0 },
-                      { label: 'Skills (3+)', done: values.skills.length >= 3 },
-                      { label: 'References', done: values.references_list.length > 0 },
+                      { label: "Full name", done: !!values.full_name },
+                      { label: "Headline", done: !!values.headline },
+                      { label: "Summary", done: !!values.cv_summary },
+                      { label: "Phone & location", done: !!(values.phone && values.location) },
+                      { label: "Work experience", done: values.work_experience.length > 0 },
+                      { label: "Education", done: values.education_items.length > 0 },
+                      { label: "Skills (3+)", done: values.skills.length >= 3 },
+                      { label: "References", done: values.references_list.length > 0 },
                     ].map(({ label, done }) => (
                       <div key={label} className="flex items-center gap-2 text-sm">
                         <CheckCircle2
-                          className={`h-4 w-4 shrink-0 ${done ? 'text-emerald-500' : 'text-muted-foreground/40'}`}
+                          className={`h-4 w-4 shrink-0 ${done ? "text-emerald-500" : "text-muted-foreground/40"}`}
                         />
-                        <span className={done ? 'text-foreground' : 'text-muted-foreground'}>
+                        <span className={done ? "text-foreground" : "text-muted-foreground"}>
                           {label}
                         </span>
                       </div>

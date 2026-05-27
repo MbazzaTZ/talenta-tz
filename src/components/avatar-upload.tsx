@@ -1,27 +1,27 @@
-import * as React from 'react';
-import { toast } from 'sonner';
-import { Camera, Loader2 } from 'lucide-react';
-import { uploadAvatarFile } from '@/lib/supabase-data';
-import { useAuth } from '@/lib/auth';
-import { useQueryClient } from '@tanstack/react-query';
+import * as React from "react";
+import { toast } from "sonner";
+import { Camera, Loader2 } from "lucide-react";
+import { uploadAvatarFile } from "@/lib/supabase-data";
+import { useAuth } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AvatarUploadProps {
   avatarUrl?: string | null;
   name: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   editable?: boolean;
 }
 
 const SIZES = {
-  sm: { outer: 'h-10 w-10', text: 'text-sm', icon: 'h-3 w-3', badge: 'h-5 w-5' },
-  md: { outer: 'h-16 w-16', text: 'text-xl', icon: 'h-4 w-4', badge: 'h-6 w-6' },
-  lg: { outer: 'h-24 w-24', text: 'text-3xl', icon: 'h-5 w-5', badge: 'h-8 w-8' },
+  sm: { outer: "h-10 w-10", text: "text-sm", icon: "h-3 w-3", badge: "h-5 w-5" },
+  md: { outer: "h-16 w-16", text: "text-xl", icon: "h-4 w-4", badge: "h-6 w-6" },
+  lg: { outer: "h-24 w-24", text: "text-3xl", icon: "h-5 w-5", badge: "h-8 w-8" },
 };
 
 export function AvatarUpload({
   avatarUrl,
   name,
-  size = 'md',
+  size = "md",
   editable = false,
 }: AvatarUploadProps) {
   const { user } = useAuth();
@@ -34,23 +34,23 @@ export function AvatarUpload({
   const displayUrl = previewUrl ?? avatarUrl;
   const initials = name
     ? name
-        .split(' ')
+        .split(" ")
         .map((w) => w[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
-    : 'U';
+    : "U";
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Photo must be under 5 MB');
+      toast.error("Photo must be under 5 MB");
       return;
     }
 
@@ -62,14 +62,14 @@ export function AvatarUpload({
     setUploading(true);
     try {
       await uploadAvatarFile(user.id, file);
-      toast.success('Profile photo updated');
-      queryClient.invalidateQueries({ queryKey: ['supabase-profile', user.id] });
+      toast.success("Profile photo updated");
+      queryClient.invalidateQueries({ queryKey: ["supabase-profile", user.id] });
     } catch (err) {
-      toast.error((err as Error).message || 'Upload failed');
+      toast.error((err as Error).message || "Upload failed");
       setPreviewUrl(null);
     } finally {
       setUploading(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 

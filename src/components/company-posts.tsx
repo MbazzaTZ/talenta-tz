@@ -3,9 +3,9 @@
  * Company owner can post updates, products, services, announcements,
  * media (images) and documents on behalf of the company.
  */
-import * as React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import * as React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Heart,
   Trash2,
@@ -19,30 +19,30 @@ import {
   Newspaper,
   Upload,
   Loader2,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 type PostType =
-  | 'update'
-  | 'product'
-  | 'service'
-  | 'announcement'
-  | 'media'
-  | 'document'
-  | 'hiring'
-  | 'article';
+  | "update"
+  | "product"
+  | "service"
+  | "announcement"
+  | "media"
+  | "document"
+  | "hiring"
+  | "article";
 
 interface CompanyPost {
   id: string;
@@ -59,29 +59,29 @@ interface CompanyPost {
 }
 
 const POST_TYPES: { value: PostType; label: string; icon: React.ElementType; color: string }[] = [
-  { value: 'update', label: 'Company update', icon: Megaphone, color: 'text-blue-600' },
-  { value: 'announcement', label: 'Announcement', icon: Megaphone, color: 'text-purple-600' },
-  { value: 'product', label: 'Product', icon: Package, color: 'text-emerald-600' },
-  { value: 'service', label: 'Service', icon: Wrench, color: 'text-amber-600' },
-  { value: 'hiring', label: "We're hiring", icon: Plus, color: 'text-accent' },
-  { value: 'article', label: 'Article / Blog', icon: Newspaper, color: 'text-slate-600' },
-  { value: 'media', label: 'Photo / Video', icon: Image, color: 'text-pink-600' },
-  { value: 'document', label: 'Document', icon: FileText, color: 'text-indigo-600' },
+  { value: "update", label: "Company update", icon: Megaphone, color: "text-blue-600" },
+  { value: "announcement", label: "Announcement", icon: Megaphone, color: "text-purple-600" },
+  { value: "product", label: "Product", icon: Package, color: "text-emerald-600" },
+  { value: "service", label: "Service", icon: Wrench, color: "text-amber-600" },
+  { value: "hiring", label: "We're hiring", icon: Plus, color: "text-accent" },
+  { value: "article", label: "Article / Blog", icon: Newspaper, color: "text-slate-600" },
+  { value: "media", label: "Photo / Video", icon: Image, color: "text-pink-600" },
+  { value: "document", label: "Document", icon: FileText, color: "text-indigo-600" },
 ];
 
 function timeAgo(d: string) {
   const diff = Date.now() - new Date(d).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return 'just now';
+  if (m < 1) return "just now";
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
   const days = Math.floor(h / 24);
   if (days < 30) return `${days}d ago`;
-  return new Date(d).toLocaleDateString('en-TZ', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+  return new Date(d).toLocaleDateString("en-TZ", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 }
 
@@ -105,8 +105,8 @@ export function CompanyPosts({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [composing, setComposing] = React.useState(false);
-  const [content, setContent] = React.useState('');
-  const [postType, setPostType] = React.useState<PostType>('update');
+  const [content, setContent] = React.useState("");
+  const [postType, setPostType] = React.useState<PostType>("update");
   const [mediaFiles, setMediaFiles] = React.useState<File[]>([]);
   const [mediaPreviews, setMediaPreviews] = React.useState<string[]>([]);
   const [docFile, setDocFile] = React.useState<File | null>(null);
@@ -115,15 +115,15 @@ export function CompanyPosts({
   const docInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: posts, isLoading } = useQuery<CompanyPost[]>({
-    queryKey: ['company-posts', companyId],
+    queryKey: ["company-posts", companyId],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('posts')
+        .from("posts")
         .select(
-          'id,author_id,company_author_id,content,post_type,media_urls,document_url,document_name,likes_count,created_at,profiles!author_id(full_name,avatar_url)',
+          "id,author_id,company_author_id,content,post_type,media_urls,document_url,document_name,likes_count,created_at,profiles!author_id(full_name,avatar_url)",
         )
-        .eq('company_author_id', companyId)
-        .order('created_at', { ascending: false })
+        .eq("company_author_id", companyId)
+        .order("created_at", { ascending: false })
         .limit(30);
       if (error) throw error;
       return (data ?? []) as CompanyPost[];
@@ -131,13 +131,13 @@ export function CompanyPosts({
   });
 
   const { data: likedIds } = useQuery<string[]>({
-    queryKey: ['liked-posts', user?.id],
+    queryKey: ["liked-posts", user?.id],
     enabled: !!user,
     queryFn: async () => {
       const { data } = await (supabase as any)
-        .from('post_likes')
-        .select('post_id')
-        .eq('user_id', user!.id);
+        .from("post_likes")
+        .select("post_id")
+        .eq("user_id", user!.id);
       return (data ?? []).map((r: { post_id: string }) => r.post_id);
     },
   });
@@ -145,7 +145,7 @@ export function CompanyPosts({
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length + mediaFiles.length > 6) {
-      toast.error('Max 6 images per post');
+      toast.error("Max 6 images per post");
       return;
     }
     setMediaFiles((prev) => [...prev, ...files]);
@@ -154,7 +154,7 @@ export function CompanyPosts({
       reader.onload = (ev) => setMediaPreviews((prev) => [...prev, ev.target?.result as string]);
       reader.readAsDataURL(f);
     });
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const removeMedia = (idx: number) => {
@@ -164,12 +164,12 @@ export function CompanyPosts({
 
   const uploadFile = async (file: File, path: string): Promise<string> => {
     const { error } = await supabase.storage
-      .from('company-media')
+      .from("company-media")
       .upload(path, file, { upsert: true });
     if (error) throw error;
     const {
       data: { publicUrl },
-    } = supabase.storage.from('company-media').getPublicUrl(path);
+    } = supabase.storage.from("company-media").getPublicUrl(path);
     return publicUrl;
   };
 
@@ -183,7 +183,7 @@ export function CompanyPosts({
       // Upload media images
       const mediaUrls: string[] = [];
       for (let i = 0; i < mediaFiles.length; i++) {
-        const ext = mediaFiles[i].name.split('.').pop();
+        const ext = mediaFiles[i].name.split(".").pop();
         const url = await uploadFile(mediaFiles[i], `${companyId}/${ts}_img${i}.${ext}`);
         mediaUrls.push(url);
       }
@@ -192,12 +192,12 @@ export function CompanyPosts({
       let docUrl: string | null = null;
       let docName: string | null = null;
       if (docFile) {
-        const ext = docFile.name.split('.').pop();
+        const ext = docFile.name.split(".").pop();
         docUrl = await uploadFile(docFile, `${companyId}/${ts}_doc.${ext}`);
         docName = docFile.name;
       }
 
-      const { error } = await (supabase as any).from('posts').insert({
+      const { error } = await (supabase as any).from("posts").insert({
         author_id: user.id,
         company_author_id: companyId,
         content: content.trim(),
@@ -209,16 +209,16 @@ export function CompanyPosts({
 
       if (error) throw error;
 
-      toast.success('Post shared');
-      setContent('');
+      toast.success("Post shared");
+      setContent("");
       setMediaFiles([]);
       setMediaPreviews([]);
       setDocFile(null);
       setComposing(false);
-      setPostType('update');
-      queryClient.invalidateQueries({ queryKey: ['company-posts', companyId] });
+      setPostType("update");
+      queryClient.invalidateQueries({ queryKey: ["company-posts", companyId] });
     } catch (e) {
-      toast.error((e as Error).message || 'Could not post');
+      toast.error((e as Error).message || "Could not post");
     } finally {
       setUploading(false);
     }
@@ -226,27 +226,27 @@ export function CompanyPosts({
 
   const toggleLike = async (post: CompanyPost) => {
     if (!user) {
-      toast.error('Sign in to like');
+      toast.error("Sign in to like");
       return;
     }
     const liked = likedIds?.includes(post.id);
     if (liked) {
       await (supabase as any)
-        .from('post_likes')
+        .from("post_likes")
         .delete()
-        .eq('post_id', post.id)
-        .eq('user_id', user.id);
+        .eq("post_id", post.id)
+        .eq("user_id", user.id);
     } else {
-      await (supabase as any).from('post_likes').insert({ post_id: post.id, user_id: user.id });
+      await (supabase as any).from("post_likes").insert({ post_id: post.id, user_id: user.id });
     }
-    queryClient.invalidateQueries({ queryKey: ['company-posts', companyId] });
-    queryClient.invalidateQueries({ queryKey: ['liked-posts', user.id] });
+    queryClient.invalidateQueries({ queryKey: ["company-posts", companyId] });
+    queryClient.invalidateQueries({ queryKey: ["liked-posts", user.id] });
   };
 
   const deletePost = async (postId: string) => {
-    await (supabase as any).from('posts').delete().eq('id', postId);
-    toast.success('Post deleted');
-    queryClient.invalidateQueries({ queryKey: ['company-posts', companyId] });
+    await (supabase as any).from("posts").delete().eq("id", postId);
+    toast.success("Post deleted");
+    queryClient.invalidateQueries({ queryKey: ["company-posts", companyId] });
   };
 
   const getTypeInfo = (type: PostType) => POST_TYPES.find((t) => t.value === type) ?? POST_TYPES[0];
@@ -392,7 +392,7 @@ export function CompanyPosts({
                     size="sm"
                     onClick={() => {
                       setComposing(false);
-                      setContent('');
+                      setContent("");
                       setMediaFiles([]);
                       setMediaPreviews([]);
                       setDocFile(null);
@@ -411,7 +411,7 @@ export function CompanyPosts({
                         <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Posting…
                       </>
                     ) : (
-                      'Post'
+                      "Post"
                     )}
                   </Button>
                 </div>
@@ -434,7 +434,7 @@ export function CompanyPosts({
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) setDocFile(f);
-                  e.target.value = '';
+                  e.target.value = "";
                 }}
               />
             </div>
@@ -518,7 +518,7 @@ export function CompanyPosts({
                 {/* Image grid */}
                 {images.length > 0 && (
                   <div
-                    className={`grid gap-2 mb-3 ${images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}
+                    className={`grid gap-2 mb-3 ${images.length === 1 ? "grid-cols-1" : images.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}
                   >
                     {images.map((url, i) => (
                       <a
@@ -551,7 +551,7 @@ export function CompanyPosts({
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {post.document_name ?? 'Document'}
+                        {post.document_name ?? "Document"}
                       </p>
                       <p className="text-xs text-muted-foreground">Click to open ↗</p>
                     </div>
@@ -562,12 +562,12 @@ export function CompanyPosts({
                 <div className="flex items-center gap-4 pt-2 border-t border-border/50">
                   <button
                     onClick={() => toggleLike(post)}
-                    className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? 'text-accent' : 'text-muted-foreground hover:text-accent'}`}
+                    className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? "text-accent" : "text-muted-foreground hover:text-accent"}`}
                   >
-                    <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+                    <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
                     <span>
-                      {post.likes_count > 0 ? post.likes_count : ''}{' '}
-                      {post.likes_count === 1 ? 'Like' : 'Likes'}
+                      {post.likes_count > 0 ? post.likes_count : ""}{" "}
+                      {post.likes_count === 1 ? "Like" : "Likes"}
                     </span>
                   </button>
                 </div>
@@ -578,7 +578,7 @@ export function CompanyPosts({
       ) : (
         <Card className="p-8 text-center border-dashed">
           <p className="text-sm text-muted-foreground">
-            {isOwner ? 'Share your first post above.' : 'No posts from this company yet.'}
+            {isOwner ? "Share your first post above." : "No posts from this company yet."}
           </p>
         </Card>
       )}

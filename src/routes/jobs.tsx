@@ -1,22 +1,22 @@
-import * as React from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
-import { Search, X, SlidersHorizontal, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import * as React from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Search, X, SlidersHorizontal, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { JobCard, JobCardSkeleton, type JobCardData } from '@/components/job-card';
-import { supabase } from '@/integrations/supabase/client';
+} from "@/components/ui/select";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
+import { supabase } from "@/integrations/supabase/client";
 import {
   REGIONS,
   INDUSTRIES,
@@ -24,7 +24,7 @@ import {
   CONTRACT_TYPES,
   QUALIFICATIONS,
   SALARY_BANDS,
-} from '@/lib/kazi-data';
+} from "@/lib/kazi-data";
 
 const PAGE_SIZE = 20;
 
@@ -38,15 +38,15 @@ type JobsSearch = {
   salary?: string;
 };
 
-export const Route = createFileRoute('/jobs')({
+export const Route = createFileRoute("/jobs")({
   validateSearch: (s: Record<string, unknown>): JobsSearch => ({
-    q: typeof s.q === 'string' ? s.q : undefined,
-    region: typeof s.region === 'string' ? s.region : undefined,
-    industry: typeof s.industry === 'string' ? s.industry : undefined,
-    level: typeof s.level === 'string' ? s.level : undefined,
-    contract: typeof s.contract === 'string' ? s.contract : undefined,
-    qualification: typeof s.qualification === 'string' ? s.qualification : undefined,
-    salary: typeof s.salary === 'string' ? s.salary : undefined,
+    q: typeof s.q === "string" ? s.q : undefined,
+    region: typeof s.region === "string" ? s.region : undefined,
+    industry: typeof s.industry === "string" ? s.industry : undefined,
+    level: typeof s.level === "string" ? s.level : undefined,
+    contract: typeof s.contract === "string" ? s.contract : undefined,
+    qualification: typeof s.qualification === "string" ? s.qualification : undefined,
+    salary: typeof s.salary === "string" ? s.salary : undefined,
   }),
   component: JobsPage,
 });
@@ -54,11 +54,11 @@ export const Route = createFileRoute('/jobs')({
 function JobsPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const [q, setQ] = React.useState(search.q ?? '');
+  const [q, setQ] = React.useState(search.q ?? "");
   const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
-    setQ(search.q ?? '');
+    setQ(search.q ?? "");
     setPage(1);
   }, [search.q]);
 
@@ -75,16 +75,16 @@ function JobsPage() {
   ]);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['jobs', search, page],
+    queryKey: ["jobs", search, page],
     queryFn: async () => {
       let query = supabase
-        .from('jobs')
+        .from("jobs")
         .select(
-          'id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)',
+          "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
         )
-        .eq('status', 'published')
-        .order('featured', { ascending: false })
-        .order('created_at', { ascending: false })
+        .eq("status", "published")
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false })
         .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
       if (search.q) {
@@ -92,15 +92,15 @@ function JobsPage() {
           `title.ilike.%${search.q}%,location.ilike.%${search.q}%,industry.ilike.%${search.q}%`,
         );
       }
-      if (search.region) query = query.eq('region', search.region);
-      if (search.industry) query = query.eq('industry', search.industry);
-      if (search.level) query = query.eq('position_level', search.level as never);
-      if (search.contract) query = query.eq('contract_type', search.contract as never);
-      if (search.qualification) query = query.eq('qualification', search.qualification as never);
+      if (search.region) query = query.eq("region", search.region);
+      if (search.industry) query = query.eq("industry", search.industry);
+      if (search.level) query = query.eq("position_level", search.level as never);
+      if (search.contract) query = query.eq("contract_type", search.contract as never);
+      if (search.qualification) query = query.eq("qualification", search.qualification as never);
       if (search.salary) {
         const band = SALARY_BANDS.find((b) => b.value === search.salary);
-        if (band?.min) query = query.gte('salary_min', band.min);
-        if (band?.max) query = query.lte('salary_max', band.max);
+        if (band?.min) query = query.gte("salary_min", band.min);
+        if (band?.max) query = query.lte("salary_max", band.max);
       }
 
       const { data, error } = await query;
@@ -120,47 +120,47 @@ function JobsPage() {
     <div className="space-y-4">
       {[
         {
-          label: 'Region',
+          label: "Region",
           value: search.region,
-          key: 'region' as const,
+          key: "region" as const,
           options: REGIONS.map((r) => ({ value: r, label: r })),
         },
         {
-          label: 'Industry',
+          label: "Industry",
           value: search.industry,
-          key: 'industry' as const,
+          key: "industry" as const,
           options: INDUSTRIES.map((i) => ({ value: i.value, label: i.en })),
         },
         {
-          label: 'Level',
+          label: "Level",
           value: search.level,
-          key: 'level' as const,
+          key: "level" as const,
           options: POSITION_LEVELS.map((p) => ({ value: p.value, label: p.label })),
         },
         {
-          label: 'Contract',
+          label: "Contract",
           value: search.contract,
-          key: 'contract' as const,
+          key: "contract" as const,
           options: CONTRACT_TYPES.map((c) => ({ value: c.value, label: c.label })),
         },
         {
-          label: 'Qualification',
+          label: "Qualification",
           value: search.qualification,
-          key: 'qualification' as const,
+          key: "qualification" as const,
           options: QUALIFICATIONS.map((q) => ({ value: q.value, label: q.label })),
         },
         {
-          label: 'Salary',
+          label: "Salary",
           value: search.salary,
-          key: 'salary' as const,
+          key: "salary" as const,
           options: SALARY_BANDS.slice(1).map((b) => ({ value: b.value, label: b.label })),
         },
       ].map(({ label, value, key, options }) => (
         <div key={key}>
           <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
           <Select
-            value={value ?? '_all'}
-            onValueChange={(v) => update({ [key]: v === '_all' ? undefined : v })}
+            value={value ?? "_all"}
+            onValueChange={(v) => update({ [key]: v === "_all" ? undefined : v })}
           >
             <SelectTrigger className="mt-1 h-8 text-sm">
               <SelectValue placeholder={`Any ${label.toLowerCase()}`} />
@@ -265,7 +265,7 @@ function JobsPage() {
                   <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading…
                 </span>
               ) : (
-                `${data?.length ?? 0}${hasMore ? '+' : ''} jobs found`
+                `${data?.length ?? 0}${hasMore ? "+" : ""} jobs found`
               )}
             </p>
             {isFetching && !isLoading && (
@@ -292,7 +292,7 @@ function JobsPage() {
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Loading…
                       </>
                     ) : (
-                      'Load more jobs'
+                      "Load more jobs"
                     )}
                   </Button>
                 )}

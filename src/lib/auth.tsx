@@ -1,6 +1,6 @@
-import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { useEffect, useState, createContext, useContext, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
@@ -50,14 +50,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserRoles = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId);
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
 
       if (error) throw error;
       setRoles(data?.map((r) => r.role) ?? []);
     } catch (error) {
-      console.error('Error fetching user roles:', error);
+      console.error("Error fetching user roles:", error);
       setRoles([]);
     }
   };

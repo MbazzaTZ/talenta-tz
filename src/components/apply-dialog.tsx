@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { Link } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { CheckCircle2, FileText, Users, AlertTriangle, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import * as React from "react";
+import { Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { CheckCircle2, FileText, Users, AlertTriangle, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -16,10 +16,10 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
-import { getUserProfile } from '@/lib/supabase-data';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { getUserProfile } from "@/lib/supabase-data";
+import { useAuth } from "@/lib/auth";
 
 interface ApplyDialogProps {
   jobId: string;
@@ -36,9 +36,9 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
   const [submitting, setSubmitting] = React.useState(false);
 
   // Application fields
-  const [remarks, setRemarks] = React.useState('');
-  const [qualifications, setQualifications] = React.useState('');
-  const [experienceNote, setExperienceNote] = React.useState('');
+  const [remarks, setRemarks] = React.useState("");
+  const [qualifications, setQualifications] = React.useState("");
+  const [experienceNote, setExperienceNote] = React.useState("");
   const [shareReferences, setShareReferences] = React.useState(false);
   const [backgroundCheck, setBackgroundCheck] = React.useState(false);
   const [testimonies, setTestimonies] = React.useState<
@@ -46,7 +46,7 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
   >([]);
 
   const { data: profile } = useQuery({
-    queryKey: ['supabase-profile', user?.id],
+    queryKey: ["supabase-profile", user?.id],
     enabled: !!user?.id && open,
     queryFn: () => getUserProfile(user!.id),
   });
@@ -54,21 +54,21 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
   const profileStrength = React.useMemo(() => {
     if (!profile) return { score: 0, missing: [] as string[] };
     const checks = [
-      { label: 'Headline', ok: !!profile.headline },
-      { label: 'Summary', ok: !!(profile as never as { cv_summary?: string }).cv_summary },
-      { label: 'Skills', ok: (profile.skills?.length ?? 0) > 0 },
+      { label: "Headline", ok: !!profile.headline },
+      { label: "Summary", ok: !!(profile as never as { cv_summary?: string }).cv_summary },
+      { label: "Skills", ok: (profile.skills?.length ?? 0) > 0 },
       {
-        label: 'Work experience',
+        label: "Work experience",
         ok:
           ((profile as never as { work_experience?: unknown[] }).work_experience?.length ?? 0) > 0,
       },
       {
-        label: 'Education',
+        label: "Education",
         ok:
           ((profile as never as { education_items?: unknown[] }).education_items?.length ?? 0) > 0,
       },
-      { label: 'Resume uploaded', ok: !!profile.resumeUrl },
-      { label: 'Phone', ok: !!profile.phone },
+      { label: "Resume uploaded", ok: !!profile.resumeUrl },
+      { label: "Phone", ok: !!profile.phone },
     ];
     const missing = checks.filter((c) => !c.ok).map((c) => c.label);
     return {
@@ -94,7 +94,7 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
           }
         : null;
 
-      const { error } = await supabase.from('applications').insert({
+      const { error } = await supabase.from("applications").insert({
         job_id: jobId,
         applicant_id: user.id,
         cover_letter: remarks || null,
@@ -108,13 +108,13 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
       } as never);
 
       if (error) {
-        if (error.message.includes('duplicate')) toast.info("You've already applied to this job");
+        if (error.message.includes("duplicate")) toast.info("You've already applied to this job");
         else toast.error(error.message);
         return;
       }
 
-      toast.success('Application submitted! The employer will be in touch.');
-      queryClient.invalidateQueries({ queryKey: ['application', jobId, user.id] });
+      toast.success("Application submitted! The employer will be in touch.");
+      queryClient.invalidateQueries({ queryKey: ["application", jobId, user.id] });
       setOpen(false);
       setStep(1);
     } finally {
@@ -123,10 +123,10 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
   };
 
   const addTestimony = () => {
-    setTestimonies((t) => [...t, { name: '', contact: '', message: '' }]);
+    setTestimonies((t) => [...t, { name: "", contact: "", message: "" }]);
   };
 
-  const updateTestimony = (idx: number, field: 'name' | 'contact' | 'message', value: string) => {
+  const updateTestimony = (idx: number, field: "name" | "contact" | "message", value: string) => {
     setTestimonies((t) => t.map((item, i) => (i === idx ? { ...item, [field]: value } : item)));
   };
 
@@ -150,7 +150,7 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
               <CheckCircle2 className="h-4 w-4 mr-1" /> Applied
             </>
           ) : (
-            'Apply now'
+            "Apply now"
           )}
         </Button>
       </DialogTrigger>
@@ -166,12 +166,12 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
             <React.Fragment key={s}>
               <div
                 className={`h-6 w-6 rounded-full text-xs font-semibold flex items-center justify-center transition-colors ${
-                  step >= s ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'
+                  step >= s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {s}
               </div>
-              {s < 3 && <div className={`flex-1 h-0.5 ${step > s ? 'bg-accent' : 'bg-muted'}`} />}
+              {s < 3 && <div className={`flex-1 h-0.5 ${step > s ? "bg-accent" : "bg-muted"}`} />}
             </React.Fragment>
           ))}
         </div>
@@ -188,8 +188,8 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-sm">Profile strength</h3>
                 <Badge
-                  variant={profileStrength.score >= 70 ? 'default' : 'secondary'}
-                  className={profileStrength.score >= 70 ? 'bg-emerald-500' : ''}
+                  variant={profileStrength.score >= 70 ? "default" : "secondary"}
+                  className={profileStrength.score >= 70 ? "bg-emerald-500" : ""}
                 >
                   {profileStrength.score}%
                 </Badge>
@@ -197,21 +197,21 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
               {profile ? (
                 <div className="space-y-1">
                   {[
-                    { label: profile.headline || 'No headline', ok: !!profile.headline },
+                    { label: profile.headline || "No headline", ok: !!profile.headline },
                     {
                       label: `${profile.skills?.length ?? 0} skills listed`,
                       ok: (profile.skills?.length ?? 0) > 0,
                     },
                     {
-                      label: profile.resumeUrl ? 'Resume uploaded ✓' : 'No resume uploaded',
+                      label: profile.resumeUrl ? "Resume uploaded ✓" : "No resume uploaded",
                       ok: !!profile.resumeUrl,
                     },
                     {
                       label:
                         ((profile as never as { work_experience?: unknown[] }).work_experience
                           ?.length ?? 0) > 0
-                          ? 'Work experience added ✓'
-                          : 'No work experience',
+                          ? "Work experience added ✓"
+                          : "No work experience",
                       ok:
                         ((profile as never as { work_experience?: unknown[] }).work_experience
                           ?.length ?? 0) > 0,
@@ -220,8 +220,8 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
                       label:
                         ((profile as never as { education_items?: unknown[] }).education_items
                           ?.length ?? 0) > 0
-                          ? 'Education added ✓'
-                          : 'No education',
+                          ? "Education added ✓"
+                          : "No education",
                       ok:
                         ((profile as never as { education_items?: unknown[] }).education_items
                           ?.length ?? 0) > 0,
@@ -229,9 +229,9 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
                   ].map(({ label, ok }) => (
                     <div key={label} className="flex items-center gap-2 text-xs">
                       <CheckCircle2
-                        className={`h-3.5 w-3.5 shrink-0 ${ok ? 'text-emerald-500' : 'text-muted-foreground/30'}`}
+                        className={`h-3.5 w-3.5 shrink-0 ${ok ? "text-emerald-500" : "text-muted-foreground/30"}`}
                       />
-                      <span className={ok ? '' : 'text-muted-foreground'}>{label}</span>
+                      <span className={ok ? "" : "text-muted-foreground"}>{label}</span>
                     </div>
                   ))}
                 </div>
@@ -244,9 +244,9 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
                     <AlertTriangle className="h-3 w-3 text-amber-500" />
                     Complete your profile to stand out
                   </p>
-                  <Link to={'/cv-builder' as never} className="text-xs text-accent hover:underline">
-                    Open CV Builder → {profileStrength.missing.slice(0, 3).join(', ')}
-                    {profileStrength.missing.length > 3 ? ' …' : ''}
+                  <Link to={"/cv-builder" as never} className="text-xs text-accent hover:underline">
+                    Open CV Builder → {profileStrength.missing.slice(0, 3).join(", ")}
+                    {profileStrength.missing.length > 3 ? " …" : ""}
                   </Link>
                 </div>
               )}
@@ -337,20 +337,20 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
                         className="text-sm border border-input rounded-md px-2 py-1"
                         placeholder="Person's name"
                         value={t.name}
-                        onChange={(e) => updateTestimony(i, 'name', e.target.value)}
+                        onChange={(e) => updateTestimony(i, "name", e.target.value)}
                       />
                       <input
                         className="text-sm border border-input rounded-md px-2 py-1"
                         placeholder="Email or phone"
                         value={t.contact}
-                        onChange={(e) => updateTestimony(i, 'contact', e.target.value)}
+                        onChange={(e) => updateTestimony(i, "contact", e.target.value)}
                       />
                     </div>
                     <Textarea
                       rows={2}
                       placeholder="Their endorsement or testimonial…"
                       value={t.message}
-                      onChange={(e) => updateTestimony(i, 'message', e.target.value)}
+                      onChange={(e) => updateTestimony(i, "message", e.target.value)}
                     />
                     <button
                       type="button"
@@ -372,13 +372,13 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
             <div className="rounded-xl border border-border p-4 space-y-1">
               <p className="font-semibold text-sm">Application summary</p>
               <p className="text-sm text-muted-foreground">
-                Applying as:{' '}
+                Applying as:{" "}
                 <span className="text-foreground">{profile?.full_name || user.email}</span>
               </p>
               {remarks && <p className="text-xs text-muted-foreground line-clamp-2">"{remarks}"</p>}
               {testimonies.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {testimonies.length} testimon{testimonies.length > 1 ? 'ies' : 'y'} included
+                  {testimonies.length} testimon{testimonies.length > 1 ? "ies" : "y"} included
                 </p>
               )}
             </div>
@@ -445,7 +445,7 @@ export function ApplyDialog({ jobId, jobTitle, companyName, hasApplied }: ApplyD
               onClick={handleApply}
               disabled={submitting}
             >
-              {submitting ? 'Submitting…' : 'Submit application'}
+              {submitting ? "Submitting…" : "Submit application"}
             </Button>
           )}
         </DialogFooter>

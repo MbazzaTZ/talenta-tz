@@ -2,9 +2,9 @@
  * EmployeeProfile — lets any logged-in user register as an employee of a company,
  * and lets employees manage incoming reference requests from job seekers.
  */
-import * as React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import * as React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Building2,
   CheckCircle2,
@@ -15,31 +15,31 @@ import {
   ChevronDown,
   ChevronUp,
   Send,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -61,7 +61,7 @@ interface ReferenceRequest {
   job_title: string | null;
   relationship: string | null;
   message: string | null;
-  status: 'pending' | 'accepted' | 'completed' | 'declined' | 'withdrawn';
+  status: "pending" | "accepted" | "completed" | "declined" | "withdrawn";
   recommendation: string | null;
   rating: number | null;
   requested_at: string;
@@ -78,13 +78,13 @@ interface Company {
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 
-function StatusBadge({ status }: { status: ReferenceRequest['status'] }) {
+function StatusBadge({ status }: { status: ReferenceRequest["status"] }) {
   const map = {
-    pending: { label: 'Pending', cls: 'bg-amber-100 text-amber-800' },
-    accepted: { label: 'Accepted', cls: 'bg-blue-100 text-blue-800' },
-    completed: { label: 'Completed', cls: 'bg-emerald-100 text-emerald-800' },
-    declined: { label: 'Declined', cls: 'bg-red-100 text-red-800' },
-    withdrawn: { label: 'Withdrawn', cls: 'bg-muted text-muted-foreground' },
+    pending: { label: "Pending", cls: "bg-amber-100 text-amber-800" },
+    accepted: { label: "Accepted", cls: "bg-blue-100 text-blue-800" },
+    completed: { label: "Completed", cls: "bg-emerald-100 text-emerald-800" },
+    declined: { label: "Declined", cls: "bg-red-100 text-red-800" },
+    withdrawn: { label: "Withdrawn", cls: "bg-muted text-muted-foreground" },
   };
   const s = map[status];
   return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.cls}`}>{s.label}</span>;
@@ -97,18 +97,18 @@ export function EmployeeProfile() {
   const queryClient = useQueryClient();
 
   // Register form state
-  const [companySearch, setCompanySearch] = React.useState('');
+  const [companySearch, setCompanySearch] = React.useState("");
   const [selectedCompany, setSelectedCompany] = React.useState<Company | null>(null);
-  const [jobTitle, setJobTitle] = React.useState('');
-  const [department, setDepartment] = React.useState('');
-  const [startDate, setStartDate] = React.useState('');
+  const [jobTitle, setJobTitle] = React.useState("");
+  const [department, setDepartment] = React.useState("");
+  const [startDate, setStartDate] = React.useState("");
   const [isCurrent, setIsCurrent] = React.useState(true);
   const [registering, setRegistering] = React.useState(false);
   const [showSearch, setShowSearch] = React.useState(false);
 
   // Response dialog
   const [respondingTo, setRespondingTo] = React.useState<ReferenceRequest | null>(null);
-  const [recommendation, setRecommendation] = React.useState('');
+  const [recommendation, setRecommendation] = React.useState("");
   const [rating, setRating] = React.useState<number>(5);
   const [responding, setResponding] = React.useState(false);
 
@@ -116,44 +116,44 @@ export function EmployeeProfile() {
 
   // Fetch user's employee records
   const { data: employeeRecords } = useQuery({
-    queryKey: ['employee-records', user.id],
+    queryKey: ["employee-records", user.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('company_employees')
+        .from("company_employees")
         .select(
-          'id,company_id,job_title,department,start_date,is_current,verified,companies(name,logo_url,location)',
+          "id,company_id,job_title,department,start_date,is_current,verified,companies(name,logo_url,location)",
         )
-        .eq('user_id', user.id)
-        .order('is_current', { ascending: false });
+        .eq("user_id", user.id)
+        .order("is_current", { ascending: false });
       return (data ?? []) as CompanyEmployee[];
     },
   });
 
   // Fetch incoming reference requests
   const { data: incomingRequests } = useQuery({
-    queryKey: ['incoming-reference-requests', user.id],
+    queryKey: ["incoming-reference-requests", user.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('reference_requests')
+        .from("reference_requests")
         .select(
-          'id,seeker_id,company_id,job_title,relationship,message,status,recommendation,rating,requested_at,profiles!seeker_id(full_name,headline,location)',
+          "id,seeker_id,company_id,job_title,relationship,message,status,recommendation,rating,requested_at,profiles!seeker_id(full_name,headline,location)",
         )
-        .eq('employee_id', user.id)
-        .order('requested_at', { ascending: false });
-      return ((data ?? []) as unknown) as ReferenceRequest[];
+        .eq("employee_id", user.id)
+        .order("requested_at", { ascending: false });
+      return (data ?? []) as unknown as ReferenceRequest[];
     },
   });
 
   // Search companies
   const { data: companyResults } = useQuery({
-    queryKey: ['company-search', companySearch],
+    queryKey: ["company-search", companySearch],
     enabled: companySearch.length >= 2,
     queryFn: async () => {
       const { data } = await supabase
-        .from('companies')
-        .select('id,name,location,industry,verified')
-        .ilike('name', `%${companySearch}%`)
-        .eq('suspended', false)
+        .from("companies")
+        .select("id,name,location,industry,verified")
+        .ilike("name", `%${companySearch}%`)
+        .eq("suspended", false)
         .limit(8);
       return (data ?? []) as Company[];
     },
@@ -161,16 +161,16 @@ export function EmployeeProfile() {
 
   const handleRegister = async () => {
     if (!selectedCompany) {
-      toast.error('Please search and select a company first');
+      toast.error("Please search and select a company first");
       return;
     }
     if (!jobTitle.trim()) {
-      toast.error('Please enter your job title at this company');
+      toast.error("Please enter your job title at this company");
       return;
     }
     setRegistering(true);
     try {
-      const { error } = await (supabase as any).from('company_employees').insert({
+      const { error } = await (supabase as any).from("company_employees").insert({
         user_id: user.id,
         company_id: selectedCompany.id,
         job_title: jobTitle.trim(),
@@ -179,22 +179,22 @@ export function EmployeeProfile() {
         is_current: isCurrent,
       });
       if (error) {
-        if (error.message.includes('duplicate')) {
-          toast.info('You already have a record at this company');
+        if (error.message.includes("duplicate")) {
+          toast.info("You already have a record at this company");
         } else {
           toast.error(error.message);
         }
         return;
       }
-      toast.success('Registered! The company owner can now verify you.');
+      toast.success("Registered! The company owner can now verify you.");
       // Also ensure employee role is set
-      await supabase.from('user_roles').insert({ user_id: user.id, role: 'employee' }).select();
-      queryClient.invalidateQueries({ queryKey: ['employee-records', user.id] });
+      await supabase.from("user_roles").insert({ user_id: user.id, role: "employee" }).select();
+      queryClient.invalidateQueries({ queryKey: ["employee-records", user.id] });
       setSelectedCompany(null);
-      setJobTitle('');
-      setDepartment('');
-      setStartDate('');
-      setCompanySearch('');
+      setJobTitle("");
+      setDepartment("");
+      setStartDate("");
+      setCompanySearch("");
     } finally {
       setRegistering(false);
     }
@@ -202,33 +202,33 @@ export function EmployeeProfile() {
 
   const handleAccept = async (req: ReferenceRequest) => {
     const { error } = await supabase
-      .from('reference_requests')
-      .update({ status: 'accepted', responded_at: new Date().toISOString() })
-      .eq('id', req.id);
+      .from("reference_requests")
+      .update({ status: "accepted", responded_at: new Date().toISOString() })
+      .eq("id", req.id);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success('Request accepted. Write your recommendation when ready.');
-    queryClient.invalidateQueries({ queryKey: ['incoming-reference-requests', user.id] });
+    toast.success("Request accepted. Write your recommendation when ready.");
+    queryClient.invalidateQueries({ queryKey: ["incoming-reference-requests", user.id] });
   };
 
   const handleDecline = async (req: ReferenceRequest) => {
     const { error } = await supabase
-      .from('reference_requests')
-      .update({ status: 'declined', responded_at: new Date().toISOString() })
-      .eq('id', req.id);
+      .from("reference_requests")
+      .update({ status: "declined", responded_at: new Date().toISOString() })
+      .eq("id", req.id);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success('Request declined.');
-    queryClient.invalidateQueries({ queryKey: ['incoming-reference-requests', user.id] });
+    toast.success("Request declined.");
+    queryClient.invalidateQueries({ queryKey: ["incoming-reference-requests", user.id] });
   };
 
   const handleSubmitRecommendation = async () => {
     if (!respondingTo || !recommendation.trim()) {
-      toast.error('Please write your recommendation');
+      toast.error("Please write your recommendation");
       return;
     }
     setResponding(true);
@@ -236,32 +236,32 @@ export function EmployeeProfile() {
       // Get this employee's job title for the record
       const empRecord = employeeRecords?.find((e) => e.company_id === respondingTo.company_id);
       const { error } = await supabase
-        .from('reference_requests')
+        .from("reference_requests")
         .update({
-          status: 'completed',
+          status: "completed",
           recommendation: recommendation.trim(),
           rating,
           recommender_title: empRecord?.job_title || null,
           completed_at: new Date().toISOString(),
         })
-        .eq('id', respondingTo.id);
+        .eq("id", respondingTo.id);
       if (error) {
         toast.error(error.message);
         return;
       }
-      toast.success('Recommendation submitted! The job seeker has been notified.');
+      toast.success("Recommendation submitted! The job seeker has been notified.");
       setRespondingTo(null);
-      setRecommendation('');
+      setRecommendation("");
       setRating(5);
-      queryClient.invalidateQueries({ queryKey: ['incoming-reference-requests', user.id] });
+      queryClient.invalidateQueries({ queryKey: ["incoming-reference-requests", user.id] });
     } finally {
       setResponding(false);
     }
   };
 
-  const pending = incomingRequests?.filter((r) => r.status === 'pending') ?? [];
-  const accepted = incomingRequests?.filter((r) => r.status === 'accepted') ?? [];
-  const completed = incomingRequests?.filter((r) => r.status === 'completed') ?? [];
+  const pending = incomingRequests?.filter((r) => r.status === "pending") ?? [];
+  const accepted = incomingRequests?.filter((r) => r.status === "accepted") ?? [];
+  const completed = incomingRequests?.filter((r) => r.status === "completed") ?? [];
 
   return (
     <div className="space-y-6 mt-4">
@@ -289,12 +289,12 @@ export function EmployeeProfile() {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="h-9 w-9 rounded-lg bg-cream border border-border grid place-items-center shrink-0 text-sm font-bold text-primary">
-                    {rec.companies?.name?.[0]?.toUpperCase() ?? 'C'}
+                    {rec.companies?.name?.[0]?.toUpperCase() ?? "C"}
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium text-sm truncate">{rec.job_title}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {rec.companies?.name} {rec.department ? `· ${rec.department}` : ''}
+                      {rec.companies?.name} {rec.department ? `· ${rec.department}` : ""}
                     </p>
                   </div>
                 </div>
@@ -351,7 +351,7 @@ export function EmployeeProfile() {
                       </div>
                       <div>
                         <p className="text-sm font-medium">{co.name}</p>
-                        <p className="text-xs text-muted-foreground">{co.location ?? 'Tanzania'}</p>
+                        <p className="text-xs text-muted-foreground">{co.location ?? "Tanzania"}</p>
                       </div>
                       {co.verified && (
                         <BadgeCheck className="h-4 w-4 text-accent ml-auto shrink-0" />
@@ -407,7 +407,7 @@ export function EmployeeProfile() {
             size="sm"
             className="bg-accent hover:bg-accent/90 text-accent-foreground"
           >
-            {registering ? 'Registering…' : 'Register at this company'}
+            {registering ? "Registering…" : "Register at this company"}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-3">
@@ -455,7 +455,7 @@ export function EmployeeProfile() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold text-sm">
-                        {req.profiles?.full_name ?? 'Job seeker'}
+                        {req.profiles?.full_name ?? "Job seeker"}
                       </p>
                       <StatusBadge status={req.status} />
                     </div>
@@ -481,7 +481,7 @@ export function EmployeeProfile() {
                     )}
                   </div>
                   <div className="flex flex-col gap-2 shrink-0">
-                    {req.status === 'pending' && (
+                    {req.status === "pending" && (
                       <>
                         <Button
                           size="sm"
@@ -500,27 +500,27 @@ export function EmployeeProfile() {
                         </Button>
                       </>
                     )}
-                    {req.status === 'accepted' && (
+                    {req.status === "accepted" && (
                       <Button
                         size="sm"
                         className="bg-accent hover:bg-accent/90 text-accent-foreground h-7 text-xs"
                         onClick={() => {
                           setRespondingTo(req);
-                          setRecommendation('');
+                          setRecommendation("");
                           setRating(5);
                         }}
                       >
                         Write recommendation
                       </Button>
                     )}
-                    {req.status === 'completed' && (
+                    {req.status === "completed" && (
                       <Button
                         size="sm"
                         variant="outline"
                         className="h-7 text-xs"
                         onClick={() => {
                           setRespondingTo(req);
-                          setRecommendation(req.recommendation ?? '');
+                          setRecommendation(req.recommendation ?? "");
                           setRating(req.rating ?? 5);
                         }}
                       >
@@ -530,7 +530,7 @@ export function EmployeeProfile() {
                   </div>
                 </div>
 
-                {req.status === 'completed' && req.recommendation && (
+                {req.status === "completed" && req.recommendation && (
                   <div className="mt-3 pt-3 border-t border-border">
                     <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                       <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Recommendation submitted
@@ -558,12 +558,12 @@ export function EmployeeProfile() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {respondingTo?.status === 'completed'
-                ? 'Your recommendation'
-                : 'Write recommendation'}
+              {respondingTo?.status === "completed"
+                ? "Your recommendation"
+                : "Write recommendation"}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
-              For {respondingTo?.profiles?.full_name ?? 'the applicant'}
+              For {respondingTo?.profiles?.full_name ?? "the applicant"}
             </p>
           </DialogHeader>
 
@@ -594,12 +594,12 @@ export function EmployeeProfile() {
                     className="transition-transform hover:scale-110"
                   >
                     <Star
-                      className={`h-6 w-6 ${n <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
+                      className={`h-6 w-6 ${n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`}
                     />
                   </button>
                 ))}
                 <span className="text-sm text-muted-foreground ml-1">
-                  {['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][rating]}
+                  {["", "Poor", "Fair", "Good", "Very good", "Excellent"][rating]}
                 </span>
               </div>
             </div>
@@ -615,10 +615,10 @@ export function EmployeeProfile() {
               disabled={responding || !recommendation.trim()}
             >
               {responding
-                ? 'Submitting…'
-                : respondingTo?.status === 'completed'
-                  ? 'Update'
-                  : 'Submit recommendation'}
+                ? "Submitting…"
+                : respondingTo?.status === "completed"
+                  ? "Update"
+                  : "Submit recommendation"}
             </Button>
           </DialogFooter>
         </DialogContent>

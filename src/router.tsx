@@ -1,6 +1,6 @@
-import { QueryClient } from '@tanstack/react-query';
-import { createRouter } from '@tanstack/react-router';
-import { routeTree } from './routeTree.gen';
+import { QueryClient } from "@tanstack/react-query";
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 
 export const getRouter = () => {
   const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 30_000, // preload data for 30s
-    defaultPreload: 'intent', // preload on hover/focus
+    defaultPreload: "intent", // preload on hover/focus
   });
 
   return router;

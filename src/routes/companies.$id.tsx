@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import * as React from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   MapPin,
   Globe,
@@ -10,54 +10,54 @@ import {
   Building2,
   ExternalLink,
   Edit2,
-} from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { JobCard, type JobCardData } from '@/components/job-card';
-import { supabase } from '@/integrations/supabase/client';
-import { RequestReference } from '@/components/request-reference';
-import { FollowButton } from '@/components/follow-button';
-import { CompanyPosts } from '@/components/company-posts';
-import { industryLabel } from '@/lib/kazi-data';
-import { useAuth } from '@/lib/auth';
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { JobCard, type JobCardData } from "@/components/job-card";
+import { supabase } from "@/integrations/supabase/client";
+import { RequestReference } from "@/components/request-reference";
+import { FollowButton } from "@/components/follow-button";
+import { CompanyPosts } from "@/components/company-posts";
+import { industryLabel } from "@/lib/kazi-data";
+import { useAuth } from "@/lib/auth";
 
-export const Route = createFileRoute('/companies/$id')({ component: CompanyPage });
+export const Route = createFileRoute("/companies/$id")({ component: CompanyPage });
 
 function CompanyPage() {
   const { id } = Route.useParams();
   const { user } = useAuth();
 
   const { data: co, isLoading } = useQuery({
-    queryKey: ['company', id],
+    queryKey: ["company", id],
     queryFn: async () => {
-      const { data } = await supabase.from('companies').select('*').eq('id', id).maybeSingle();
+      const { data } = await supabase.from("companies").select("*").eq("id", id).maybeSingle();
       return data;
     },
   });
 
   const { data: jobs } = useQuery({
-    queryKey: ['company-jobs', id],
+    queryKey: ["company-jobs", id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('jobs')
+        .from("jobs")
         .select(
-          'id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)',
+          "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
         )
-        .eq('company_id', id)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false });
+        .eq("company_id", id)
+        .eq("status", "published")
+        .order("created_at", { ascending: false });
       return (data ?? []) as unknown as JobCardData[];
     },
   });
 
   const { data: followerCount } = useQuery({
-    queryKey: ['company-followers', id],
+    queryKey: ["company-followers", id],
     queryFn: async () => {
-      const { data } = await (supabase as any).rpc('get_company_follower_count', {
+      const { data } = await supabase.rpc("get_company_follower_count", {
         p_company_id: id,
       });
       return (data as number) ?? 0;
@@ -65,14 +65,14 @@ function CompanyPage() {
   });
 
   const { data: verifiedEmployees } = useQuery({
-    queryKey: ['company-verified-employees', id],
+    queryKey: ["company-verified-employees", id],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('company_employees')
-        .select('id,job_title,department,profiles!user_id(full_name,headline,avatar_url)')
-        .eq('company_id', id)
-        .eq('verified', true)
-        .eq('is_current', true)
+      const { data } = await supabase
+        .from("company_employees")
+        .select("id,job_title,department,profiles!user_id(full_name,headline,avatar_url)")
+        .eq("company_id", id)
+        .eq("verified", true)
+        .eq("is_current", true)
         .limit(12);
       return (data ?? []) as Array<{
         id: string;
@@ -186,7 +186,7 @@ function CompanyPage() {
                   variant="outline"
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
-                  <Link to={'/employer-dashboard' as never}>
+                  <Link to={"/employer-dashboard" as never}>
                     <Edit2 className="h-4 w-4 mr-1.5" /> Manage
                   </Link>
                 </Button>
@@ -223,7 +223,7 @@ function CompanyPage() {
           <TabsList className="h-10 mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs {jobs?.length ? `(${jobs.length})` : ''}</TabsTrigger>
+            <TabsTrigger value="jobs">Jobs {jobs?.length ? `(${jobs.length})` : ""}</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
           </TabsList>
 
@@ -251,7 +251,7 @@ function CompanyPage() {
                           onClick={() =>
                             document
                               .querySelector('[data-value="jobs"]')
-                              ?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+                              ?.dispatchEvent(new MouseEvent("click", { bubbles: true }))
                           }
                           className="text-sm text-accent hover:underline"
                         >
@@ -301,7 +301,7 @@ function CompanyPage() {
                           rel="noreferrer"
                           className="text-accent hover:underline truncate"
                         >
-                          {co.website.replace(/^https?:\/\//, '')}
+                          {co.website.replace(/^https?:\/\//, "")}
                         </a>
                       </div>
                     )}
@@ -326,7 +326,7 @@ function CompanyPage() {
                               />
                             ) : (
                               <span className="text-xs font-bold text-accent">
-                                {emp.profiles?.full_name?.[0]?.toUpperCase() ?? 'U'}
+                                {emp.profiles?.full_name?.[0]?.toUpperCase() ?? "U"}
                               </span>
                             )}
                           </div>
@@ -397,7 +397,7 @@ function CompanyPage() {
                         />
                       ) : (
                         <span className="font-bold text-lg text-accent">
-                          {emp.profiles?.full_name?.[0]?.toUpperCase() ?? 'U'}
+                          {emp.profiles?.full_name?.[0]?.toUpperCase() ?? "U"}
                         </span>
                       )}
                     </div>
@@ -405,7 +405,7 @@ function CompanyPage() {
                       <p className="font-semibold text-sm truncate">{emp.profiles?.full_name}</p>
                       <p className="text-xs text-muted-foreground truncate">
                         {emp.job_title}
-                        {emp.department ? ` · ${emp.department}` : ''}
+                        {emp.department ? ` · ${emp.department}` : ""}
                       </p>
                       {emp.profiles?.headline && (
                         <p className="text-[10px] text-muted-foreground truncate mt-0.5">

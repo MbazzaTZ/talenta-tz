@@ -1,41 +1,48 @@
-import * as React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, AlertCircle, Save, X } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import * as React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bell, AlertCircle, Save, X } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { getJobAlert, createJobAlert, updateJobAlert, JobAlert } from '@/lib/supabase-alerts';
-import { useAuth } from '@/lib/auth';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { getJobAlert, createJobAlert, updateJobAlert, JobAlert } from "@/lib/supabase-alerts";
+import { useAuth } from "@/lib/auth";
 
 export function JobAlertSettings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [keywords, setKeywords] = React.useState<string[]>([]);
-  const [keywordInput, setKeywordInput] = React.useState('');
+  const [keywordInput, setKeywordInput] = React.useState("");
   const [selectedRegions, setSelectedRegions] = React.useState<string[]>([]);
   const [selectedIndustries, setSelectedIndustries] = React.useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = React.useState<string[]>([]);
-  const [frequency, setFrequency] = React.useState<'daily' | 'weekly' | 'immediately'>('daily');
+  const [frequency, setFrequency] = React.useState<"daily" | "weekly" | "immediately">("daily");
   const [enabled, setEnabled] = React.useState(true);
 
-  const commonRegions = ['Dar es Salaam', 'Nairobi', 'Lagos', 'Remote'];
-  const commonIndustries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Sales', 'Marketing'];
-  const positionLevels = ['entry', 'mid', 'senior', 'manager', 'director'];
+  const commonRegions = ["Dar es Salaam", "Nairobi", "Lagos", "Remote"];
+  const commonIndustries = [
+    "Technology",
+    "Finance",
+    "Healthcare",
+    "Education",
+    "Sales",
+    "Marketing",
+  ];
+  const positionLevels = ["entry", "mid", "senior", "manager", "director"];
 
   // Fetch existing alert
   const alertQuery = useQuery({
-    queryKey: ['jobAlert', user?.id],
+    queryKey: ["jobAlert", user?.id],
     enabled: !!user?.id,
     queryFn: () => getJobAlert(user!.id),
   });
@@ -46,7 +53,7 @@ export function JobAlertSettings() {
       setSelectedRegions(alertQuery.data.regions || []);
       setSelectedIndustries(alertQuery.data.industries || []);
       setSelectedLevels(alertQuery.data.position_levels || []);
-      setFrequency(alertQuery.data.email_frequency || 'daily');
+      setFrequency(alertQuery.data.email_frequency || "daily");
       setEnabled(alertQuery.data.enabled !== false);
     }
   }, [alertQuery.data]);
@@ -54,7 +61,7 @@ export function JobAlertSettings() {
   // Save alert mutation
   const saveAlertMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.id) throw new Error('User not found');
+      if (!user?.id) throw new Error("User not found");
 
       const alertData = {
         keywords,
@@ -72,18 +79,18 @@ export function JobAlertSettings() {
       }
     },
     onSuccess: () => {
-      toast.success('Job alert saved successfully!');
-      queryClient.invalidateQueries({ queryKey: ['jobAlert', user?.id] });
+      toast.success("Job alert saved successfully!");
+      queryClient.invalidateQueries({ queryKey: ["jobAlert", user?.id] });
     },
     onError: () => {
-      toast.error('Failed to save job alert');
+      toast.error("Failed to save job alert");
     },
   });
 
   const addKeyword = () => {
     if (keywordInput.trim() && !keywords.includes(keywordInput.trim())) {
       setKeywords([...keywords, keywordInput.trim()]);
-      setKeywordInput('');
+      setKeywordInput("");
     }
   };
 
@@ -93,19 +100,19 @@ export function JobAlertSettings() {
 
   const toggleRegion = (region: string) => {
     setSelectedRegions((prev) =>
-      prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region]
+      prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region],
     );
   };
 
   const toggleIndustry = (industry: string) => {
     setSelectedIndustries((prev) =>
-      prev.includes(industry) ? prev.filter((i) => i !== industry) : [...prev, industry]
+      prev.includes(industry) ? prev.filter((i) => i !== industry) : [...prev, industry],
     );
   };
 
   const toggleLevel = (level: string) => {
     setSelectedLevels((prev) =>
-      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level],
     );
   };
 
@@ -122,11 +129,7 @@ export function JobAlertSettings() {
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="alert-enabled">Enable</Label>
-            <Switch
-              id="alert-enabled"
-              checked={enabled}
-              onCheckedChange={setEnabled}
-            />
+            <Switch id="alert-enabled" checked={enabled} onCheckedChange={setEnabled} />
           </div>
         </div>
       </CardHeader>
@@ -140,7 +143,7 @@ export function JobAlertSettings() {
               placeholder="e.g., React Developer, Python"
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
+              onKeyPress={(e) => e.key === "Enter" && addKeyword()}
             />
             <Button onClick={addKeyword} variant="outline">
               Add
@@ -150,10 +153,7 @@ export function JobAlertSettings() {
             {keywords.map((keyword) => (
               <Badge key={keyword} variant="secondary" className="flex items-center gap-1">
                 {keyword}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeKeyword(keyword)}
-                />
+                <X className="h-3 w-3 cursor-pointer" onClick={() => removeKeyword(keyword)} />
               </Badge>
             ))}
           </div>
@@ -166,7 +166,7 @@ export function JobAlertSettings() {
             {commonRegions.map((region) => (
               <Badge
                 key={region}
-                variant={selectedRegions.includes(region) ? 'default' : 'outline'}
+                variant={selectedRegions.includes(region) ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => toggleRegion(region)}
               >
@@ -183,7 +183,7 @@ export function JobAlertSettings() {
             {commonIndustries.map((industry) => (
               <Badge
                 key={industry}
-                variant={selectedIndustries.includes(industry) ? 'default' : 'outline'}
+                variant={selectedIndustries.includes(industry) ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => toggleIndustry(industry)}
               >
@@ -200,7 +200,7 @@ export function JobAlertSettings() {
             {positionLevels.map((level) => (
               <Badge
                 key={level}
-                variant={selectedLevels.includes(level) ? 'default' : 'outline'}
+                variant={selectedLevels.includes(level) ? "default" : "outline"}
                 className="cursor-pointer capitalize"
                 onClick={() => toggleLevel(level)}
               >
@@ -232,7 +232,7 @@ export function JobAlertSettings() {
           className="w-full"
         >
           <Save className="mr-2 h-4 w-4" />
-          {saveAlertMutation.isPending ? 'Saving...' : 'Save Alert Settings'}
+          {saveAlertMutation.isPending ? "Saving..." : "Save Alert Settings"}
         </Button>
       </CardContent>
     </Card>

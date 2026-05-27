@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { Link } from '@tanstack/react-router';
-import { Bookmark, MapPin, Clock, Briefcase, BadgeCheck } from 'lucide-react';
-import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { formatSalary, industryLabel, timeAgo } from '@/lib/kazi-data';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/lib/auth';
+import * as React from "react";
+import { Link } from "@tanstack/react-router";
+import { Bookmark, MapPin, Clock, Briefcase, BadgeCheck } from "lucide-react";
+import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { formatSalary, industryLabel, timeAgo } from "@/lib/kazi-data";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 export type JobCardData = {
   id: string;
@@ -39,22 +39,22 @@ export const JobCard = React.memo(function JobCard({ job }: { job: JobCardData }
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      toast.error('Sign in to save jobs');
+      toast.error("Sign in to save jobs");
       return;
     }
     setSaved(true);
     const { error } = await supabase
-      .from('saved_jobs')
+      .from("saved_jobs")
       .insert({ user_id: user.id, job_id: job.id });
     if (error) {
-      if (error.message.includes('duplicate')) {
-        toast.info('Already saved');
+      if (error.message.includes("duplicate")) {
+        toast.info("Already saved");
       } else {
-        toast.error('Could not save job');
+        toast.error("Could not save job");
         setSaved(false);
       }
     } else {
-      toast.success('Saved to your list');
+      toast.success("Saved to your list");
     }
   };
 
@@ -72,7 +72,7 @@ export const JobCard = React.memo(function JobCard({ job }: { job: JobCardData }
               />
             ) : (
               <div className="h-11 w-11 rounded-lg bg-cream grid place-items-center font-display font-bold text-primary border border-border text-base">
-                {co?.name?.[0]?.toUpperCase() ?? 'T'}
+                {co?.name?.[0]?.toUpperCase() ?? "T"}
               </div>
             )}
           </div>
@@ -84,17 +84,17 @@ export const JobCard = React.memo(function JobCard({ job }: { job: JobCardData }
                   {job.title}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
-                  {co?.name ?? 'Company'}
+                  {co?.name ?? "Company"}
                   {co?.verified && <BadgeCheck className="inline h-3 w-3 text-accent shrink-0" />}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleSave}
-                className={`shrink-0 transition-colors ${saved ? 'text-accent' : 'text-muted-foreground hover:text-accent'}`}
+                className={`shrink-0 transition-colors ${saved ? "text-accent" : "text-muted-foreground hover:text-accent"}`}
                 aria-label="Save job"
               >
-                <Bookmark className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+                <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
               </button>
             </div>
 
@@ -131,7 +131,7 @@ export const JobCard = React.memo(function JobCard({ job }: { job: JobCardData }
                 {formatSalary(
                   job.salary_min,
                   job.salary_max,
-                  job.currency ?? 'TZS',
+                  job.currency ?? "TZS",
                   job.salary_negotiable ?? false,
                 )}
               </span>

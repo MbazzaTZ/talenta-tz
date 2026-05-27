@@ -1,51 +1,61 @@
-import * as React from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
+import * as React from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Search, MapPin, ArrowRight, BadgeCheck,
-  Briefcase, Users, Sparkles, TrendingUp,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+  Search,
+  MapPin,
+  ArrowRight,
+  BadgeCheck,
+  Briefcase,
+  Users,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { SiteHeader, SiteFooter, MobileBottomNav } from '@/components/site-chrome';
-import { JobCard, JobCardSkeleton, type JobCardData } from '@/components/job-card';
-import { supabase } from '@/integrations/supabase/client';
-import { REGIONS, INDUSTRIES } from '@/lib/kazi-data';
-import { useT, useLang } from '@/lib/i18n';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
+import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
+import { supabase } from "@/integrations/supabase/client";
+import { REGIONS, INDUSTRIES } from "@/lib/kazi-data";
+import { useT, useLang } from "@/lib/i18n";
 
-export const Route = createFileRoute('/')({ component: LandingPage });
+export const Route = createFileRoute("/")({ component: LandingPage });
 
-const POPULAR_SEARCHES = ['Dar es Salaam', 'ICT', 'NGO', 'Banking', 'Remote', 'Arusha'];
+const POPULAR_SEARCHES = ["Dar es Salaam", "ICT", "NGO", "Banking", "Remote", "Arusha"];
 
 const STATS = [
-  { icon: Briefcase, value: '12,500+', label: 'Active jobs' },
-  { icon: Users, value: '800+', label: 'Verified employers' },
-  { icon: TrendingUp, value: '50k+', label: 'Job seekers' },
-  { icon: BadgeCheck, value: '26', label: 'Regions covered' },
+  { icon: Briefcase, value: "12,500+", label: "Active jobs" },
+  { icon: Users, value: "800+", label: "Verified employers" },
+  { icon: TrendingUp, value: "50k+", label: "Job seekers" },
+  { icon: BadgeCheck, value: "26", label: "Regions covered" },
 ];
 
 function LandingPage() {
   const t = useT();
   const { lang } = useLang();
   const navigate = useNavigate();
-  const [q, setQ] = React.useState('');
-  const [region, setRegion] = React.useState<string>('');
+  const [q, setQ] = React.useState("");
+  const [region, setRegion] = React.useState<string>("");
 
   const { data: featured, isLoading } = useQuery({
-    queryKey: ['featured-jobs'],
+    queryKey: ["featured-jobs"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('jobs')
+        .from("jobs")
         .select(
-          'id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)',
+          "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
         )
-        .eq('status', 'published')
-        .order('featured', { ascending: false })
-        .order('created_at', { ascending: false })
+        .eq("status", "published")
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(6);
       if (error) throw error;
       return (data ?? []) as unknown as JobCardData[];
@@ -56,7 +66,7 @@ function LandingPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     navigate({
-      to: '/jobs',
+      to: "/jobs",
       search: { q: q || undefined, region: region || undefined } as never,
     });
   };
@@ -70,17 +80,17 @@ function LandingPage() {
         <div className="container mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center">
           <div className="space-y-5">
             <Badge variant="secondary" className="bg-cream border border-border text-foreground/80">
-              <Sparkles className="h-3 w-3 mr-1 text-accent" /> {t('tagline')}
+              <Sparkles className="h-3 w-3 mr-1 text-accent" /> {t("tagline")}
             </Badge>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05]">
-              {t('hero_title_1')}{' '}
+              {t("hero_title_1")}{" "}
               <span className="relative whitespace-nowrap">
-                <span className="text-accent">{t('hero_title_2')}</span>
+                <span className="text-accent">{t("hero_title_2")}</span>
                 <span className="absolute -bottom-1 left-0 right-0 h-2 bg-peach/40 -z-10 rounded" />
               </span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
-              {t('hero_sub')}
+              {t("hero_sub")}
             </p>
 
             {/* Search bar */}
@@ -93,7 +103,7 @@ function LandingPage() {
                 <Input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder={t('search_title')}
+                  placeholder={t("search_title")}
                   className="border-0 shadow-none focus-visible:ring-0 px-0 h-9"
                 />
               </div>
@@ -101,11 +111,13 @@ function LandingPage() {
                 <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                 <Select value={region} onValueChange={setRegion}>
                   <SelectTrigger className="border-0 shadow-none focus:ring-0 px-0 h-auto text-sm w-full">
-                    <SelectValue placeholder={t('search_location')} />
+                    <SelectValue placeholder={t("search_location")} />
                   </SelectTrigger>
                   <SelectContent>
                     {REGIONS.map((r) => (
-                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                      <SelectItem key={r} value={r}>
+                        {r}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -114,7 +126,7 @@ function LandingPage() {
                 type="submit"
                 className="bg-accent hover:bg-accent/90 text-accent-foreground shrink-0"
               >
-                {t('search_btn')}
+                {t("search_btn")}
               </Button>
             </form>
 
@@ -185,10 +197,10 @@ function LandingPage() {
               className="group rounded-xl border border-border bg-card p-3.5 hover:border-accent/50 hover:shadow-sm transition-all"
             >
               <div className="font-display font-semibold text-sm text-foreground group-hover:text-accent transition-colors">
-                {lang === 'sw' ? i.sw : i.en}
+                {lang === "sw" ? i.sw : i.en}
               </div>
               <div className="text-xs text-muted-foreground mt-0.5">
-                {lang === 'sw' ? i.en : i.sw}
+                {lang === "sw" ? i.en : i.sw}
               </div>
             </Link>
           ))}
