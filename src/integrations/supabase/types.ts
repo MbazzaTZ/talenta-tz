@@ -1,8 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '14.5';
   };
@@ -17,6 +15,18 @@ export type Database = {
           id: string;
           job_id: string;
           status: Database['public']['Enums']['application_status'];
+          remarks: string | null;
+          qualifications: string | null;
+          experience_note: string | null;
+          testimonies: Json | null;
+          background_check: boolean | null;
+          references_shared: boolean | null;
+          cv_snapshot: Json | null;
+          employer_notes: string | null;
+          employer_score: number | null;
+          shortlisted_at: string | null;
+          rejected_at: string | null;
+          hired_at: string | null;
         };
         Insert: {
           applicant_id: string;
@@ -26,6 +36,18 @@ export type Database = {
           id?: string;
           job_id: string;
           status?: Database['public']['Enums']['application_status'];
+          remarks?: string | null;
+          qualifications?: string | null;
+          experience_note?: string | null;
+          testimonies?: Json | null;
+          background_check?: boolean | null;
+          references_shared?: boolean | null;
+          cv_snapshot?: Json | null;
+          employer_notes?: string | null;
+          employer_score?: number | null;
+          shortlisted_at?: string | null;
+          rejected_at?: string | null;
+          hired_at?: string | null;
         };
         Update: {
           applicant_id?: string;
@@ -35,6 +57,18 @@ export type Database = {
           id?: string;
           job_id?: string;
           status?: Database['public']['Enums']['application_status'];
+          remarks?: string | null;
+          qualifications?: string | null;
+          experience_note?: string | null;
+          testimonies?: Json | null;
+          background_check?: boolean | null;
+          references_shared?: boolean | null;
+          cv_snapshot?: Json | null;
+          employer_notes?: string | null;
+          employer_score?: number | null;
+          shortlisted_at?: string | null;
+          rejected_at?: string | null;
+          hired_at?: string | null;
         };
         Relationships: [
           {
@@ -192,6 +226,25 @@ export type Database = {
           location: string | null;
           phone: string | null;
           updated_at: string;
+          open_to_work: boolean;
+          open_to_work_updated_at: string | null;
+          current_company_id: string | null;
+          current_job_title: string | null;
+          current_department: string | null;
+          work_experience: Json | null;
+          education_items: Json | null;
+          certifications: Json | null;
+          references_list: Json | null;
+          languages: Json | null;
+          nationality: string | null;
+          date_of_birth: string | null;
+          gender: string | null;
+          linkedin_url: string | null;
+          github_url: string | null;
+          cv_summary: string | null;
+          resume_url: string | null;
+          portfolio_url: string | null;
+          skills: string[] | null;
         };
         Insert: {
           avatar_url?: string | null;
@@ -204,6 +257,25 @@ export type Database = {
           location?: string | null;
           phone?: string | null;
           updated_at?: string;
+          open_to_work?: boolean;
+          open_to_work_updated_at?: string | null;
+          current_company_id?: string | null;
+          current_job_title?: string | null;
+          current_department?: string | null;
+          work_experience?: Json | null;
+          education_items?: Json | null;
+          certifications?: Json | null;
+          references_list?: Json | null;
+          languages?: Json | null;
+          nationality?: string | null;
+          date_of_birth?: string | null;
+          gender?: string | null;
+          linkedin_url?: string | null;
+          github_url?: string | null;
+          cv_summary?: string | null;
+          resume_url?: string | null;
+          portfolio_url?: string | null;
+          skills?: string[] | null;
         };
         Update: {
           avatar_url?: string | null;
@@ -216,6 +288,25 @@ export type Database = {
           location?: string | null;
           phone?: string | null;
           updated_at?: string;
+          open_to_work?: boolean;
+          open_to_work_updated_at?: string | null;
+          current_company_id?: string | null;
+          current_job_title?: string | null;
+          current_department?: string | null;
+          work_experience?: Json | null;
+          education_items?: Json | null;
+          certifications?: Json | null;
+          references_list?: Json | null;
+          languages?: Json | null;
+          nationality?: string | null;
+          date_of_birth?: string | null;
+          gender?: string | null;
+          linkedin_url?: string | null;
+          github_url?: string | null;
+          cv_summary?: string | null;
+          resume_url?: string | null;
+          portfolio_url?: string | null;
+          skills?: string[] | null;
         };
         Relationships: [];
       };
@@ -307,6 +398,514 @@ export type Database = {
         };
         Relationships: [];
       };
+      company_employees: {
+        Row: {
+          id: string;
+          user_id: string;
+          company_id: string;
+          job_title: string;
+          department: string | null;
+          start_date: string | null;
+          is_current: boolean;
+          verified: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          company_id: string;
+          job_title: string;
+          department?: string | null;
+          start_date?: string | null;
+          is_current?: boolean;
+          verified?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          company_id?: string;
+          job_title?: string;
+          department?: string | null;
+          start_date?: string | null;
+          is_current?: boolean;
+          verified?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'company_employees_company_id_fkey';
+            columns: ['company_id'];
+            isOneToOne: false;
+            referencedRelation: 'companies';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      reference_requests: {
+        Row: {
+          id: string;
+          seeker_id: string;
+          employee_id: string;
+          company_id: string;
+          job_title: string | null;
+          relationship: string | null;
+          message: string | null;
+          status: Database['public']['Enums']['reference_status'];
+          recommendation: string | null;
+          rating: number | null;
+          recommender_title: string | null;
+          requested_at: string;
+          responded_at: string | null;
+          completed_at: string | null;
+          expires_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          seeker_id: string;
+          employee_id: string;
+          company_id: string;
+          job_title?: string | null;
+          relationship?: string | null;
+          message?: string | null;
+          status?: Database['public']['Enums']['reference_status'];
+          recommendation?: string | null;
+          rating?: number | null;
+          recommender_title?: string | null;
+          requested_at?: string;
+          responded_at?: string | null;
+          completed_at?: string | null;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          seeker_id?: string;
+          employee_id?: string;
+          company_id?: string;
+          job_title?: string | null;
+          relationship?: string | null;
+          message?: string | null;
+          status?: Database['public']['Enums']['reference_status'];
+          recommendation?: string | null;
+          rating?: number | null;
+          recommender_title?: string | null;
+          requested_at?: string;
+          responded_at?: string | null;
+          completed_at?: string | null;
+          expires_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'reference_requests_company_id_fkey';
+            columns: ['company_id'];
+            isOneToOne: false;
+            referencedRelation: 'companies';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      job_alerts: {
+        Row: {
+          id: string;
+          user_id: string;
+          keywords: string[];
+          regions: string[];
+          industries: string[];
+          position_levels: Database['public']['Enums']['position_level'][];
+          enabled: boolean;
+          email_frequency: string;
+          last_sent_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          keywords?: string[];
+          regions?: string[];
+          industries?: string[];
+          position_levels?: Database['public']['Enums']['position_level'][];
+          enabled?: boolean;
+          email_frequency?: string;
+          last_sent_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          keywords?: string[];
+          regions?: string[];
+          industries?: string[];
+          position_levels?: Database['public']['Enums']['position_level'][];
+          enabled?: boolean;
+          email_frequency?: string;
+          last_sent_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: string;
+          title: string;
+          message: string;
+          data: Json | null;
+          read: boolean;
+          read_at: string | null;
+          sent_at: string;
+          email_sent: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: string;
+          title: string;
+          message: string;
+          data?: Json | null;
+          read?: boolean;
+          read_at?: string | null;
+          sent_at?: string;
+          email_sent?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: string;
+          title?: string;
+          message?: string;
+          data?: Json | null;
+          read?: boolean;
+          read_at?: string | null;
+          sent_at?: string;
+          email_sent?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      follows: {
+        Row: {
+          id: string;
+          follower_id: string;
+          target_user_id: string | null;
+          target_company_id: string | null;
+          target_type: Database['public']['Enums']['follow_target_type'];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          follower_id: string;
+          target_user_id?: string | null;
+          target_company_id?: string | null;
+          target_type: Database['public']['Enums']['follow_target_type'];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          follower_id?: string;
+          target_user_id?: string | null;
+          target_company_id?: string | null;
+          target_type?: Database['public']['Enums']['follow_target_type'];
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'follows_target_company_id_fkey';
+            columns: ['target_company_id'];
+            isOneToOne: false;
+            referencedRelation: 'companies';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      posts: {
+        Row: {
+          id: string;
+          author_id: string;
+          content: string;
+          image_url: string | null;
+          post_type: string;
+          related_job_id: string | null;
+          related_company_id: string | null;
+          likes_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          content: string;
+          image_url?: string | null;
+          post_type?: string;
+          related_job_id?: string | null;
+          related_company_id?: string | null;
+          likes_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          content?: string;
+          image_url?: string | null;
+          post_type?: string;
+          related_job_id?: string | null;
+          related_company_id?: string | null;
+          likes_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'posts_related_job_id_fkey';
+            columns: ['related_job_id'];
+            isOneToOne: false;
+            referencedRelation: 'jobs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_related_company_id_fkey';
+            columns: ['related_company_id'];
+            isOneToOne: false;
+            referencedRelation: 'companies';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      post_likes: {
+        Row: {
+          id: string;
+          post_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          post_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          post_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_likes_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      application_status_history: {
+        Row: {
+          id: string;
+          application_id: string;
+          old_status: Database['public']['Enums']['application_status'];
+          new_status: Database['public']['Enums']['application_status'];
+          changed_by: string | null;
+          changed_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          old_status: Database['public']['Enums']['application_status'];
+          new_status: Database['public']['Enums']['application_status'];
+          changed_by?: string | null;
+          changed_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          old_status?: Database['public']['Enums']['application_status'];
+          new_status?: Database['public']['Enums']['application_status'];
+          changed_by?: string | null;
+          changed_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'application_status_history_application_id_fkey';
+            columns: ['application_id'];
+            isOneToOne: false;
+            referencedRelation: 'applications';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      skills: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          category: string | null;
+          difficulty: string;
+          quiz_duration_minutes: number | null;
+          passing_score: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          category?: string | null;
+          difficulty?: string;
+          quiz_duration_minutes?: number | null;
+          passing_score?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          category?: string | null;
+          difficulty?: string;
+          quiz_duration_minutes?: number | null;
+          passing_score?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      skill_quiz_questions: {
+        Row: {
+          id: string;
+          skill_id: string;
+          question_text: string;
+          question_type: string;
+          options: Json | null;
+          correct_answer: string | null;
+          explanation: string | null;
+          points: number | null;
+          order_number: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          skill_id: string;
+          question_text: string;
+          question_type?: string;
+          options?: Json | null;
+          correct_answer?: string | null;
+          explanation?: string | null;
+          points?: number | null;
+          order_number?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          skill_id?: string;
+          question_text?: string;
+          question_type?: string;
+          options?: Json | null;
+          correct_answer?: string | null;
+          explanation?: string | null;
+          points?: number | null;
+          order_number?: number | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'skill_quiz_questions_skill_id_fkey';
+            columns: ['skill_id'];
+            isOneToOne: false;
+            referencedRelation: 'skills';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_skill_assessments: {
+        Row: {
+          id: string;
+          user_id: string;
+          skill_id: string;
+          started_at: string;
+          completed_at: string | null;
+          score: number | null;
+          passed: boolean | null;
+          answers: Json | null;
+          time_taken_seconds: number | null;
+          status: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          skill_id: string;
+          started_at?: string;
+          completed_at?: string | null;
+          score?: number | null;
+          passed?: boolean | null;
+          answers?: Json | null;
+          time_taken_seconds?: number | null;
+          status?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          skill_id?: string;
+          started_at?: string;
+          completed_at?: string | null;
+          score?: number | null;
+          passed?: boolean | null;
+          answers?: Json | null;
+          time_taken_seconds?: number | null;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_skill_assessments_skill_id_fkey';
+            columns: ['skill_id'];
+            isOneToOne: false;
+            referencedRelation: 'skills';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_verified_skills: {
+        Row: {
+          id: string;
+          user_id: string;
+          skill_id: string;
+          assessment_id: string | null;
+          verified_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          skill_id: string;
+          assessment_id?: string | null;
+          verified_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          skill_id?: string;
+          assessment_id?: string | null;
+          verified_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_verified_skills_skill_id_fkey';
+            columns: ['skill_id'];
+            isOneToOne: false;
+            referencedRelation: 'skills';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -319,9 +918,74 @@ export type Database = {
         };
         Returns: boolean;
       };
+      get_follow_counts: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          following_total: number;
+          following_seekers: number;
+          following_employers: number;
+          following_employees: number;
+          following_companies: number;
+          following_agencies: number;
+          followers_total: number;
+        };
+      };
+      get_application_details: {
+        Args: {
+          p_job_id: string;
+          p_poster_id: string;
+        };
+        Returns: {
+          application_id: string;
+          applicant_id: string;
+          full_name: string | null;
+          email: string | null;
+          headline: string | null;
+          location: string | null;
+          skills: string[] | null;
+          cv_summary: string | null;
+          work_experience: Json | null;
+          education_items: Json | null;
+          certifications: Json | null;
+          references_list: Json | null;
+          resume_url: string | null;
+          portfolio_url: string | null;
+          linkedin_url: string | null;
+          remarks: string | null;
+          qualifications: string | null;
+          experience_note: string | null;
+          testimonies: Json | null;
+          background_check: boolean | null;
+          references_shared: boolean | null;
+          cv_snapshot: Json | null;
+          employer_notes: string | null;
+          employer_score: number | null;
+          status: Database['public']['Enums']['application_status'];
+          created_at: string;
+        };
+      };
+      get_user_verified_skills: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          skill_id: string;
+          skill_name: string;
+          verified_at: string;
+        };
+      };
+      user_passed_skill: {
+        Args: {
+          p_user_id: string;
+          p_skill_id: string;
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
-      app_role: 'job_seeker' | 'employer' | 'admin';
+      app_role: 'job_seeker' | 'employer' | 'admin' | 'employee';
       application_status:
         | 'applied'
         | 'under_review'
@@ -356,6 +1020,8 @@ export type Database = {
         | 'masters'
         | 'phd'
         | 'professional';
+      reference_status: 'pending' | 'accepted' | 'completed' | 'declined' | 'withdrawn';
+      follow_target_type: 'job_seeker' | 'employer' | 'employee' | 'company' | 'agency';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -481,7 +1147,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ['job_seeker', 'employer', 'admin'],
+      app_role: ['job_seeker', 'employer', 'admin', 'employee'],
       application_status: [
         'applied',
         'under_review',
@@ -520,6 +1186,8 @@ export const Constants = {
         'phd',
         'professional',
       ],
+      reference_status: ['pending', 'accepted', 'completed', 'declined', 'withdrawn'],
+      follow_target_type: ['job_seeker', 'employer', 'employee', 'company', 'agency'],
     },
   },
-} as const;
+};
