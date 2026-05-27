@@ -968,7 +968,7 @@ function SavedJobsTab({ userId }: { userId: string }) {
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <Link
-                to="/jobs/$id"
+                to="/job/$id"
                 params={{ id: job.job_id }}
                 className="font-semibold text-sm hover:text-accent transition-colors truncate block"
               >
