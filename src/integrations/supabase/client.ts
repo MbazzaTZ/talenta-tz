@@ -4,6 +4,8 @@ import type { Database } from './types';
 const SUPABASE_URL = 'https://qqbfvxlgqbspvybzsklv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxYmZ2eGxncWJzcHZ5Ynpza2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDMxNzcsImV4cCI6MjA5NTM3OTE3N30.ty9dUH9S-ZP1Xq8FuWJtSv38fZj7r8wSezYB5ix15MQ';
 
+const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.error(
     '[Talentra] ❌ Missing Supabase environment variables.\n' +
@@ -12,7 +14,7 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   );
 }
 
-export const supabase = createClient<Database>(url, key, {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: isBrowser ? localStorage : undefined,
     persistSession: isBrowser,
