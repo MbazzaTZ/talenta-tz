@@ -295,12 +295,17 @@ function JobDetail() {
     );
   }
 
-  const co = (job as any).companies;
-  const applyMethod: string = (job as any).apply_method ?? "internal";
-  const applyEmail: string | null = (job as any).apply_email ?? null;
-  const applyUrl: string | null = (job as any).apply_url ?? null;
-  const requirements: string | null = (job as any).requirements ?? null;
-  const responsibilities: string | null = (job as any).responsibilities ?? null;
+  const co = job?.companies as { owner_id?: string } | undefined;
+  const applyMethod: string =
+    ((job as Record<string, unknown>)?.apply_method as string) ?? "internal";
+  const applyEmail: string | null =
+    ((job as Record<string, unknown>)?.apply_email as string | null) ?? null;
+  const applyUrl: string | null =
+    ((job as Record<string, unknown>)?.apply_url as string | null) ?? null;
+  const requirements: string | null =
+    ((job as Record<string, unknown>)?.requirements as string | null) ?? null;
+  const responsibilities: string | null =
+    ((job as Record<string, unknown>)?.responsibilities as string | null) ?? null;
   const isExpired = job.deadline && new Date(job.deadline) < new Date();
   const isOwner = user?.id === co?.owner_id;
 
@@ -557,7 +562,7 @@ function JobDetail() {
                             { text: "Upload your resume", done: !!profile?.resumeUrl },
                             {
                               text: "Build your CV in CV Builder",
-                              done: !!(profile as any)?.cv_summary,
+                              done: !!(profile as Record<string, unknown>)?.cv_summary,
                             },
                           ].map(({ text, done }) => (
                             <li key={text} className="flex items-center gap-2">

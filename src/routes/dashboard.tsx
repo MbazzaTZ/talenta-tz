@@ -1019,7 +1019,8 @@ function EmployerView({ userId }: { userId: string }) {
         .order("verified", { ascending: true });
       return (data ?? []).map((e: { id: string; company_id: string; [key: string]: unknown }) => ({
         ...e,
-        companyName: companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
+        companyName:
+          companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
       }));
     },
   });
@@ -1038,10 +1039,7 @@ function EmployerView({ userId }: { userId: string }) {
   });
 
   const handleVerifyEmployee = async (employeeId: string, verify: boolean) => {
-    await supabase
-      .from("company_employees")
-      .update({ verified: verify })
-      .eq("id", employeeId);
+    await supabase.from("company_employees").update({ verified: verify }).eq("id", employeeId);
     toast.success(verify ? "Employee verified — badge awarded!" : "Verification removed");
     queryClient.invalidateQueries({ queryKey: ["pending-employees", userId] });
   };
@@ -1055,48 +1053,50 @@ function EmployerView({ userId }: { userId: string }) {
             <ShieldCheck className="h-4 w-4 text-accent" /> Employee verification
           </h3>
           <div className="space-y-3">
-            {pendingEmployees!.map((emp: { id: string; profiles?: { full_name?: string }; [key: string]: unknown }) => (
-              <div
-                key={emp.id}
-                className="flex items-center justify-between rounded-xl border border-border p-3 gap-3"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium text-sm">{emp.profiles?.full_name ?? "User"}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {emp.job_title}
-                    {emp.department ? ` · ${emp.department}` : ""} at {emp.companyName}
-                  </p>
+            {pendingEmployees!.map(
+              (emp: { id: string; profiles?: { full_name?: string }; [key: string]: unknown }) => (
+                <div
+                  key={emp.id}
+                  className="flex items-center justify-between rounded-xl border border-border p-3 gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm">{emp.profiles?.full_name ?? "User"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {emp.job_title}
+                      {emp.department ? ` · ${emp.department}` : ""} at {emp.companyName}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {emp.verified ? (
+                      <>
+                        <Badge className="bg-emerald-100 text-emerald-800 text-xs">Verified</Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs"
+                          onClick={() => handleVerifyEmployee(emp.id, false)}
+                        >
+                          Revoke
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Badge variant="secondary" className="text-xs">
+                          Pending
+                        </Badge>
+                        <Button
+                          size="sm"
+                          className="h-7 text-xs bg-accent hover:bg-accent/90 text-accent-foreground"
+                          onClick={() => handleVerifyEmployee(emp.id, true)}
+                        >
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> Verify
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {emp.verified ? (
-                    <>
-                      <Badge className="bg-emerald-100 text-emerald-800 text-xs">Verified</Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 text-xs"
-                        onClick={() => handleVerifyEmployee(emp.id, false)}
-                      >
-                        Revoke
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Badge variant="secondary" className="text-xs">
-                        Pending
-                      </Badge>
-                      <Button
-                        size="sm"
-                        className="h-7 text-xs bg-accent hover:bg-accent/90 text-accent-foreground"
-                        onClick={() => handleVerifyEmployee(emp.id, true)}
-                      >
-                        <CheckCircle2 className="h-3 w-3 mr-1" /> Verify
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </Card>
       )}

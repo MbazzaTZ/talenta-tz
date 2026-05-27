@@ -145,11 +145,7 @@ export async function submitAssessment(
 
   const score = totalPoints > 0 ? Math.round((correctCount / totalPoints) * 100) : 0;
   const skill = (
-    await supabase
-      .from("skills")
-      .select("passing_score")
-      .eq("id", assessment.skill_id)
-      .single()
+    await supabase.from("skills").select("passing_score").eq("id", assessment.skill_id).single()
   ).data;
   const passed = score >= (skill?.passing_score || 70);
 

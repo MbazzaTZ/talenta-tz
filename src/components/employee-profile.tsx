@@ -112,18 +112,17 @@ export function EmployeeProfile() {
   const [rating, setRating] = React.useState<number>(5);
   const [responding, setResponding] = React.useState(false);
 
-  if (!user) return null;
-
   // Fetch user's employee records
   const { data: employeeRecords } = useQuery({
-    queryKey: ["employee-records", user.id],
+    queryKey: ["employee-records", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("company_employees")
         .select(
           "id,company_id,job_title,department,start_date,is_current,verified,companies(name,logo_url,location)",
         )
-        .eq("user_id", user.id)
+        .eq("user_id", user!.id)
         .order("is_current", { ascending: false });
       return (data ?? []) as CompanyEmployee[];
     },
@@ -131,14 +130,15 @@ export function EmployeeProfile() {
 
   // Fetch incoming reference requests
   const { data: incomingRequests } = useQuery({
-    queryKey: ["incoming-reference-requests", user.id],
+    queryKey: ["incoming-reference-requests", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("reference_requests")
         .select(
           "id,seeker_id,company_id,job_title,relationship,message,status,recommendation,rating,requested_at,profiles!seeker_id(full_name,headline,location)",
         )
-        .eq("employee_id", user.id)
+        .eq("employee_id", user!.id)
         .order("requested_at", { ascending: false });
       return (data ?? []) as unknown as ReferenceRequest[];
     },
@@ -159,6 +159,8 @@ export function EmployeeProfile() {
     },
   });
 
+  if (!user) return null;
+
   const handleRegister = async () => {
     if (!selectedCompany) {
       toast.error("Please search and select a company first");
@@ -170,7 +172,7 @@ export function EmployeeProfile() {
     }
     setRegistering(true);
     try {
-      const { error } = await (supabase as any).from("company_employees").insert({
+      const { error } = await supabase.from("company_employees").insert({
         user_id: user.id,
         company_id: selectedCompany.id,
         job_title: jobTitle.trim(),

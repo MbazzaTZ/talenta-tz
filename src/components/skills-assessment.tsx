@@ -10,6 +10,8 @@ import {
   getUserCurrentAssessment,
   getUserAssessmentHistory,
   getUserVerifiedSkills,
+  type Skill,
+  type QuizQuestion,
 } from "@/lib/supabase-skills";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
@@ -36,13 +38,13 @@ export function SkillsAssessment() {
     queryFn: () => (user?.id ? getUserAssessmentHistory(user.id) : Promise.resolve([])),
   });
 
-  const [selectedSkill, setSelectedSkill] = React.useState<any | null>(null);
-  const [questions, setQuestions] = React.useState<any[]>([]);
+  const [selectedSkill, setSelectedSkill] = React.useState<Skill | null>(null);
+  const [questions, setQuestions] = React.useState<QuizQuestion[]>([]);
   const [answers, setAnswers] = React.useState<Record<string, string>>({});
   const [assessmentId, setAssessmentId] = React.useState<string | null>(null);
   const [timeStarted, setTimeStarted] = React.useState<number | null>(null);
 
-  const handleSelectSkill = async (skill: any) => {
+  const handleSelectSkill = async (skill: Skill) => {
     setSelectedSkill(skill);
     const detail = await getSkillWithQuestions(skill.id);
     setQuestions(detail?.questions || []);
@@ -151,7 +153,7 @@ export function SkillsAssessment() {
                     <div className="font-medium">{q.question_text}</div>
                     {q.question_type === "multiple_choice" && (
                       <div className="grid gap-2">
-                        {q.options?.map((opt: any) => (
+                        {q.options?.map((opt: { id: string; text: string }) => (
                           <Button
                             key={opt.id}
                             onClick={() => setAnswers({ ...answers, [q.id]: opt.id })}

@@ -830,7 +830,8 @@ function EmployeesTab({ userId }: { userId: string }) {
         .order("verified", { ascending: true });
       return (data ?? []).map((e: { id: string; company_id: string; [key: string]: unknown }) => ({
         ...e,
-        companyName: companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
+        companyName:
+          companies.find((c: { id: string; name: string }) => c.id === e.company_id)?.name ?? "",
       }));
     },
   });
@@ -902,7 +903,11 @@ function EmployeeRow({
   onVerify,
   onRevoke,
 }: {
-  emp: { id: string; profiles?: { full_name?: string; headline?: string; avatar_url?: string }; [key: string]: unknown };
+  emp: {
+    id: string;
+    profiles?: { full_name?: string; headline?: string; avatar_url?: string };
+    [key: string]: unknown;
+  };
   onVerify: () => void;
   onRevoke: () => void;
 }) {
