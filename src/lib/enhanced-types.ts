@@ -3,7 +3,7 @@
  * Includes institution verification, talent showcase, and advanced profiles
  */
 
-export type UserRole = "job_seeker" | "employer" | "institution" | "recruiter" | "admin";
+export type UserRole = "job_seeker" | "employer" | "institution" | "recruiter" | "recruitment_agency" | "admin";
 
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 
@@ -256,4 +256,191 @@ export interface UserStatistics {
   profile_completeness: number;
   portfolio_items_count: number;
   last_profile_update: string;
+}
+
+// ─── Recruitment Agency ──────────────────────────────────────────────────
+
+export interface RecruitmentAgency {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  website?: string;
+  logo_url?: string;
+  location?: string;
+  country?: string;
+  founded_year?: number;
+  specialization?: string[];
+  description?: string;
+  company_size?: "1-10" | "11-50" | "51-200" | "200+";
+  verified: boolean;
+  admin_id: string;
+  max_projects?: number;
+  max_staff?: number;
+  subscription_tier?: "free" | "basic" | "professional" | "enterprise";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecruitmentProject {
+  id: string;
+  agency_id: string;
+  client_id?: string; // Employer/Company
+  project_name: string;
+  description?: string;
+  industry?: string;
+  target_positions?: string[];
+  target_count?: number;
+  required_skills?: string[];
+  budget?: number;
+  timeline?: {
+    start_date: string;
+    end_date?: string;
+    urgency?: "low" | "medium" | "high" | "urgent";
+  };
+  status: "draft" | "active" | "onhold" | "completed" | "archived";
+  positions_filled?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecruitmentAgencyStaff {
+  id: string;
+  agency_id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: "recruiter" | "manager" | "lead" | "director";
+  specialization?: string[];
+  bio?: string;
+  avatar_url?: string;
+  assigned_projects?: string[];
+  candidates_placed?: number;
+  success_rate?: number;
+  is_active: boolean;
+  joined_at: string;
+  last_active?: string;
+}
+
+export interface AgencyProjectAssignment {
+  id: string;
+  project_id: string;
+  staff_id: string;
+  role: "lead" | "recruiter" | "reviewer";
+  assigned_at: string;
+  assignment_status: "active" | "completed" | "onhold";
+}
+
+export interface AgencyCandidate {
+  id: string;
+  agency_id: string;
+  project_id?: string;
+  candidate_id: string;
+  candidate_name?: string;
+  candidate_email?: string;
+  candidate_phone?: string;
+  submitted_by_staff_id: string;
+  status: "submitted" | "shortlisted" | "interviewed" | "offered" | "rejected" | "placed";
+  notes?: string;
+  rating?: number;
+  salary_expectation?: number;
+  placement_date?: string;
+  submitted_at: string;
+  updated_at: string;
+}
+
+export interface AgencyProjectMetrics {
+  project_id: string;
+  agency_id: string;
+  total_candidates_submitted: number;
+  candidates_shortlisted: number;
+  candidates_interviewed: number;
+  candidates_offered: number;
+  candidates_placed: number;
+  conversion_rate: number;
+  average_placement_time_days: number;
+  success_rate: number;
+  last_updated: string;
+}
+
+export interface AgencyInvoice {
+  id: string;
+  agency_id: string;
+  project_id?: string;
+  invoice_number: string;
+  client_id: string;
+  amount: number;
+  currency: string;
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+  issue_date: string;
+  due_date: string;
+  payment_date?: string;
+  description?: string;
+  line_items?: {
+    description: string;
+    quantity: number;
+    unit_price: number;
+  }[];
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AgencySettings {
+  agency_id: string;
+  branding_color?: string;
+  logo_url?: string;
+  terms_and_conditions?: string;
+  commission_rate?: number;
+  payment_terms?: string;
+  email_signature?: string;
+  notification_email?: string;
+  notification_preferences?: {
+    new_applications: boolean;
+    status_updates: boolean;
+    monthly_reports: boolean;
+  };
+  updated_at: string;
+}
+
+export interface AgencyReport {
+  id: string;
+  agency_id: string;
+  report_type: "monthly" | "quarterly" | "yearly" | "project";
+  period_start: string;
+  period_end: string;
+  total_placements: number;
+  total_revenue?: number;
+  total_projects: number;
+  active_projects: number;
+  team_size: number;
+  success_rate: number;
+  top_performing_staff?: string[];
+  generated_at: string;
+}
+
+export interface AgencyPermission {
+  id: string;
+  agency_id: string;
+  staff_id: string;
+  permission: string;
+  granted_at: string;
+}
+
+export interface AgencyClientRelationship {
+  id: string;
+  agency_id: string;
+  client_id: string;
+  client_name?: string;
+  relationship_status: "active" | "inactive" | "terminated";
+  projects_count: number;
+  total_placements: number;
+  total_revenue?: number;
+  contract_start_date?: string;
+  contract_end_date?: string;
+  primary_contact_id?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
 }
