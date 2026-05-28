@@ -40,6 +40,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { timeAgo } from "@/lib/kazi-data";
 import { AvatarUpload } from "@/components/avatar-upload";
+import { AdminJobImport } from "@/components/admin-job-import";
 
 export const Route = createFileRoute("/employer-dashboard")({
   component: EmployerDashboardPage,
@@ -118,6 +119,20 @@ const APP_STATUSES = [
 function EmployerDashboardPage() {
   const { user, loading, roles } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { data: ownedCompanies } = useQuery({
+    queryKey: ["my-companies-min", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("companies")
+        .select("id,name")
+        .eq("owner_id", user!.id)
+        .order("created_at", { ascending: false });
+      return (data ?? []) as { id: string; name: string }[];
+    },
+  });
 
   React.useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -140,11 +155,21 @@ function EmployerDashboardPage() {
               Manage your companies, jobs, and candidates
             </p>
           </div>
-          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shrink-0">
-            <Link to="/post-job">
-              <Plus className="h-4 w-4 mr-1.5" /> Post a job
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link to="/post-job">
+                <Plus className="h-4 w-4 mr-1.5" /> Post a job
+              </Link>
+            </Button>
+            <AdminJobImport
+              mode="employer"
+              companies={ownedCompanies ?? []}
+              onImported={() => {
+                queryClient.invalidateQueries({ queryKey: ["employer-jobs-full", user.id] });
+                queryClient.invalidateQueries({ queryKey: ["employer-stats", user.id] });
+              }}
+            />
+          </div>
         </div>
 
         <Tabs defaultValue="overview">

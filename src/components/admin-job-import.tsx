@@ -134,7 +134,23 @@ function extractFromText(text: string): Partial<ParsedJob> {
 
 const CONTRACT_FALLBACK = "permanent";
 
-export function AdminJobImport({ onImported }: { onImported?: () => void }) {
+type CompanyOption = { id: string; name: string };
+
+type AdminJobImportProps = {
+  onImported?: () => void;
+  /** "admin" can attach to any company (find/create by name).
+   *  "employer" must pick one of their own companies. */
+  mode?: "admin" | "employer";
+  /** Required when mode === "employer": the companies this user owns. */
+  companies?: CompanyOption[];
+};
+
+export function AdminJobImport({
+  onImported,
+  mode = "admin",
+  companies = [],
+}: AdminJobImportProps) {
+  const isEmployer = mode === "employer";
   const [open, setOpen] = React.useState(false);
   const [tab, setTab] = React.useState<"link" | "text" | "file">("text");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -144,6 +160,15 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
   const [saving, setSaving] = React.useState(false);
   const [form, setForm] = React.useState<ParsedJob>(EMPTY);
   const [reviewing, setReviewing] = React.useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = React.useState<string>(
+    companies[0]?.id ?? "",
+  );
+
+  React.useEffect(() => {
+    if (isEmployer && !selectedCompanyId && companies[0]?.id) {
+      setSelectedCompanyId(companies[0].id);
+    }
+  }, [companies, isEmployer, selectedCompanyId]);
 
   const set = (patch: Partial<ParsedJob>) => setForm((f) => ({ ...f, ...patch }));
 
@@ -248,41 +273,48 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("You must be signed in as admin.");
+        toast.error("You must be signed in.");
         setSaving(false);
         return;
       }
 
-      // Find or create the company by name (imported jobs need a company_id).
       let companyId: string | null = null;
-      const companyName = form.company.trim() || "External listing";
 
-      const { data: existing } = await supabase
-        .from("companies")
-        .select("id")
-        .ilike("name", companyName)
-        .limit(1)
-        .maybeSingle();
-
-      if (existing?.id) {
-        companyId = existing.id;
+      if (isEmployer) {
+        // Employer: must attach to a company they own (RLS enforces this too).
+        if (!selectedCompanyId) {
+          toast.error("Select which company this job is for.");
+          setSaving(false);
+          return;
+        }
+        companyId = selectedCompanyId;
       } else {
-        const { data: created, error: cErr } = await supabase
+        // Admin: find or create the company by name.
+        const companyName = form.company.trim() || "External listing";
+        const { data: existing } = await supabase
           .from("companies")
-          .insert({
-            owner_id: user.id,
-            name: companyName,
-          })
           .select("id")
-          .single();
-        if (cErr) throw cErr;
-        companyId = created.id;
+          .ilike("name", companyName)
+          .limit(1)
+          .maybeSingle();
+
+        if (existing?.id) {
+          companyId = existing.id;
+        } else {
+          const { data: created, error: cErr } = await supabase
+            .from("companies")
+            .insert({ owner_id: user.id, name: companyName })
+            .select("id")
+            .single();
+          if (cErr) throw cErr;
+          companyId = created.id;
+        }
       }
 
       const { error: jErr } = await supabase.from("jobs").insert({
         company_id: companyId,
         posted_by: user.id,
-        created_by_role: "admin",
+        created_by_role: isEmployer ? "employer" : "admin",
         title: form.title.trim(),
         description: form.description.trim(),
         location: form.location.trim() || "Tanzania",
@@ -483,8 +515,35 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
               </div>
 
               <div className="space-y-2">
-                <Label>Company</Label>
-                <Input value={form.company} onChange={(e) => set({ company: e.target.value })} />
+                <Label>Company{isEmployer ? " *" : ""}</Label>
+                {isEmployer ? (
+                  companies.length ? (
+                    <Select
+                      value={selectedCompanyId}
+                      onValueChange={setSelectedCompanyId}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Create a company first to post jobs.
+                    </p>
+                  )
+                ) : (
+                  <Input
+                    value={form.company}
+                    onChange={(e) => set({ company: e.target.value })}
+                  />
+                )}
               </div>
               <div className="space-y-2">
                 <Label>Location</Label>
