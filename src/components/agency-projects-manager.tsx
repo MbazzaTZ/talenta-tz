@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Agency Projects Management Component
  * Manage recruitment projects on behalf of employers

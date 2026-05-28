@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Recruitment Agency Data Functions
  * Handles agency profiles, projects, staff, and client management

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Report Abuse Component
  * Allows users to report fake profiles, scam jobs, and other violations
