@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { AdminJobImport } from "@/components/admin-job-import";
 import { useAuth } from "@/lib/auth";
 import { timeAgo } from "@/lib/kazi-data";
 
@@ -146,6 +147,11 @@ function AdminPage() {
                 >
                   <Link to="/post-job">Post job</Link>
                 </Button>
+                <AdminJobImport
+                  onImported={() =>
+                    queryClient.invalidateQueries({ queryKey: ["admin-dashboard"] })
+                  }
+                />
                 <Button asChild variant="outline" size="lg">
                   <Link to="/dashboard">View dashboard</Link>
                 </Button>
