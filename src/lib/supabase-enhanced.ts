@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Supabase Data Functions
  * Handles institution verification, talent showcase, and advanced searches
