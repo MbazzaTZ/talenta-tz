@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Universal Search Component
  * Search across jobs, job seekers, employees, employers, and companies

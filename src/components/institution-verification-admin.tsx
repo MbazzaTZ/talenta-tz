@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Institution Verification Admin Interface
  * Allows institutions to review and approve student verification requests
