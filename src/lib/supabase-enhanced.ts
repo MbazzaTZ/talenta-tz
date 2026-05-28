@@ -360,11 +360,13 @@ export async function searchTalent(filters: TalentSearchFilter, limit = 50, offs
 // ─── Universal Search ─────────────────────────────────────────────────────
 
 export async function universalSearch(query: string, limit = 20): Promise<UniversalSearchResult[]> {
+  const term = `%${query}%`;
+
   // Search jobs
   const jobsPromise = supabase
     .from("jobs")
     .select("id, title, description, location, company_name")
-    .textSearch("title", query, { type: "phrase" })
+    .like("title", term)
     .limit(limit / 3)
     .then(
       (res) =>
@@ -384,7 +386,7 @@ export async function universalSearch(query: string, limit = 20): Promise<Univer
   const usersPromise = supabase
     .from("profiles")
     .select("id, full_name, headline, location, avatar_url, verification_status")
-    .textSearch("full_name", query, { type: "phrase" })
+    .like("full_name", term)
     .limit(limit / 3)
     .then(
       (res) =>
@@ -405,7 +407,7 @@ export async function universalSearch(query: string, limit = 20): Promise<Univer
   const companiesPromise = supabase
     .from("companies")
     .select("id, name, location, logo_url, verified")
-    .textSearch("name", query, { type: "phrase" })
+    .like("name", term)
     .limit(limit / 3)
     .then(
       (res) =>

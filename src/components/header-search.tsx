@@ -56,17 +56,17 @@ export function HeaderSearch() {
           supabase
             .from("profiles")
             .select("id, full_name, headline")
-            .or(`full_name.ilike.${term},headline.ilike.${term}`)
+            .or(`full_name.like.${term},headline.like.${term}`)
             .limit(5),
           supabase
             .from("companies")
             .select("id, name, industry, location")
-            .or(`name.ilike.${term},industry.ilike.${term},location.ilike.${term}`)
+            .or(`name.like.${term},industry.like.${term},location.like.${term}`)
             .limit(8),
           supabase
             .from("jobs")
             .select("id, title, location")
-            .ilike("title", term)
+            .like("title", term)
             .limit(5),
         ]);
 

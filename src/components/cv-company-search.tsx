@@ -52,7 +52,7 @@ export function CVCompanySearch({
       const { data } = await supabase
         .from("companies")
         .select("id,name,location,verified,owner_id")
-        .ilike("name", `%${value}%`)
+        .like("name", `%${value}%`)
         .limit(6);
       return (data ?? []) as Company[];
     },
@@ -144,6 +144,8 @@ export function CVCompanySearch({
               type="button"
               onClick={onClear}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive"
+              title="Clear selected company"
+              aria-label="Clear selected company"
             >
               <X className="h-3.5 w-3.5" />
             </button>

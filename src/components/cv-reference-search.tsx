@@ -52,7 +52,7 @@ export function CVReferenceSearch({
       const { data } = await supabase
         .from("profiles")
         .select("id,full_name,headline,avatar_url")
-        .ilike("full_name", `%${value}%`)
+        .like("full_name", `%${value}%`)
         .neq("id", user?.id ?? "")
         .limit(6);
       return (data ?? []) as UserResult[];
@@ -152,6 +152,8 @@ export function CVReferenceSearch({
               type="button"
               onClick={onClear}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive"
+              title="Clear selected referee"
+              aria-label="Clear selected referee"
             >
               <X className="h-3.5 w-3.5" />
             </button>

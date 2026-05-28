@@ -152,7 +152,7 @@ export function EmployeeProfile() {
       const { data } = await supabase
         .from("companies")
         .select("id,name,location,industry,verified")
-        .ilike("name", `%${companySearch}%`)
+        .like("name", `%${companySearch}%`)
         .eq("suspended", false)
         .limit(8);
       return (data ?? []) as Company[];
@@ -594,6 +594,8 @@ export function EmployeeProfile() {
                     type="button"
                     onClick={() => setRating(n)}
                     className="transition-transform hover:scale-110"
+                    title={`Set rating ${n} out of 5`}
+                    aria-label={`Set rating ${n} out of 5`}
                   >
                     <Star
                       className={`h-6 w-6 ${n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`}
