@@ -24,6 +24,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
 import { useLang, useT } from "@/lib/i18n";
+import { HeaderSearch } from "@/components/header-search";
 
 function Logo() {
   return (
