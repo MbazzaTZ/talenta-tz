@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Briefcase, Check } from "lucide-react";

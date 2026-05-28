@@ -1,187 +1,147 @@
 import * as React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Search as SearchIcon,
-  Users,
-  Building2,
-  School,
-  Briefcase,
-  FolderKanban,
-  Loader2,
-  BadgeCheck,
-} from "lucide-react";
+import { Search, Loader2, User2, Building2, GraduationCap, Briefcase, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
 
-type ResultType = "people" | "company" | "university" | "agency" | "project";
-
-interface SearchResult {
-  type: ResultType;
+type ResultType = "person" | "company" | "university" | "agency" | "project";
+type Result = {
   id: string;
+  type: ResultType;
   title: string;
-  subtitle?: string | null;
-  avatar?: string | null;
-  verified?: boolean;
-}
+  subtitle?: string;
+};
 
-const TYPE_META: Record<ResultType, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
-  people: { label: "People", icon: Users },
-  company: { label: "Company", icon: Building2 },
-  university: { label: "University", icon: School },
-  agency: { label: "Agency", icon: Briefcase },
-  project: { label: "Project", icon: FolderKanban },
+const iconFor: Record<ResultType, React.ComponentType<{ className?: string }>> = {
+  person: User2,
+  company: Building2,
+  university: GraduationCap,
+  agency: Users,
+  project: Briefcase,
 };
 
 function classifyCompany(industry?: string | null): ResultType {
-  const i = (industry || "").toLowerCase();
-  if (i.includes("educ") || i.includes("univers") || i.includes("school") || i.includes("college"))
-    return "university";
-  if (i.includes("agency") || i.includes("recruit") || i.includes("staffing") || i.includes("ngo"))
-    return "agency";
+  const s = (industry || "").toLowerCase();
+  if (/(university|college|school|institute|education)/.test(s)) return "university";
+  if (/(agency|recruit|staffing|consult)/.test(s)) return "agency";
   return "company";
 }
 
-async function searchAll(q: string): Promise<SearchResult[]> {
-  const term = `%${q}%`;
-  const [peopleRes, companyRes, projectRes] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, full_name, headline, avatar_url, verification_status")
-      .or(`full_name.ilike.${term},headline.ilike.${term}`)
-      .limit(5),
-    supabase
-      .from("companies")
-      .select("id, name, industry, location, logo_url, verified")
-      .ilike("name", term)
-      .limit(8),
-    supabase
-      .from("jobs")
-      .select("id, title, location, companies(name)")
-      .ilike("title", term)
-      .eq("status", "published")
-      .limit(5),
-  ]);
-
-  const people: SearchResult[] =
-    (peopleRes.data || []).map((p: any) => ({
-      type: "people",
-      id: p.id,
-      title: p.full_name || "User",
-      subtitle: p.headline,
-      avatar: p.avatar_url,
-      verified: p.verification_status === "verified",
-    }));
-
-  const companies: SearchResult[] = (companyRes.data || []).map((c: any) => ({
-    type: classifyCompany(c.industry),
-    id: c.id,
-    title: c.name,
-    subtitle: c.location || c.industry,
-    avatar: c.logo_url,
-    verified: c.verified,
-  }));
-
-  const projects: SearchResult[] = (projectRes.data || []).map((j: any) => ({
-    type: "project",
-    id: j.id,
-    title: j.title,
-    subtitle: j.companies?.name || j.location,
-  }));
-
-  return [...people, ...companies, ...projects];
-}
-
-export function HeaderSearch({ className }: { className?: string }) {
+export function HeaderSearch() {
   const navigate = useNavigate();
-  const containerRef = React.useRef<HTMLDivElement>(null);
   const [q, setQ] = React.useState("");
-  const [debounced, setDebounced] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [results, setResults] = React.useState<Result[]>([]);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const t = setTimeout(() => setDebounced(q.trim()), 250);
-    return () => clearTimeout(t);
-  }, [q]);
-
-  React.useEffect(() => {
-    function onDocClick(e: MouseEvent) {
+    const onClick = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const { data, isFetching } = useQuery({
-    queryKey: ["header-search", debounced],
-    queryFn: () => searchAll(debounced),
-    enabled: debounced.length >= 2,
-    staleTime: 30_000,
-  });
+  React.useEffect(() => {
+    if (q.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+    const handle = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const term = `%${q.trim()}%`;
+        const [people, companies, jobs] = await Promise.all([
+          supabase
+            .from("profiles")
+            .select("id, full_name, headline")
+            .or(`full_name.ilike.${term},headline.ilike.${term}`)
+            .limit(5),
+          supabase
+            .from("companies")
+            .select("id, name, industry, location")
+            .or(`name.ilike.${term},industry.ilike.${term},location.ilike.${term}`)
+            .limit(8),
+          supabase
+            .from("jobs")
+            .select("id, title, location")
+            .ilike("title", term)
+            .limit(5),
+        ]);
 
-  function go(r: SearchResult) {
+        const out: Result[] = [];
+        (people.data || []).forEach((p: any) =>
+          out.push({ id: p.id, type: "person", title: p.full_name || "Unnamed", subtitle: p.headline || undefined }),
+        );
+        (companies.data || []).forEach((c: any) =>
+          out.push({
+            id: c.id,
+            type: classifyCompany(c.industry),
+            title: c.name,
+            subtitle: [c.industry, c.location].filter(Boolean).join(" · ") || undefined,
+          }),
+        );
+        (jobs.data || []).forEach((j: any) =>
+          out.push({ id: j.id, type: "project", title: j.title, subtitle: j.location || undefined }),
+        );
+        setResults(out);
+      } finally {
+        setLoading(false);
+      }
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [q]);
+
+  const go = (r: Result) => {
     setOpen(false);
     setQ("");
-    if (r.type === "people") navigate({ to: "/dashboard" }); // profile route may not exist
+    if (r.type === "person") navigate({ to: "/dashboard" });
     else if (r.type === "project") navigate({ to: "/job/$id", params: { id: r.id } });
     else navigate({ to: "/companies/$id", params: { id: r.id } });
-  }
+  };
 
   return (
-    <div ref={containerRef} className={cn("relative w-full max-w-md", className)}>
+    <div ref={containerRef} className="relative w-full">
       <div className="relative">
-        <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={q}
-          onFocus={() => setOpen(true)}
           onChange={(e) => {
             setQ(e.target.value);
             setOpen(true);
           }}
-          placeholder="Search people, companies, universities…"
-          className="h-8 pl-8 pr-8 text-sm bg-muted/50 border-border/60 focus-visible:bg-background"
+          onFocus={() => setOpen(true)}
+          placeholder="Search people, companies, universities, agencies, projects..."
+          className="pl-9 h-9"
         />
-        {isFetching && (
-          <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground animate-spin" />
+        {loading && (
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
         )}
       </div>
-
-      {open && debounced.length >= 2 && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 rounded-xl border border-border bg-popover shadow-lg overflow-hidden max-h-[420px] overflow-y-auto">
-          {!data || data.length === 0 ? (
-            <div className="p-4 text-sm text-muted-foreground text-center">
-              {isFetching ? "Searching…" : `No results for "${debounced}"`}
-            </div>
+      {open && q.trim().length >= 2 && (
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border bg-popover shadow-lg max-h-96 overflow-y-auto z-50">
+          {results.length === 0 && !loading ? (
+            <div className="p-4 text-sm text-muted-foreground text-center">No results</div>
           ) : (
-            <ul className="py-1">
-              {data.map((r) => {
-                const meta = TYPE_META[r.type];
-                const Icon = meta.icon;
+            <ul className="divide-y">
+              {results.map((r) => {
+                const Icon = iconFor[r.type];
                 return (
                   <li key={`${r.type}-${r.id}`}>
                     <button
                       onClick={() => go(r)}
-                      className="w-full text-left px-3 py-2 flex items-center gap-3 hover:bg-muted transition-colors"
+                      className="w-full flex items-start gap-3 p-3 hover:bg-muted text-left"
                     >
-                      <div className="h-8 w-8 rounded-md bg-muted grid place-items-center overflow-hidden shrink-0">
-                        {r.avatar ? (
-                          <img src={r.avatar} alt="" className="h-full w-full object-cover" />
-                        ) : (
-                          <Icon className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium truncate">{r.title}</span>
-                          {r.verified && <BadgeCheck className="h-3.5 w-3.5 text-accent shrink-0" />}
-                        </div>
+                      <Icon className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{r.title}</div>
                         {r.subtitle && (
                           <div className="text-xs text-muted-foreground truncate">{r.subtitle}</div>
                         )}
                       </div>
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                        {meta.label}
+                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        {r.type}
                       </span>
                     </button>
                   </li>

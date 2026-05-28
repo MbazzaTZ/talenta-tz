@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * ProfilePosts — post feed for a user's profile overview.
  * Supports creating, liking, and deleting posts.

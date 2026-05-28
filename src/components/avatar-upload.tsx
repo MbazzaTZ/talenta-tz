@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from "react";
 import { toast } from "sonner";
 import { Camera, Loader2 } from "lucide-react";

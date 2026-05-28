@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

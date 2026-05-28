@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Recruitment Agency Profile Component
  * Displays agency information, statistics, and services

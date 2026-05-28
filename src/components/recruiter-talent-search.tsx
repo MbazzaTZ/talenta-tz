@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Recruiter Talent Search Component
  * Advanced filtering for finding verified talent

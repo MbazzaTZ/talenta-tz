@@ -101,12 +101,12 @@ export const SiteHeader = React.memo(function SiteHeader() {
         </div>
 
         <div className="hidden md:flex flex-1 max-w-md mx-4">
-          <HeaderSearch className="w-full" />
+          <HeaderSearch />
         </div>
 
         <div className="flex items-center gap-1.5">
-          <LangToggle />
 
+          <LangToggle />
 
           {user ? (
             <>

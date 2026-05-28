@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Verification Badge Component
  * Displays user verification status and badges

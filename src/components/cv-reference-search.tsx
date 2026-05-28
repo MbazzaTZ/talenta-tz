@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * CVReferenceSearch — inline user search for reference entries.
  * When a Talentra user is found and selected, auto-creates a

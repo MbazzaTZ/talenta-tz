@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * RequestReference — lets a job seeker browse verified employees at a company
  * and send them a reference request.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * EmployeeProfile — lets any logged-in user register as an employee of a company,
  * and lets employees manage incoming reference requests from job seekers.

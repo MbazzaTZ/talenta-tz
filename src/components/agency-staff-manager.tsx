@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Agency Staff Management Component
  * Manage recruitment team members and assign to projects

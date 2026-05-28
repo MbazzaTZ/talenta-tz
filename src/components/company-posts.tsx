@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * CompanyPosts — post feed for a company profile page.
  * Company owner can post updates, products, services, announcements,
