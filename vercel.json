@@ -1,0 +1,12 @@
+{
+  "projectName": "talenta-tz",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "env": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_ANON_KEY"
+  ],
+  "devCommand": "npm run dev",
+  "installCommand": "npm install"
+}
