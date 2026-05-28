@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";

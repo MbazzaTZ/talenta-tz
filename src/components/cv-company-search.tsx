@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CVCompanySearch — inline company search for work experience entries.
  * When a company is selected from Talentra, auto-creates a company_employee

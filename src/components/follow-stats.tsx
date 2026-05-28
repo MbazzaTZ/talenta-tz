@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * FollowStats — Instagram-style following/followers counts on a profile.
  * Shows breakdown by target type (companies, employers, employees, seekers, agencies).

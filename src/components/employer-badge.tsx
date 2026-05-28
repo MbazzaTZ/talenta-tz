@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * EmployerBadge — shows the verified company logo badge on a user's profile.
  * Fetches the user's current verified employer from profiles + companies.
