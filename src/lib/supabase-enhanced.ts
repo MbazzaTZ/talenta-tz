@@ -377,10 +377,9 @@ export async function universalSearch(query: string, limit = 20): Promise<Univer
           relevance_score: 1,
         })) || []
     )
-    .catch(() => [])
-};
+    .catch(() => []);
 
-// Continue search for users
+  // Continue search for users
   const usersPromise = supabase
     .from("profiles")
     .select("id, full_name, headline, location, avatar_url, verification_status")
