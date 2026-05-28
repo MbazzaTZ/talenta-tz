@@ -1,6 +1,6 @@
 import * as React from "react";
 import { toast } from "sonner";
-import { Loader2, Link2, FileText, ClipboardPaste, Sparkles } from "lucide-react";
+import { Loader2, Link2, FileText, ClipboardPaste, Sparkles, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { extractTextFromFile } from "@/lib/file-extract";
 import {
   REGIONS,
   INDUSTRIES,
@@ -135,7 +136,8 @@ const CONTRACT_FALLBACK = "permanent";
 
 export function AdminJobImport({ onImported }: { onImported?: () => void }) {
   const [open, setOpen] = React.useState(false);
-  const [tab, setTab] = React.useState<"link" | "text">("text");
+  const [tab, setTab] = React.useState<"link" | "text" | "file">("text");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [sourceUrl, setSourceUrl] = React.useState("");
   const [rawText, setRawText] = React.useState("");
   const [parsing, setParsing] = React.useState(false);
@@ -187,12 +189,43 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
     }
   };
 
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("File too large (max 15 MB).");
+      return;
+    }
+    setParsing(true);
+    try {
+      const { text, warning } = await extractTextFromFile(file);
+      if (text.trim().length < 20) {
+        toast.error(
+          warning ?? "Couldn't read enough text from that file. Try pasting the text.",
+        );
+        setTab("text");
+        return;
+      }
+      if (warning) toast.warning(warning);
+      const extracted = extractFromText(text);
+      setForm({ ...EMPTY, ...extracted, apply_url: sourceUrl.trim() });
+      setReviewing(true);
+      toast.success("Extracted from file — please review and correct.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to read file.";
+      toast.error(msg);
+    } finally {
+      setParsing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const resetAll = () => {
     setForm(EMPTY);
     setRawText("");
     setSourceUrl("");
     setReviewing(false);
     setTab("text");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSave = async () => {
@@ -322,6 +355,15 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
                 <Link2 className="mr-2 h-4 w-4" />
                 From link
               </Button>
+              <Button
+                type="button"
+                variant={tab === "file" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTab("file")}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Upload file
+              </Button>
             </div>
 
             {tab === "link" ? (
@@ -349,6 +391,47 @@ export function AdminJobImport({ onImported }: { onImported?: () => void }) {
                     "Fetch & extract"
                   )}
                 </Button>
+              </div>
+            ) : tab === "file" ? (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="src3">Source link (optional)</Label>
+                  <Input
+                    id="src3"
+                    placeholder="https://… (where this job came from)"
+                    value={sourceUrl}
+                    onChange={(e) => setSourceUrl(e.target.value)}
+                  />
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                  className="hidden"
+                  onChange={(e) => handleFile(e.target.files?.[0])}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={parsing}
+                  className="flex w-full flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 text-center transition hover:border-accent hover:bg-muted/50 disabled:opacity-60"
+                >
+                  {parsing ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  ) : (
+                    <Upload className="h-8 w-8 text-muted-foreground" />
+                  )}
+                  <span className="font-semibold">
+                    {parsing ? "Reading file…" : "Click to upload a job file"}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    PDF, Word (.docx) or .txt · max 15 MB
+                  </span>
+                </button>
+                <p className="text-xs text-muted-foreground">
+                  Text is read in your browser. Scanned/image PDFs may have no readable text —
+                  paste the text instead if extraction comes back empty.
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
