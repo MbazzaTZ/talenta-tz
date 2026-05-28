@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { extractTextFromFile } from "@/lib/file-extract";
+import { aiExtractJob } from "@/lib/ai";
 import {
   REGIONS,
   INDUSTRIES,
@@ -132,6 +133,36 @@ function extractFromText(text: string): Partial<ParsedJob> {
   return out;
 }
 
+/**
+ * Smart extraction: try the DeepSeek AI first (via secure edge function).
+ * If AI is unavailable or returns nothing useful, fall back to the local
+ * heuristic so the feature always works.
+ */
+async function smartExtract(text: string): Promise<Partial<ParsedJob>> {
+  try {
+    const ai = await aiExtractJob(text);
+    // Consider AI successful only if it found a title or a decent description.
+    if (ai && (ai.title || (ai.description && ai.description.length > 40))) {
+      return {
+        title: ai.title ?? "",
+        company: ai.company ?? "",
+        location: ai.location ?? "",
+        region: ai.region ?? "",
+        industry: ai.industry ?? "",
+        position_level: ai.position_level || "mid",
+        contract_type: ai.contract_type || "permanent",
+        qualification: ai.qualification ?? "",
+        salary_min: ai.salary_min != null ? String(ai.salary_min) : "",
+        salary_max: ai.salary_max != null ? String(ai.salary_max) : "",
+        description: ai.description ?? text.trim().slice(0, 8000),
+      };
+    }
+  } catch {
+    // ignore — fall through to heuristic
+  }
+  return extractFromText(text);
+}
+
 const CONTRACT_FALLBACK = "permanent";
 
 type CompanyOption = { id: string; name: string };
@@ -172,17 +203,17 @@ export function AdminJobImport({
 
   const set = (patch: Partial<ParsedJob>) => setForm((f) => ({ ...f, ...patch }));
 
-  const handleParseText = () => {
+  const handleParseText = async () => {
     if (rawText.trim().length < 20) {
       toast.error("Paste a bit more text so we can extract the job details.");
       return;
     }
     setParsing(true);
-    const extracted = extractFromText(rawText);
+    const extracted = await smartExtract(rawText);
     setForm({ ...EMPTY, ...extracted, apply_url: sourceUrl.trim() });
     setReviewing(true);
     setParsing(false);
-    toast.success("Extracted what we could — please review and correct.");
+    toast.success("Extracted the details — please review and correct.");
   };
 
   const handleFetchLink = async () => {
@@ -200,7 +231,7 @@ export function AdminJobImport({
       const res = await fetch(proxy);
       if (!res.ok) throw new Error("fetch failed");
       const pageText = await res.text();
-      const extracted = extractFromText(pageText);
+      const extracted = await smartExtract(pageText);
       setForm({ ...EMPTY, ...extracted, apply_url: url });
       setReviewing(true);
       toast.success("Fetched the page — please review and correct the fields.");
@@ -231,7 +262,7 @@ export function AdminJobImport({
         return;
       }
       if (warning) toast.warning(warning);
-      const extracted = extractFromText(text);
+      const extracted = await smartExtract(text);
       setForm({ ...EMPTY, ...extracted, apply_url: sourceUrl.trim() });
       setReviewing(true);
       toast.success("Extracted from file — please review and correct.");
