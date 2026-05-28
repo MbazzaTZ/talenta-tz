@@ -163,7 +163,7 @@ export function UniversalSearch({
                         onClick={() => handleResultClick(result)}
                         className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b last:border-0 transition flex items-start gap-3"
                       >
-                        <Icon className="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" />
+                        <Icon className="h-5 w-5 text-gray-400 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium truncate">
@@ -181,7 +181,7 @@ export function UniversalSearch({
                             </p>
                           )}
                         </div>
-                        <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <ArrowRight className="h-4 w-4 text-gray-400 shrink-0" />
                       </button>
                     );
                   })}
@@ -277,7 +277,7 @@ export function UniversalSearch({
                 onClick={() => handleResultClick(result)}
               >
                 <CardContent className="pt-6 flex items-start gap-4">
-                  <Icon className="h-12 w-12 text-gray-300 flex-shrink-0" />
+                  <Icon className="h-12 w-12 text-gray-300 shrink-0" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h2 className="text-lg font-semibold">
@@ -304,7 +304,7 @@ export function UniversalSearch({
                       </div>
                     )}
                   </div>
-                  <ArrowRight className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
+                  <ArrowRight className="h-5 w-5 text-gray-400 shrink-0 mt-1" />
                 </CardContent>
               </Card>
             );

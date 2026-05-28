@@ -1,7 +1,7 @@
-# ============================================================================
-# TALENTA-TZ - AUTOMATIC GIT SYNC SCRIPT (POWERSHELL FOR WINDOWS)
-# Pulls latest changes from GitHub and pushes local changes automatically
-# ============================================================================
+<# 
+TALENTA-TZ - AUTOMATIC GIT SYNC SCRIPT (POWERSHELL FOR WINDOWS)
+Pulls latest changes from GitHub and pushes local changes automatically
+#>
 
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Green
@@ -11,22 +11,15 @@ Write-Host "║                                                                 
 Write-Host "╚══════════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 
-# Get current directory
 $ProjectDir = Get-Location
 Write-Host "📁 Working Directory: $ProjectDir" -ForegroundColor Cyan
 Write-Host ""
 
-# ============================================================================
-# STEP 1: CHECK GIT STATUS
-# ============================================================================
 Write-Host "Step 1: Checking Git Status..." -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 git status
 Write-Host ""
 
-# ============================================================================
-# STEP 2: PULL LATEST CHANGES FROM GITHUB
-# ============================================================================
 Write-Host "Step 2: Pulling Latest Changes from GitHub..." -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -38,9 +31,6 @@ try {
 }
 Write-Host ""
 
-# ============================================================================
-# STEP 3: CHECK FOR LOCAL CHANGES
-# ============================================================================
 Write-Host "Step 3: Checking for Local Changes..." -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -68,26 +58,19 @@ if ($null -eq $ChangedFiles -or $ChangedFiles.Length -eq 0) {
 }
 Write-Host ""
 
-# ============================================================================
-# STEP 4: PUSH LOCAL CHANGES TO GITHUB
-# ============================================================================
 Write-Host "Step 4: Pushing Local Changes to GitHub..." -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if ($ChangesExist) {
-    # Add all changes
     git add .
     
-    # Get current timestamp and hostname
     $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $ComputerName = $env:COMPUTERNAME
     
-    # Commit changes
     try {
         git commit -m "sync: auto-sync from $ComputerName - $Timestamp" 2>&1 | Out-Null
         Write-Host "✅ Committed changes locally" -ForegroundColor Green
         
-        # Push to GitHub
         try {
             git push origin main 2>&1 | Out-Null
             Write-Host "✅ Successfully pushed changes to GitHub" -ForegroundColor Green
@@ -103,17 +86,11 @@ if ($ChangesExist) {
 }
 Write-Host ""
 
-# ============================================================================
-# STEP 5: SHOW SYNC STATUS
-# ============================================================================
 Write-Host "Step 5: Final Git Status" -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 git log --oneline -3
 Write-Host ""
 
-# ============================================================================
-# DONE
-# ============================================================================
 Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Green
 Write-Host "║                                                                              ║" -ForegroundColor Green
 Write-Host "║                   ✅ GIT SYNC COMPLETE! ✅                                   ║" -ForegroundColor Green
