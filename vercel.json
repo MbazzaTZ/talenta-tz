@@ -1,5 +1,4 @@
 {
-  "projectName": "talenta-tz",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
