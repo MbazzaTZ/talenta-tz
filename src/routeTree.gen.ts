@@ -23,6 +23,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JobIdRouteImport } from './routes/job.$id'
 import { Route as CompaniesIdRouteImport } from './routes/companies.$id'
+import { Route as AgencyAgencyIdRouteImport } from './routes/agency.$agencyId'
 
 const PostJobRoute = PostJobRouteImport.update({
   id: '/post-job',
@@ -94,6 +95,11 @@ const CompaniesIdRoute = CompaniesIdRouteImport.update({
   path: '/companies/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgencyAgencyIdRoute = AgencyAgencyIdRouteImport.update({
+  id: '/agency/$agencyId',
+  path: '/agency/$agencyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/job/$id': typeof JobIdRoute
 }
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/job/$id': typeof JobIdRoute
 }
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/job/$id': typeof JobIdRoute
 }
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/job/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/job/$id'
   id:
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/job/$id'
   fileRoutesById: FileRoutesById
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   JobSeekersRoute: typeof JobSeekersRoute
   JobsRoute: typeof JobsRoute
   PostJobRoute: typeof PostJobRoute
+  AgencyAgencyIdRoute: typeof AgencyAgencyIdRoute
   CompaniesIdRoute: typeof CompaniesIdRoute
   JobIdRoute: typeof JobIdRoute
 }
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompaniesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agency/$agencyId': {
+      id: '/agency/$agencyId'
+      path: '/agency/$agencyId'
+      fullPath: '/agency/$agencyId'
+      preLoaderRoute: typeof AgencyAgencyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -328,6 +348,7 @@ const rootRouteChildren: RootRouteChildren = {
   JobSeekersRoute: JobSeekersRoute,
   JobsRoute: JobsRoute,
   PostJobRoute: PostJobRoute,
+  AgencyAgencyIdRoute: AgencyAgencyIdRoute,
   CompaniesIdRoute: CompaniesIdRoute,
   JobIdRoute: JobIdRoute,
 }
