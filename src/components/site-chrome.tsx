@@ -100,8 +100,13 @@ export const SiteHeader = React.memo(function SiteHeader() {
           </nav>
         </div>
 
+        <div className="hidden md:flex flex-1 max-w-md mx-4">
+          <HeaderSearch className="w-full" />
+        </div>
+
         <div className="flex items-center gap-1.5">
           <LangToggle />
+
 
           {user ? (
             <>
