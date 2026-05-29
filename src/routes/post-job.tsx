@@ -1493,7 +1493,7 @@ function PostJobPage() {
     localStorage.removeItem(DRAFT_KEY);
     queryClient.invalidateQueries({ queryKey: ["my-companies"] });
     toast.success("Job published. Talent will discover your opening soon.");
-    navigate({ to: "/jobs_/$id", params: { id: jobResult.id } });
+    navigate({ to: "/jobs/$id", params: { id: jobResult.id } });
   };
 
   const hasPremium = companies?.some((company) => company?.premium) ?? false;

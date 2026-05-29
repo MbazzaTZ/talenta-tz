@@ -59,7 +59,7 @@ export const JobCard = React.memo(function JobCard({ job }: { job: JobCardData }
   };
 
   return (
-    <Link to="/jobs_/$id" params={{ id: job.id }} className="group block">
+    <Link to="/jobs/$id" params={{ id: job.id }} className="group block">
       <Card className="p-4 hover:shadow-md hover:border-accent/40 transition-all duration-150">
         <div className="flex gap-3">
           <div className="shrink-0">
