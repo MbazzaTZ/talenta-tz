@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { Search, X, SlidersHorizontal, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,45 @@ type JobsSearch = {
   salary?: string;
 };
 
+async function fetchJobs(search: JobsSearch, page: number): Promise<JobCardData[]> {
+  let query = supabase
+    .from("jobs")
+    .select(
+      "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
+    )
+    .eq("status", "published")
+    .order("featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+
+  if (search.q) {
+    query = query.or(
+      `title.ilike.%${search.q}%,location.ilike.%${search.q}%,industry.ilike.%${search.q}%`,
+    );
+  }
+  if (search.region) query = query.eq("region", search.region);
+  if (search.industry) query = query.eq("industry", search.industry);
+  if (search.level) query = query.eq("position_level", search.level as never);
+  if (search.contract) query = query.eq("contract_type", search.contract as never);
+  if (search.qualification) query = query.eq("qualification", search.qualification as never);
+  if (search.salary) {
+    const band = SALARY_BANDS.find((b) => b.value === search.salary);
+    if (band?.min) query = query.gte("salary_min", band.min);
+    if (band?.max) query = query.lte("salary_max", band.max);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as unknown as JobCardData[];
+}
+
+const jobsQueryOptions = (search: JobsSearch, page: number) =>
+  queryOptions({
+    queryKey: ["jobs", search, page],
+    queryFn: () => fetchJobs(search, page),
+    staleTime: 60_000,
+  });
+
 export const Route = createFileRoute("/jobs")({
   validateSearch: (s: Record<string, unknown>): JobsSearch => ({
     q: typeof s.q === "string" ? s.q : undefined,
@@ -48,8 +87,12 @@ export const Route = createFileRoute("/jobs")({
     qualification: typeof s.qualification === "string" ? s.qualification : undefined,
     salary: typeof s.salary === "string" ? s.salary : undefined,
   }),
+  loaderDeps: ({ search }) => ({ search }),
+  loader: ({ context, deps }) =>
+    context.queryClient.ensureQueryData(jobsQueryOptions(deps.search, 1)),
   component: JobsPage,
 });
+
 
 function JobsPage() {
   const search = Route.useSearch();
