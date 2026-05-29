@@ -51,6 +51,55 @@ export async function aiAnalyzeCv(cv: string): Promise<string> {
   return invoke({ task: "cv-analyze", cv });
 }
 
+/**
+ * AI-rank applicants by fit for a job.
+ * Returns JSON array of {email, name, score (0-100), reasoning}.
+ */
+export async function aiShortlistCandidates(
+  jobTitle: string,
+  jobDescription: string,
+  applicantsJson: string,
+): Promise<
+  { email: string; name: string; score: number; reasoning: string }[]
+> {
+  const content = await invoke({
+    task: "shortlist",
+    jobTitle,
+    jobDescription,
+    applicantsJson,
+  });
+  try {
+    const clean = content.replace(/```json|```/g, "").trim();
+    return JSON.parse(clean);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Suggest search terms and job filters for a job seeker's profile.
+ * Returns {keywords, jobTitles, industries, reasoning}.
+ */
+export async function aiFindMatchingJobs(profile: string): Promise<{
+  keywords: string[];
+  jobTitles: string[];
+  industries: string[];
+  reasoning: string;
+}> {
+  const content = await invoke({ task: "find-jobs", profile });
+  try {
+    const clean = content.replace(/```json|```/g, "").trim();
+    return JSON.parse(clean);
+  } catch {
+    return {
+      keywords: [],
+      jobTitles: [],
+      industries: [],
+      reasoning: "Could not analyze profile.",
+    };
+  }
+}
+
 /** General chat assistant. messages = [{role, content}, ...] */
 export async function aiChat(
   messages: { role: "user" | "assistant"; content: string }[],

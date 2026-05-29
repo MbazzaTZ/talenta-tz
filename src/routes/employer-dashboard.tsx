@@ -41,6 +41,7 @@ import { useAuth } from "@/lib/auth";
 import { timeAgo } from "@/lib/kazi-data";
 import { AvatarUpload } from "@/components/avatar-upload";
 import { AdminJobImport } from "@/components/admin-job-import";
+import { AIShortlist } from "@/components/ai-shortlist";
 import { ProtectedRoute } from "@/components/protected-route";
 
 export const Route = createFileRoute("/employer-dashboard")({
@@ -602,6 +603,40 @@ function ApplicationsTab({ userId }: { userId: string }) {
     <div className="grid lg:grid-cols-[1fr_380px] gap-5">
       {/* List */}
       <div className="space-y-2">
+        {/* Header with AI Shortlist button */}
+        {applications?.length ? (
+          <div className="flex items-center justify-between gap-2 pb-2 border-b">
+            <h3 className="font-semibold text-sm">Applications</h3>
+            {(() => {
+              // Get unique jobs from applications
+              const jobsMap = new Map<string, {
+                id: string;
+                title: string;
+                description: string;
+              }>();
+              applications.forEach((app) => {
+                if (app.jobs?.title && !jobsMap.has(app.job_id)) {
+                  jobsMap.set(app.job_id, {
+                    id: app.job_id,
+                    title: app.jobs.title,
+                    description: "", // Would need separate fetch
+                  });
+                }
+              });
+              // Show shortlist if there's only one job, or allow per-job
+              const uniqueJobs = Array.from(jobsMap.values());
+              if (uniqueJobs.length === 1) {
+                return (
+                  <AIShortlist
+                    job={uniqueJobs[0]}
+                    applicants={applications.filter((a) => a.job_id === uniqueJobs[0].id)}
+                  />
+                );
+              }
+              return null;
+            })()}
+          </div>
+        ) : null}
         {applications?.length ? (
           applications.map((app) => (
             <Card

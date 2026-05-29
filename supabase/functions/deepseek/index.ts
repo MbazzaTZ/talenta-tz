@@ -38,6 +38,47 @@ function json(body: unknown, status = 200) {
 
 // Build the system + user prompt for each task.
 function buildMessages(task: string, payload: Record<string, unknown>) {
+  if (task === "shortlist") {
+    const jobTitle = String(payload.jobTitle ?? "");
+    const jobDescription = String(payload.jobDescription ?? "").slice(0, 2000);
+    const applicantsJson = String(payload.applicantsJson ?? "");
+    return [
+      {
+        role: "system",
+        content:
+          "You are a recruitment expert. You will analyze job applicants and rank them by fit for the role. " +
+          "Respond ONLY with minified JSON, no markdown, no prose. " +
+          "Schema: [{email: string, name: string, score: 0-100, reasoning: brief string}] " +
+          "Sort by score descending. Be fair and specific in reasoning.",
+      },
+      {
+        role: "user",
+        content:
+          `Job: ${jobTitle}\n\nDescription:\n${jobDescription}\n\nApplicants:\n${applicantsJson}`,
+      },
+    ];
+  }
+
+  if (task === "find-jobs") {
+    const profile = String(payload.profile ?? "").slice(0, 3000);
+    return [
+      {
+        role: "system",
+        content:
+          "You are a career matcher. Given a job seeker's profile, suggest 3-5 key search terms and " +
+          "job title filters they should use to find matching roles. " +
+          "Respond ONLY with minified JSON, no markdown, no prose. " +
+          "Schema: {keywords: [string], jobTitles: [string], industries: [string], " +
+          "reasoning: string}",
+      },
+      {
+        role: "user",
+        content:
+          `My profile:\n${profile}\n\nWhat jobs should I search for or apply to?`,
+      },
+    ];
+  }
+
   if (task === "cv-analyze") {
     const cv = String(payload.cv ?? "").slice(0, 8000);
     return [

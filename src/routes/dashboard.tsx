@@ -59,6 +59,7 @@ import { AvatarUpload } from "@/components/avatar-upload";
 import { FollowStats } from "@/components/follow-stats";
 import { ProfilePosts } from "@/components/profile-posts";
 import { FollowButton } from "@/components/follow-button";
+import { AIAutoApply } from "@/components/ai-auto-apply";
 import { REGIONS } from "@/lib/kazi-data";
 
 export const Route = createFileRoute("/dashboard")({ component: () => (<ProtectedRoute><Dashboard /></ProtectedRoute>) });
@@ -155,6 +156,9 @@ function Dashboard() {
                 <FileText className="h-3.5 w-3.5 mr-1.5" /> CV Builder
               </Link>
             </Button>
+            {!isEmployer && (
+              <AIAutoApply />
+            )}
             {isEmployer && (
               <Button
                 asChild
