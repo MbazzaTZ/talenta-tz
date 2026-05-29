@@ -969,7 +969,7 @@ function SavedJobsTab({ userId }: { userId: string }) {
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <Link
-                to="/job/$id"
+                to="/jobs_/$id"
                 params={{ id: job.job_id }}
                 className="font-semibold text-sm hover:text-accent transition-colors truncate block"
               >
@@ -979,7 +979,7 @@ function SavedJobsTab({ userId }: { userId: string }) {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                <Link to="/job/$id" params={{ id: job.job_id }}>
+                <Link to="/jobs_/$id" params={{ id: job.job_id }}>
                   View
                 </Link>
               </Button>
@@ -1125,7 +1125,7 @@ function EmployerView({ userId }: { userId: string }) {
               >
                 <div className="min-w-0">
                   <Link
-                    to="/job/$id"
+                    to="/jobs_/$id"
                     params={{ id: job.id }}
                     className="font-medium text-sm hover:text-accent transition-colors block truncate"
                   >

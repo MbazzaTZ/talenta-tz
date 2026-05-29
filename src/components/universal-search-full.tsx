@@ -105,7 +105,7 @@ export function UniversalSearch({
       // Default navigation based on result type
       switch (result.entity_type) {
         case "job":
-          navigate({ to: `/job/${result.id}` });
+          navigate({ to: `/jobs/${result.id}` });
           break;
         case "job_seeker":
         case "employee":

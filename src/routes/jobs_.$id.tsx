@@ -44,7 +44,7 @@ import { useAuth } from "@/lib/auth";
 import { getUserProfile } from "@/lib/supabase-data";
 import { formatSalary, industryLabel, timeAgo } from "@/lib/kazi-data";
 
-export const Route = createFileRoute("/job/$id")({
+export const Route = createFileRoute("/jobs_/$id")({
   component: JobDetail,
 });
 
