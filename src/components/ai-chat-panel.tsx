@@ -1,15 +1,21 @@
 import * as React from "react";
-import { MessageCircle, X, Send, Loader2, Upload, Image as ImageIcon } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Upload, Image as ImageIcon, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { aiChat, aiChatWithFile } from "@/lib/ai";
 import { extractTextFromFile } from "@/lib/file-extract";
+import { useAuth } from "@/lib/auth";
 
 type Message = { role: "user" | "assistant"; content: string; hasFile?: boolean };
 
+const GUEST_CHAT_LIMIT = 3;
+const GUEST_COUNT_KEY = "talentra_guest_chat_count";
+
 export function AIChatPanel() {
+  const { user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>([
     {
@@ -22,8 +28,21 @@ export function AIChatPanel() {
   const [loading, setLoading] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [filePreview, setFilePreview] = React.useState<string>("");
+  const [guestCount, setGuestCount] = React.useState(0);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Load guest chat count from localStorage on mount
+  React.useEffect(() => {
+    if (!user) {
+      const stored = localStorage.getItem(GUEST_COUNT_KEY);
+      setGuestCount(stored ? parseInt(stored, 10) : 0);
+    }
+  }, [user]);
+
+  const isGuest = !user;
+  const guestLimitReached = isGuest && guestCount >= GUEST_CHAT_LIMIT;
+  const guestRemaining = GUEST_CHAT_LIMIT - guestCount;
 
   const handleFileSelect = (file: File | undefined) => {
     if (!file) return;
@@ -48,6 +67,12 @@ export function AIChatPanel() {
 
   const handleSend = async () => {
     if (!input.trim() && !selectedFile) return;
+
+    // Block guests who hit the limit
+    if (guestLimitReached) {
+      toast.error("Sign up to continue chatting with AI");
+      return;
+    }
 
     const userMsg = input.trim() || "Please analyze this file";
     setInput("");
@@ -107,6 +132,13 @@ export function AIChatPanel() {
       }
 
       setMessages((m) => [...m, { role: "assistant", content: response }]);
+
+      // Increment guest chat count after successful response
+      if (isGuest) {
+        const newCount = guestCount + 1;
+        setGuestCount(newCount);
+        localStorage.setItem(GUEST_COUNT_KEY, String(newCount));
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed to get response";
       toast.error(msg);
@@ -217,45 +249,80 @@ export function AIChatPanel() {
 
           {/* Input */}
           <div className="border-t p-4 space-y-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,.pdf,.docx,.doc,.txt"
-              className="hidden"
-              onChange={(e) => handleFileSelect(e.target.files?.[0])}
-            />
+            {guestLimitReached ? (
+              /* Guest limit reached - show sign-up prompt */
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 text-center space-y-3">
+                <div className="flex justify-center">
+                  <div className="h-10 w-10 rounded-full bg-accent/20 grid place-items-center">
+                    <Lock className="h-5 w-5 text-accent" />
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">
+                    You've used your {GUEST_CHAT_LIMIT} free chats
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Sign up free to keep chatting with AI, get CV feedback,
+                    auto-apply to jobs, and more.
+                  </p>
+                </div>
+                <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Link to="/auth">Sign up free</Link>
+                </Button>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,.pdf,.docx,.doc,.txt"
+                  className="hidden"
+                  onChange={(e) => handleFileSelect(e.target.files?.[0])}
+                />
 
-            <div className="flex gap-2">
-              <Input
-                placeholder={
-                  selectedFile
-                    ? "Add a message about this file..."
-                    : "Ask me anything..."
-                }
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                disabled={loading}
-              />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loading}
-                variant="outline"
-                size="icon"
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={handleSend}
-                disabled={loading || (!input.trim() && !selectedFile)}
-                size="icon"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Upload images, PDFs, or documents. Max 5 MB.
-            </p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder={
+                      selectedFile
+                        ? "Add a message about this file..."
+                        : "Ask me anything..."
+                    }
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    disabled={loading}
+                  />
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={loading}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <Upload className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={handleSend}
+                    disabled={loading || (!input.trim() && !selectedFile)}
+                    size="icon"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+                {isGuest ? (
+                  <p className="text-xs text-center text-muted-foreground">
+                    {guestRemaining} free {guestRemaining === 1 ? "chat" : "chats"} left ·{" "}
+                    <Link to="/auth" className="text-accent hover:underline">
+                      Sign up
+                    </Link>{" "}
+                    for unlimited
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Upload images, PDFs, or documents. Max 5 MB.
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}
