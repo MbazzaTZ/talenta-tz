@@ -41,10 +41,16 @@ import { useAuth } from "@/lib/auth";
 import { timeAgo } from "@/lib/kazi-data";
 import { AvatarUpload } from "@/components/avatar-upload";
 import { AdminJobImport } from "@/components/admin-job-import";
+import { ProtectedRoute } from "@/components/protected-route";
 
 export const Route = createFileRoute("/employer-dashboard")({
-  component: EmployerDashboardPage,
+  component: () => (
+    <ProtectedRoute requiredRoles={["employer", "admin"]}>
+      <EmployerDashboardPage />
+    </ProtectedRoute>
+  ),
 });
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
