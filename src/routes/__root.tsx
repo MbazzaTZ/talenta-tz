@@ -170,9 +170,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
 
-  const { queryClient } = Route.useRouteContext();
-  return (
-    <QueryClientProvider client={queryClient}>
       <LangProvider>
         <AuthProvider>
           <TooltipProvider>
