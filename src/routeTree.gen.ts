@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as JobSeekersRouteImport } from './routes/job-seekers'
@@ -21,9 +22,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as JobIdRouteImport } from './routes/job.$id'
+import { Route as JobsIdRouteImport } from './routes/jobs_.$id'
 import { Route as CompaniesIdRouteImport } from './routes/companies.$id'
 
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostJobRoute = PostJobRouteImport.update({
   id: '/post-job',
   path: '/post-job',
@@ -84,9 +90,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JobIdRoute = JobIdRouteImport.update({
-  id: '/job/$id',
-  path: '/job/$id',
+const JobsIdRoute = JobsIdRouteImport.update({
+  id: '/jobs_/$id',
+  path: '/jobs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompaniesIdRoute = CompaniesIdRouteImport.update({
@@ -108,8 +114,9 @@ export interface FileRoutesByFullPath {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/companies/$id': typeof CompaniesIdRoute
-  '/job/$id': typeof JobIdRoute
+  '/jobs/$id': typeof JobsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,8 +131,9 @@ export interface FileRoutesByTo {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/companies/$id': typeof CompaniesIdRoute
-  '/job/$id': typeof JobIdRoute
+  '/jobs/$id': typeof JobsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,8 +149,9 @@ export interface FileRoutesById {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/companies/$id': typeof CompaniesIdRoute
-  '/job/$id': typeof JobIdRoute
+  '/jobs_/$id': typeof JobsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,8 +168,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/unauthorized'
     | '/companies/$id'
-    | '/job/$id'
+    | '/jobs/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,8 +185,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/unauthorized'
     | '/companies/$id'
-    | '/job/$id'
+    | '/jobs/$id'
   id:
     | '__root__'
     | '/'
@@ -191,8 +202,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/unauthorized'
     | '/companies/$id'
-    | '/job/$id'
+    | '/jobs_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -208,12 +220,20 @@ export interface RootRouteChildren {
   JobSeekersRoute: typeof JobSeekersRoute
   JobsRoute: typeof JobsRoute
   PostJobRoute: typeof PostJobRoute
+  UnauthorizedRoute: typeof UnauthorizedRoute
   CompaniesIdRoute: typeof CompaniesIdRoute
-  JobIdRoute: typeof JobIdRoute
+  JobsIdRoute: typeof JobsIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/post-job': {
       id: '/post-job'
       path: '/post-job'
@@ -298,11 +318,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/job/$id': {
-      id: '/job/$id'
-      path: '/job/$id'
-      fullPath: '/job/$id'
-      preLoaderRoute: typeof JobIdRouteImport
+    '/jobs_/$id': {
+      id: '/jobs_/$id'
+      path: '/jobs/$id'
+      fullPath: '/jobs/$id'
+      preLoaderRoute: typeof JobsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/companies/$id': {
@@ -328,19 +348,10 @@ const rootRouteChildren: RootRouteChildren = {
   JobSeekersRoute: JobSeekersRoute,
   JobsRoute: JobsRoute,
   PostJobRoute: PostJobRoute,
+  UnauthorizedRoute: UnauthorizedRoute,
   CompaniesIdRoute: CompaniesIdRoute,
-  JobIdRoute: JobIdRoute,
+  JobsIdRoute: JobsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

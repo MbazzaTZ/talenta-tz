@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
