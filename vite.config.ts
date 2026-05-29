@@ -7,4 +7,17 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  // Force the Nitro server build with the Vercel preset so self-deploys
+  // to Vercel get a proper SSR server. Output is written to .vercel/output
+  // in the Build Output API layout (functions/__server.func + static) that
+  // Vercel auto-detects. Without this, the default build is Vite-only
+  // (no server) and every route 404s on Vercel.
+  nitro: {
+    preset: "vercel",
+    output: {
+      dir: ".vercel/output",
+      serverDir: ".vercel/output/functions/__server.func",
+      publicDir: ".vercel/output/static",
+    },
+  },
 });
