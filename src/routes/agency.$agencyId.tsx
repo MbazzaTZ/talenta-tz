@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams, useNavigate } from "@tanstack/react-router";
+import { useParams, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,10 @@ import { AgencyProjectsList } from "@/components/agency-projects-list";
 import { AgencyStaffList } from "@/components/agency-staff-list";
 import { AgencyAnalytics } from "@/components/agency-analytics";
 import { AgencySettings } from "@/components/agency-settings";
+
+export const Route = createFileRoute("/agency/$agencyId")({
+  component: AgencyDashboard,
+});
 
 export function AgencyDashboard() {
   const { user } = useAuth();

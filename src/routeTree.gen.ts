@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as PostJobRouteImport } from './routes/post-job'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as JobSeekersRouteImport } from './routes/job-seekers'
@@ -19,15 +20,22 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CvBuilderRouteImport } from './routes/cv-builder'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AgenciesRouteImport } from './routes/agencies'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JobsIdRouteImport } from './routes/jobs_.$id'
 import { Route as CompaniesIdRouteImport } from './routes/companies.$id'
+import { Route as AgencyAgencyIdRouteImport } from './routes/agency.$agencyId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostJobRoute = PostJobRouteImport.update({
@@ -75,6 +83,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgenciesRoute = AgenciesRouteImport.update({
+  id: '/agencies',
+  path: '/agencies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -100,11 +113,17 @@ const CompaniesIdRoute = CompaniesIdRouteImport.update({
   path: '/companies/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgencyAgencyIdRoute = AgencyAgencyIdRouteImport.update({
+  id: '/agency/$agencyId',
+  path: '/agency/$agencyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/agencies': typeof AgenciesRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/cv-builder': typeof CvBuilderRoute
@@ -114,7 +133,9 @@ export interface FileRoutesByFullPath {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/search': typeof SearchRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/jobs/$id': typeof JobsIdRoute
 }
@@ -122,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/agencies': typeof AgenciesRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/cv-builder': typeof CvBuilderRoute
@@ -131,7 +153,9 @@ export interface FileRoutesByTo {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/search': typeof SearchRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/jobs/$id': typeof JobsIdRoute
 }
@@ -140,6 +164,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/agencies': typeof AgenciesRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/cv-builder': typeof CvBuilderRoute
@@ -149,7 +174,9 @@ export interface FileRoutesById {
   '/job-seekers': typeof JobSeekersRoute
   '/jobs': typeof JobsRoute
   '/post-job': typeof PostJobRoute
+  '/search': typeof SearchRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/agency/$agencyId': typeof AgencyAgencyIdRoute
   '/companies/$id': typeof CompaniesIdRoute
   '/jobs_/$id': typeof JobsIdRoute
 }
@@ -159,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/agencies'
     | '/auth'
     | '/contact'
     | '/cv-builder'
@@ -168,7 +196,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/search'
     | '/unauthorized'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/jobs/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -176,6 +206,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/agencies'
     | '/auth'
     | '/contact'
     | '/cv-builder'
@@ -185,7 +216,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/search'
     | '/unauthorized'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/jobs/$id'
   id:
@@ -193,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/agencies'
     | '/auth'
     | '/contact'
     | '/cv-builder'
@@ -202,7 +236,9 @@ export interface FileRouteTypes {
     | '/job-seekers'
     | '/jobs'
     | '/post-job'
+    | '/search'
     | '/unauthorized'
+    | '/agency/$agencyId'
     | '/companies/$id'
     | '/jobs_/$id'
   fileRoutesById: FileRoutesById
@@ -211,6 +247,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  AgenciesRoute: typeof AgenciesRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   CvBuilderRoute: typeof CvBuilderRoute
@@ -220,7 +257,9 @@ export interface RootRouteChildren {
   JobSeekersRoute: typeof JobSeekersRoute
   JobsRoute: typeof JobsRoute
   PostJobRoute: typeof PostJobRoute
+  SearchRoute: typeof SearchRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
+  AgencyAgencyIdRoute: typeof AgencyAgencyIdRoute
   CompaniesIdRoute: typeof CompaniesIdRoute
   JobsIdRoute: typeof JobsIdRoute
 }
@@ -232,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/unauthorized'
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post-job': {
@@ -297,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agencies': {
+      id: '/agencies'
+      path: '/agencies'
+      fullPath: '/agencies'
+      preLoaderRoute: typeof AgenciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -332,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompaniesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agency/$agencyId': {
+      id: '/agency/$agencyId'
+      path: '/agency/$agencyId'
+      fullPath: '/agency/$agencyId'
+      preLoaderRoute: typeof AgencyAgencyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -339,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  AgenciesRoute: AgenciesRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   CvBuilderRoute: CvBuilderRoute,
@@ -348,7 +409,9 @@ const rootRouteChildren: RootRouteChildren = {
   JobSeekersRoute: JobSeekersRoute,
   JobsRoute: JobsRoute,
   PostJobRoute: PostJobRoute,
+  SearchRoute: SearchRoute,
   UnauthorizedRoute: UnauthorizedRoute,
+  AgencyAgencyIdRoute: AgencyAgencyIdRoute,
   CompaniesIdRoute: CompaniesIdRoute,
   JobsIdRoute: JobsIdRoute,
 }
