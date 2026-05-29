@@ -135,6 +135,48 @@ function buildMessages(task: string, payload: Record<string, unknown>) {
     ];
   }
 
+  if (task === "chat-with-file") {
+    const messageText = String(payload.messageText ?? "");
+    const fileType = String(payload.fileType ?? ""); // image, document, or text
+    const fileContent = String(payload.fileContent ?? ""); // base64 for images, extracted text for docs
+    const fileName = String(payload.fileName ?? "");
+
+    const systemPrompt =
+      fileType === "image"
+        ? "You are a helpful assistant analyzing images for users. Be specific and descriptive. " +
+          "Answer questions about the image and help the user understand what they're looking at."
+        : "You are a helpful assistant analyzing documents for users. " +
+          "Extract key information, summarize, answer questions, and provide insights from the content.";
+
+    // For images, include as vision (DeepSeek supports vision)
+    if (fileType === "image") {
+      return [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${fileContent}`,
+              },
+            },
+            { type: "text", text: messageText || "Please analyze this image." },
+          ],
+        },
+      ];
+    }
+
+    // For documents/text, include the extracted text
+    return [
+      { role: "system", content: systemPrompt },
+      {
+        role: "user",
+        content: `File: ${fileName}\n\n${fileContent}\n\nUser question/request: ${messageText || "Please analyze this document."}`,
+      },
+    ];
+  }
+
   if (task === "chat") {
     const messages = Array.isArray(payload.messages) ? payload.messages : [];
     return [

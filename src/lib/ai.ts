@@ -107,6 +107,26 @@ export async function aiChat(
   return invoke({ task: "chat", messages });
 }
 
+/**
+ * Chat with an uploaded file (image or document).
+ * fileContent: base64 for images, extracted text for documents.
+ * fileType: 'image', 'document', or 'text'
+ */
+export async function aiChatWithFile(
+  messageText: string,
+  fileType: "image" | "document" | "text",
+  fileContent: string,
+  fileName: string,
+): Promise<string> {
+  return invoke({
+    task: "chat-with-file",
+    messageText,
+    fileType,
+    fileContent,
+    fileName,
+  });
+}
+
 export function aiAvailable(): boolean {
   // The function decides; client can't see the key. This is just a hint.
   return true;
