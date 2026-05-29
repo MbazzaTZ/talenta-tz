@@ -1,4 +1,8 @@
 {
-  "buildCommand": "npm run build",
-  "framework": null
+  "buildCommand": "vite build --config vite.config.spa.ts",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  ]
 }
