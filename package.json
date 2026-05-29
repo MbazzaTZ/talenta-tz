@@ -7,7 +7,7 @@
     "postdev": "npm run sync:push",
     "dev": "vite dev",
     "start": "npm run dev",
-    "build": "vite build",
+    "build": "vite build --config vite.config.spa.ts",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "sync:pull": "git pull --rebase",
