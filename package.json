@@ -4,7 +4,6 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "predev": "git pull --rebase",
     "postdev": "npm run sync:push",
     "dev": "vite dev",
     "start": "npm run dev",
