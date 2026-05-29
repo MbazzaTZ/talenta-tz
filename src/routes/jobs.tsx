@@ -118,40 +118,11 @@ function JobsPage() {
   ]);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["jobs", search, page],
-    queryFn: async () => {
-      let query = supabase
-        .from("jobs")
-        .select(
-          "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
-        )
-        .eq("status", "published")
-        .order("featured", { ascending: false })
-        .order("created_at", { ascending: false })
-        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
-
-      if (search.q) {
-        query = query.or(
-          `title.ilike.%${search.q}%,location.ilike.%${search.q}%,industry.ilike.%${search.q}%`,
-        );
-      }
-      if (search.region) query = query.eq("region", search.region);
-      if (search.industry) query = query.eq("industry", search.industry);
-      if (search.level) query = query.eq("position_level", search.level as never);
-      if (search.contract) query = query.eq("contract_type", search.contract as never);
-      if (search.qualification) query = query.eq("qualification", search.qualification as never);
-      if (search.salary) {
-        const band = SALARY_BANDS.find((b) => b.value === search.salary);
-        if (band?.min) query = query.gte("salary_min", band.min);
-        if (band?.max) query = query.lte("salary_max", band.max);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return (data ?? []) as unknown as JobCardData[];
-    },
+    ...jobsQueryOptions(search, page),
     placeholderData: (prev) => prev,
   });
+
+
 
   const update = (patch: Partial<JobsSearch>) =>
     navigate({ search: (prev: JobsSearch) => ({ ...prev, ...patch }) });
