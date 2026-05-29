@@ -1,13 +1,12 @@
 import * as React from "react";
-import { MessageCircle, X, Send, Loader2, Upload, Image as ImageIcon } from "lucide-react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { aiChat, aiChatWithFile } from "@/lib/ai";
-import { extractTextFromFile } from "@/lib/file-extract";
+import { aiChat } from "@/lib/ai";
 
-type Message = { role: "user" | "assistant"; content: string; hasFile?: boolean };
+type Message = { role: "user" | "assistant"; content: string };
 
 export function AIChatPanel() {
   const [open, setOpen] = React.useState(false);
@@ -15,97 +14,26 @@ export function AIChatPanel() {
     {
       role: "assistant",
       content:
-        "Hi! I'm Talentra's AI assistant. I can help you with job search advice, CV tips, interview prep, or anything else about your career. You can also upload images or documents for me to analyze. What would you like help with?",
+        "Hi! I'm Talentra's AI assistant. I can help you with job search advice, CV tips, interview prep, or anything else about your career. What would you like help with?",
     },
   ]);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [filePreview, setFilePreview] = React.useState<string>("");
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const handleFileSelect = (file: File | undefined) => {
-    if (!file) return;
-
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File too large (max 5 MB)");
-      return;
-    }
-
-    setSelectedFile(file);
-
-    // Show preview for images
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (e) => setFilePreview(e.target?.result as string);
-      reader.readAsDataURL(file);
-    } else {
-      setFilePreview(`📄 ${file.name}`);
-    }
-  };
 
   const handleSend = async () => {
-    if (!input.trim() && !selectedFile) return;
+    if (!input.trim()) return;
 
-    const userMsg = input.trim() || "Please analyze this file";
+    const userMsg = input.trim();
     setInput("");
-
-    // Add user message to chat
-    setMessages((m) => [
-      ...m,
-      {
-        role: "user",
-        content: selectedFile ? `📎 ${selectedFile.name}: ${userMsg}` : userMsg,
-        hasFile: !!selectedFile,
-      },
-    ]);
-
+    setMessages((m) => [...m, { role: "user", content: userMsg }]);
     setLoading(true);
 
     try {
-      let response: string;
-
-      if (selectedFile) {
-        // File-based chat
-        const isImage = selectedFile.type.startsWith("image/");
-
-        if (isImage) {
-          // Convert image to base64
-          const base64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve((e.target?.result as string).split(",")[1]);
-            reader.readAsDataURL(selectedFile);
-          });
-          response = await aiChatWithFile(userMsg, "image", base64, selectedFile.name);
-        } else {
-          // Extract text from document
-          try {
-            const { text } = await extractTextFromFile(selectedFile);
-            response = await aiChatWithFile(
-              userMsg,
-              "document",
-              text,
-              selectedFile.name,
-            );
-          } catch (e) {
-            throw new Error(
-              `Could not read file: ${e instanceof Error ? e.message : "unknown error"}`,
-            );
-          }
-        }
-
-        setSelectedFile(null);
-        setFilePreview("");
-      } else {
-        // Regular chat
-        response = await aiChat([
-          ...messages,
-          { role: "user", content: userMsg },
-        ]);
-      }
-
+      const response = await aiChat([
+        ...messages,
+        { role: "user", content: userMsg },
+      ]);
       setMessages((m) => [...m, { role: "assistant", content: response }]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed to get response";
@@ -183,78 +111,26 @@ export function AIChatPanel() {
             <div ref={scrollRef} />
           </ScrollArea>
 
-          {/* File preview */}
-          {selectedFile && (
-            <div className="border-t bg-muted/20 p-3">
-              <div className="flex items-center justify-between gap-2 text-sm">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  {filePreview.startsWith("data:") ? (
-                    <img
-                      src={filePreview}
-                      alt="preview"
-                      className="h-8 w-8 rounded object-cover"
-                    />
-                  ) : (
-                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <span className="truncate text-xs text-muted-foreground">
-                    {selectedFile.name}
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setFilePreview("");
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Input */}
           <div className="border-t p-4 space-y-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,.pdf,.docx,.doc,.txt"
-              className="hidden"
-              onChange={(e) => handleFileSelect(e.target.files?.[0])}
-            />
-
             <div className="flex gap-2">
               <Input
-                placeholder={
-                  selectedFile
-                    ? "Add a message about this file..."
-                    : "Ask me anything..."
-                }
+                placeholder="Ask me anything..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 disabled={loading}
               />
               <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loading}
-                variant="outline"
-                size="icon"
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-              <Button
                 onClick={handleSend}
-                disabled={loading || (!input.trim() && !selectedFile)}
+                disabled={loading || !input.trim()}
                 size="icon"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
             <p className="text-xs text-muted-foreground text-center">
-              Upload images, PDFs, or documents. Max 5 MB.
+              Powered by DeepSeek AI
             </p>
           </div>
         </div>
