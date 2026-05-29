@@ -182,6 +182,8 @@ function buildMessages(task: string, payload: Record<string, unknown>) {
 }
 
 Deno.serve(async (req) => {
+  console.log("📥 Request received:", req.method);
+  
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -189,13 +191,16 @@ Deno.serve(async (req) => {
     return json({ error: "Method not allowed" }, 405);
   }
   if (!DEEPSEEK_API_KEY) {
+    console.error("❌ DEEPSEEK_API_KEY not set");
     return json({ error: "Server missing DEEPSEEK_API_KEY" }, 500);
   }
 
   let body: Record<string, unknown>;
   try {
     body = await req.json();
-  } catch {
+    console.log("📋 Body parsed, task:", body.task);
+  } catch (e) {
+    console.error("❌ JSON parse failed:", e);
     return json({ error: "Invalid JSON body" }, 400);
   }
 
@@ -203,37 +208,46 @@ Deno.serve(async (req) => {
   let messages;
   try {
     messages = buildMessages(task, body);
-  } catch {
-    return json({ error: "Invalid or missing task" }, 400);
+    console.log("✅ Messages built for task:", task, "message count:", messages.length);
+  } catch (e) {
+    console.error("❌ buildMessages failed:", e);
+    return json({ error: "Invalid or missing task: " + String(e) }, 400);
   }
 
   try {
+    const payload = {
+      model: MODEL,
+      messages,
+      temperature: task === "extract" ? 0.1 : 0.7,
+      max_tokens: 1500,
+      ...(task === "extract" ? { response_format: { type: "json_object" } } : {}),
+    };
+    
+    console.log("🚀 Calling DeepSeek...");
     const ds = await fetch(DEEPSEEK_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
       },
-      body: JSON.stringify({
-        model: MODEL,
-        messages,
-        temperature: task === "extract" ? 0.1 : 0.7,
-        max_tokens: 1500,
-        // Ask DeepSeek for JSON output on extract
-        ...(task === "extract" ? { response_format: { type: "json_object" } } : {}),
-      }),
+      body: JSON.stringify(payload),
     });
 
+    console.log("📡 DeepSeek response status:", ds.status);
+    
     if (!ds.ok) {
       const errText = await ds.text();
+      console.error("❌ DeepSeek error:", ds.status, errText);
       return json({ error: "DeepSeek error", detail: errText }, 502);
     }
 
     const data = await ds.json();
     const content = data?.choices?.[0]?.message?.content ?? "";
+    console.log("✅ Success, content length:", content.length);
     return json({ task, content });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Upstream call failed";
+    console.error("❌ Exception:", msg, e);
     return json({ error: msg }, 500);
   }
 });
