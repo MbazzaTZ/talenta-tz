@@ -44,6 +44,7 @@ import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrom
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/protected-route";
 import {
   fetchSavedJobs,
   fetchUserApplications,
@@ -60,7 +61,7 @@ import { ProfilePosts } from "@/components/profile-posts";
 import { FollowButton } from "@/components/follow-button";
 import { REGIONS } from "@/lib/kazi-data";
 
-export const Route = createFileRoute("/dashboard")({ component: Dashboard });
+export const Route = createFileRoute("/dashboard")({ component: () => (<ProtectedRoute><Dashboard /></ProtectedRoute>) });
 
 type EmployerJob = Pick<
   Database["public"]["Tables"]["jobs"]["Row"],

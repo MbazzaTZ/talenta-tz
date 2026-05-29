@@ -10,9 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { AdminJobImport } from "@/components/admin-job-import";
 import { useAuth } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/protected-route";
 import { timeAgo } from "@/lib/kazi-data";
 
-export const Route = createFileRoute("/admin")({ component: AdminPage });
+export const Route = createFileRoute("/admin")({ component: () => (<ProtectedRoute requiredRoles={["admin"]}><AdminPage /></ProtectedRoute>) });
 
 type JobUpdate = Database["public"]["Tables"]["jobs"]["Update"];
 type CompanyUpdate = Database["public"]["Tables"]["companies"]["Update"];

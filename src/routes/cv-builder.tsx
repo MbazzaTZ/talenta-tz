@@ -42,12 +42,13 @@ import { Separator } from "@/components/ui/separator";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/protected-route";
 import { getUserProfile, saveUserProfile } from "@/lib/supabase-data";
 import { REGIONS } from "@/lib/kazi-data";
 import { CVCompanySearch } from "@/components/cv-company-search";
 import { CVReferenceSearch } from "@/components/cv-reference-search";
 
-export const Route = createFileRoute("/cv-builder")({ component: CVBuilderPage });
+export const Route = createFileRoute("/cv-builder")({ component: () => (<ProtectedRoute requiredRoles={["employee","admin"]}><CVBuilderPage /></ProtectedRoute>) });
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
