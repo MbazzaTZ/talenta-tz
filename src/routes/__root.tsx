@@ -16,6 +16,7 @@ import { AuthProvider } from "@/lib/auth";
 import { LangProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { SupabaseMissingBanner } from "@/components/supabase-missing-banner";
+import { AIChatPanel } from "@/components/ai-chat-panel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
@@ -175,6 +176,7 @@ function RootComponent() {
           <TooltipProvider>
             <SupabaseMissingBanner />
             <Outlet />
+            <AIChatPanel />
             <Toaster />
           </TooltipProvider>
         </AuthProvider>

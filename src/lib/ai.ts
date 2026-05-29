@@ -46,6 +46,11 @@ export async function aiWriteCv(
   return invoke({ task: "cv", kind, context });
 }
 
+/** Analyze a CV and give improvement suggestions. */
+export async function aiAnalyzeCv(cv: string): Promise<string> {
+  return invoke({ task: "cv-analyze", cv });
+}
+
 /** General chat assistant. messages = [{role, content}, ...] */
 export async function aiChat(
   messages: { role: "user" | "assistant"; content: string }[],

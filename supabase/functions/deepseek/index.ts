@@ -38,6 +38,27 @@ function json(body: unknown, status = 200) {
 
 // Build the system + user prompt for each task.
 function buildMessages(task: string, payload: Record<string, unknown>) {
+  if (task === "cv-analyze") {
+    const cv = String(payload.cv ?? "").slice(0, 8000);
+    return [
+      {
+        role: "system",
+        content:
+          "You are a professional CV coach for the Tanzanian job market. " +
+          "Analyze the CV provided and give constructive feedback. " +
+          "Be specific, kind, and actionable. " +
+          "Point out strengths, areas to improve, and concrete suggestions for each section. " +
+          "Format: use plain text, short paragraphs, bullet points where helpful.",
+      },
+      {
+        role: "user",
+        content:
+          "Please review my CV and give me detailed feedback on how to improve it:\n\n" +
+          cv,
+      },
+    ];
+  }
+
   if (task === "extract") {
     const text = String(payload.text ?? "").slice(0, 12000);
     return [

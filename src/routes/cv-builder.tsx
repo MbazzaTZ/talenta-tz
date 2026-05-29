@@ -47,6 +47,7 @@ import { getUserProfile, saveUserProfile } from "@/lib/supabase-data";
 import { REGIONS } from "@/lib/kazi-data";
 import { CVCompanySearch } from "@/components/cv-company-search";
 import { CVReferenceSearch } from "@/components/cv-reference-search";
+import { CVAnalyzer } from "@/components/cv-analyzer";
 
 export const Route = createFileRoute("/cv-builder")({ component: () => (<ProtectedRoute requiredRoles={["employee","admin"]}><CVBuilderPage /></ProtectedRoute>) });
 
@@ -329,6 +330,7 @@ export default function CVBuilderPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [previewMode, setPreviewMode] = React.useState(false);
+  const [analyzeMode, setAnalyzeMode] = React.useState(false);
   const [skillInput, setSkillInput] = React.useState("");
   const [saving, setSaving] = React.useState(false);
 
@@ -520,13 +522,30 @@ export default function CVBuilderPage() {
                 </div>
                 <span className="text-muted-foreground">{completionPct}% complete</span>
               </div>
-              <Button variant="outline" size="sm" onClick={() => setPreviewMode((p) => !p)}>
+              <Button variant="outline" size="sm" onClick={() => {
+                setPreviewMode(false);
+                setAnalyzeMode(false);
+              }}>
+                <FileText className="h-4 w-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                setAnalyzeMode(false);
+                setPreviewMode(!previewMode);
+              }}>
                 {previewMode ? (
                   <EyeOff className="h-4 w-4 mr-1" />
                 ) : (
                   <Eye className="h-4 w-4 mr-1" />
                 )}
-                {previewMode ? "Edit" : "Preview"}
+                {previewMode ? "Done Preview" : "Preview"}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                setPreviewMode(false);
+                setAnalyzeMode(!analyzeMode);
+              }}>
+                <Award className="h-4 w-4 mr-1" />
+                {analyzeMode ? "Back" : "Analyze"}
               </Button>
               <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
                 <Download className="h-4 w-4 mr-1" /> Download PDF
@@ -542,7 +561,11 @@ export default function CVBuilderPage() {
             </div>
           </div>
 
-          {previewMode ? (
+          {analyzeMode ? (
+            <div>
+              <CVAnalyzer />
+            </div>
+          ) : previewMode ? (
             <div className="border border-border rounded-2xl overflow-hidden shadow-sm">
               <CVPreview data={values} email={user.email ?? ""} />
             </div>
