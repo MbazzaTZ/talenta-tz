@@ -100,7 +100,7 @@ export function UniversalSearch({
       // Default navigation
       switch (result.type) {
         case "job":
-          navigate({ to: `/job/${result.id}` });
+          navigate({ to: `/jobs/${result.id}` });
           break;
         case "job_seeker":
         case "employee":

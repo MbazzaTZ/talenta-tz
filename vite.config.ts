@@ -1,15 +1,10 @@
-﻿import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
+// TanStack Start requires @lovable.dev/vite-tanstack-config for proper SSR setup.
+// This config provides: tanstackStart, viteReact, tailwindcss, tsConfigPaths, @ alias, React/TanStack deduplication.
+// You can pass additional config via defineConfig({ vite: { ... } }) if needed.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  server: {
-    port: 3000,
+  tanstackStart: {
+    server: { entry: "server" },
   },
 });

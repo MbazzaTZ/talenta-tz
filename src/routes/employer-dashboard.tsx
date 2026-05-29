@@ -41,10 +41,16 @@ import { useAuth } from "@/lib/auth";
 import { timeAgo } from "@/lib/kazi-data";
 import { AvatarUpload } from "@/components/avatar-upload";
 import { AdminJobImport } from "@/components/admin-job-import";
+import { ProtectedRoute } from "@/components/protected-route";
 
 export const Route = createFileRoute("/employer-dashboard")({
-  component: EmployerDashboardPage,
+  component: () => (
+    <ProtectedRoute requiredRoles={["employer", "admin"]}>
+      <EmployerDashboardPage />
+    </ProtectedRoute>
+  ),
 });
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -464,7 +470,7 @@ function JobsTab({ userId }: { userId: string }) {
             <div className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <Link
-                  to="/job/$id"
+                  to="/jobs_/$id"
                   params={{ id: job.id }}
                   className="font-semibold text-sm hover:text-accent transition-colors block truncate"
                 >
@@ -501,7 +507,7 @@ function JobsTab({ userId }: { userId: string }) {
                   </SelectContent>
                 </Select>
                 <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                  <Link to="/job/$id" params={{ id: job.id }}>
+                  <Link to="/jobs_/$id" params={{ id: job.id }}>
                     View
                   </Link>
                 </Button>

@@ -32,6 +32,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/protected-route";
 import { INDUSTRIES, REGIONS } from "@/lib/kazi-data";
 import { getUserProfile } from "@/lib/supabase-data";
 import {
@@ -281,7 +282,7 @@ const schema = z
     }
   });
 
-export const Route = createFileRoute("/post-job")({ component: PostJobPage });
+export const Route = createFileRoute("/post-job")({ component: () => (<ProtectedRoute requiredRoles={["employer","admin"]}><PostJobPage /></ProtectedRoute>) });
 
 function PostJobPage() {
   const { user, roles, loading } = useAuth();
@@ -1492,7 +1493,7 @@ function PostJobPage() {
     localStorage.removeItem(DRAFT_KEY);
     queryClient.invalidateQueries({ queryKey: ["my-companies"] });
     toast.success("Job published. Talent will discover your opening soon.");
-    navigate({ to: "/job/$id", params: { id: jobResult.id } });
+    navigate({ to: "/jobs_/$id", params: { id: jobResult.id } });
   };
 
   const hasPremium = companies?.some((company) => company?.premium) ?? false;

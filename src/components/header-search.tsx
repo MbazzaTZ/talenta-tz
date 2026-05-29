@@ -97,7 +97,7 @@ export function HeaderSearch() {
     setOpen(false);
     setQ("");
     if (r.type === "person") navigate({ to: "/dashboard" });
-    else if (r.type === "project") navigate({ to: "/job/$id", params: { id: r.id } });
+    else if (r.type === "project") navigate({ to: "/jobs_/$id", params: { id: r.id } });
     else navigate({ to: "/companies/$id", params: { id: r.id } });
   };
 
