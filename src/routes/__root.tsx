@@ -143,8 +143,33 @@ function RootShell({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
 function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
+
+  // Warm the jobs cache as soon as the app boots so /jobs renders instantly.
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["jobs", {}, 1],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("jobs")
+          .select(
+            "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
+          )
+          .eq("status", "published")
+          .order("featured", { ascending: false })
+          .order("created_at", { ascending: false })
+          .range(0, 19);
+        if (error) throw error;
+        return data ?? [];
+      },
+      staleTime: 60_000,
+    });
+  }, [queryClient]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
