@@ -147,7 +147,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
-  // Warm the jobs cache as soon as the app boots so /jobs renders instantly.
+  // Prefetch the full unfiltered jobs list at app boot so /jobs is instant.
   useEffect(() => {
     const emptySearch = {
       q: undefined,
@@ -169,11 +169,11 @@ function RootComponent() {
           .eq("status", "published")
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false })
-          .range(0, 19);
+          .range(0, 99);
         if (error) throw error;
         return data ?? [];
       },
-      staleTime: 60_000,
+      staleTime: 5 * 60_000,
     });
   }, [queryClient]);
 
