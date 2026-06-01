@@ -26,7 +26,7 @@ import {
   SALARY_BANDS,
 } from "@/lib/kazi-data";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 100;
 
 type JobsSearch = {
   q?: string;
