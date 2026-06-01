@@ -88,8 +88,14 @@ export const Route = createFileRoute("/jobs")({
     salary: typeof s.salary === "string" ? s.salary : undefined,
   }),
   loaderDeps: ({ search }) => ({ search }),
-  loader: ({ context, deps }) =>
-    context.queryClient.ensureQueryData(jobsQueryOptions(deps.search, 1)),
+  loader: async ({ context, deps }) => {
+    // Best-effort prefetch; never block/fail SSR if Supabase isn't reachable.
+    try {
+      await context.queryClient.ensureQueryData(jobsQueryOptions(deps.search, 1));
+    } catch (e) {
+      console.error("[jobs loader] prefetch failed", e);
+    }
+  },
   component: JobsPage,
 });
 
