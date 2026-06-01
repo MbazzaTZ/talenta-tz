@@ -147,7 +147,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
-  // Prefetch the full unfiltered jobs list at app boot so /jobs is instant.
+  // Prefetch the FULL jobs list (all pages) at app boot so /jobs is instant.
   useEffect(() => {
     const emptySearch = {
       q: undefined,
@@ -158,23 +158,42 @@ function RootComponent() {
       qualification: undefined,
       salary: undefined,
     };
-    queryClient.prefetchQuery({
-      queryKey: ["jobs", emptySearch, 1],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("jobs")
-          .select(
-            "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
-          )
-          .eq("status", "published")
-          .order("featured", { ascending: false })
-          .order("created_at", { ascending: false })
-          .range(0, 99);
-        if (error) throw error;
-        return data ?? [];
-      },
-      staleTime: 5 * 60_000,
-    });
+    const PAGE_SIZE = 100;
+
+    const fetchPage = async (page: number) => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select(
+          "id,title,location,region,industry,contract_type,salary_min,salary_max,salary_negotiable,currency,created_at,deadline,featured,companies(name,logo_url,verified)",
+        )
+        .eq("status", "published")
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false })
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+      if (error) throw error;
+      return data ?? [];
+    };
+
+    (async () => {
+      try {
+        let page = 1;
+        // Sequentially prefetch every page so all subsequent pages of
+        // /jobs render instantly from cache. Stop when we get a partial
+        // page (end of list). Safety-cap at 50 pages (5000 jobs).
+        while (page <= 50) {
+          const pageNum = page;
+          const data = await queryClient.fetchQuery({
+            queryKey: ["jobs", emptySearch, pageNum],
+            queryFn: () => fetchPage(pageNum),
+            staleTime: 5 * 60_000,
+          });
+          if (data.length < PAGE_SIZE) break;
+          page++;
+        }
+      } catch (err) {
+        console.error("[Talentra] jobs prefetch failed:", err);
+      }
+    })();
   }, [queryClient]);
 
   return (
