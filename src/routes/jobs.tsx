@@ -87,15 +87,8 @@ export const Route = createFileRoute("/jobs")({
     qualification: typeof s.qualification === "string" ? s.qualification : undefined,
     salary: typeof s.salary === "string" ? s.salary : undefined,
   }),
-  loaderDeps: ({ search }) => ({ search }),
-  loader: async ({ context, deps }) => {
-    // Best-effort prefetch; never block/fail SSR if Supabase isn't reachable.
-    try {
-      await context.queryClient.ensureQueryData(jobsQueryOptions(deps.search, 1));
-    } catch (e) {
-      console.error("[jobs loader] prefetch failed", e);
-    }
-  },
+  // No loader: jobs are prefetched at app startup in __root.tsx so navigating
+  // here is instant. Filtered/paginated queries fetch on-demand via useQuery.
   component: JobsPage,
 });
 
