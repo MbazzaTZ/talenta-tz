@@ -74,7 +74,9 @@ const jobsQueryOptions = (search: JobsSearch, page: number) =>
   queryOptions({
     queryKey: ["jobs", search, page],
     queryFn: () => fetchJobs(search, page),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
 export const Route = createFileRoute("/jobs")({
