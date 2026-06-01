@@ -149,8 +149,17 @@ function RootComponent() {
 
   // Warm the jobs cache as soon as the app boots so /jobs renders instantly.
   useEffect(() => {
+    const emptySearch = {
+      q: undefined,
+      region: undefined,
+      industry: undefined,
+      level: undefined,
+      contract: undefined,
+      qualification: undefined,
+      salary: undefined,
+    };
     queryClient.prefetchQuery({
-      queryKey: ["jobs", {}, 1],
+      queryKey: ["jobs", emptySearch, 1],
       queryFn: async () => {
         const { data, error } = await supabase
           .from("jobs")
