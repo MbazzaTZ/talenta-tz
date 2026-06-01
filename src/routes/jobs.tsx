@@ -26,7 +26,7 @@ import {
   SALARY_BANDS,
 } from "@/lib/kazi-data";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 100;
 
 type JobsSearch = {
   q?: string;
@@ -74,7 +74,9 @@ const jobsQueryOptions = (search: JobsSearch, page: number) =>
   queryOptions({
     queryKey: ["jobs", search, page],
     queryFn: () => fetchJobs(search, page),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
 export const Route = createFileRoute("/jobs")({
@@ -87,15 +89,8 @@ export const Route = createFileRoute("/jobs")({
     qualification: typeof s.qualification === "string" ? s.qualification : undefined,
     salary: typeof s.salary === "string" ? s.salary : undefined,
   }),
-  loaderDeps: ({ search }) => ({ search }),
-  loader: async ({ context, deps }) => {
-    // Best-effort prefetch; never block/fail SSR if Supabase isn't reachable.
-    try {
-      await context.queryClient.ensureQueryData(jobsQueryOptions(deps.search, 1));
-    } catch (e) {
-      console.error("[jobs loader] prefetch failed", e);
-    }
-  },
+  // No loader: jobs are prefetched at app startup in __root.tsx so navigating
+  // here is instant. Filtered/paginated queries fetch on-demand via useQuery.
   component: JobsPage,
 });
 
