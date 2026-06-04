@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/co
 import { Badge } from "@/components/ui/badge";
 import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
 import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
 import {
   REGIONS,
   INDUSTRIES,
@@ -74,9 +74,11 @@ const jobsQueryOptions = (search: JobsSearch, page: number) =>
   queryOptions({
     queryKey: ["jobs", search, page],
     queryFn: () => fetchJobs(search, page),
+    enabled: supabaseConfigured,
     staleTime: 5 * 60_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    retry: false,
   });
 
 export const Route = createFileRoute("/jobs")({

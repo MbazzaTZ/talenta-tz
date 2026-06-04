@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
 import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
 import { REGIONS, INDUSTRIES } from "@/lib/kazi-data";
 import { useT, useLang } from "@/lib/i18n";
 
@@ -60,7 +60,9 @@ function LandingPage() {
       if (error) throw error;
       return (data ?? []) as unknown as JobCardData[];
     },
+    enabled: supabaseConfigured,
     staleTime: 2 * 60 * 1000,
+    retry: false,
   });
 
   const handleSearch = (e: React.FormEvent) => {
