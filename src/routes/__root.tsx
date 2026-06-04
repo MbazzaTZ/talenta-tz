@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
 
 
 import appCss from "../styles.css?url";
@@ -159,6 +159,11 @@ function RootComponent() {
       salary: undefined,
     };
     const PAGE_SIZE = 100;
+
+    if (!supabaseConfigured) {
+      queryClient.setQueryData(["jobs", emptySearch, 1], []);
+      return;
+    }
 
     const fetchPage = async (page: number) => {
       const { data, error } = await supabase
