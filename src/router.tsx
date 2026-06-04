@@ -21,7 +21,7 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultPreloadStaleTime: 30_000, // preload data for 30s
+    defaultPreloadStaleTime: 0, // let TanStack Query control data freshness
     defaultPreload: "intent", // preload on hover/focus
   });
 
