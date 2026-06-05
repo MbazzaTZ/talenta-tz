@@ -122,10 +122,16 @@ function JobsPage() {
     search.salary,
   ]);
 
-  const { data, isLoading, isFetching } = useQuery({
+  const prefetchStatus = useJobsPrefetchStatus();
+  const { data, isLoading, isFetching, refetch } = useQuery({
     ...jobsQueryOptions(search, page),
     placeholderData: (prev) => prev,
   });
+  const hasData = (data?.length ?? 0) > 0;
+  const showSkeleton = isLoading || (prefetchStatus === "loading" && !hasData);
+  const showPrefetchError =
+    (prefetchStatus === "error" || prefetchStatus === "timeout") && !hasData && !isFetching;
+
 
 
 
