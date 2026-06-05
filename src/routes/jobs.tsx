@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
 import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
 import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
+import { useJobsPrefetchStatus } from "@/lib/jobs-prefetch";
+
 import {
   REGIONS,
   INDUSTRIES,
@@ -120,10 +122,16 @@ function JobsPage() {
     search.salary,
   ]);
 
-  const { data, isLoading, isFetching } = useQuery({
+  const prefetchStatus = useJobsPrefetchStatus();
+  const { data, isLoading, isFetching, refetch } = useQuery({
     ...jobsQueryOptions(search, page),
     placeholderData: (prev) => prev,
   });
+  const hasData = (data?.length ?? 0) > 0;
+  const showSkeleton = isLoading || (prefetchStatus === "loading" && !hasData);
+  const showPrefetchError =
+    (prefetchStatus === "error" || prefetchStatus === "timeout") && !hasData && !isFetching;
+
 
 
 
@@ -277,7 +285,7 @@ function JobsPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-muted-foreground">
-              {isLoading ? (
+              {showSkeleton ? (
                 <span className="flex items-center gap-1.5">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading…
                 </span>
@@ -290,9 +298,24 @@ function JobsPage() {
             )}
           </div>
           <div className="grid gap-3">
-            {isLoading ? (
+            {showSkeleton ? (
               Array.from({ length: 6 }).map((_, i) => <JobCardSkeleton key={i} />)
+            ) : showPrefetchError ? (
+              <div className="rounded-xl border border-dashed border-destructive/40 bg-destructive/5 p-10 text-center">
+                <p className="font-display text-lg font-semibold">
+                  {prefetchStatus === "timeout" ? "Jobs took too long to load" : "Couldn't load jobs"}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Check your connection and try again.
+                </p>
+                <div className="mt-4 flex justify-center">
+                  <Button size="sm" onClick={() => refetch()}>
+                    Retry
+                  </Button>
+                </div>
+              </div>
             ) : data && data.length > 0 ? (
+
               <>
                 {data.map((j) => (
                   <JobCard key={j.id} job={j} />

@@ -9,6 +9,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
+import { jobsPrefetch } from "@/lib/jobs-prefetch";
+
+
 
 
 import appCss from "../styles.css?url";
@@ -162,10 +165,11 @@ function RootComponent() {
 
     if (!supabaseConfigured) {
       queryClient.setQueryData(["jobs", emptySearch, 1], []);
+      jobsPrefetch.set("success");
       return;
     }
 
-    const fetchPage = async (page: number) => {
+    const fetchPage = async (page: number, signal: AbortSignal) => {
       const { data, error } = await supabase
         .from("jobs")
         .select(
@@ -174,32 +178,56 @@ function RootComponent() {
         .eq("status", "published")
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false })
-        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
+        .abortSignal(signal);
       if (error) throw error;
       return data ?? [];
     };
 
+    jobsPrefetch.set("loading");
+    const controller = new AbortController();
+    const TIMEOUT_MS = 8000;
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      if (jobsPrefetch.get() === "loading") {
+        const cached = queryClient.getQueryData(["jobs", emptySearch, 1]);
+        if (!cached) queryClient.setQueryData(["jobs", emptySearch, 1], []);
+        jobsPrefetch.set("timeout");
+      }
+    }, TIMEOUT_MS);
+
     (async () => {
       try {
         let page = 1;
-        // Sequentially prefetch every page so all subsequent pages of
-        // /jobs render instantly from cache. Stop when we get a partial
-        // page (end of list). Safety-cap at 50 pages (5000 jobs).
         while (page <= 50) {
+          if (controller.signal.aborted) return;
           const pageNum = page;
           const data = await queryClient.fetchQuery({
             queryKey: ["jobs", emptySearch, pageNum],
-            queryFn: () => fetchPage(pageNum),
+            queryFn: () => fetchPage(pageNum, controller.signal),
             staleTime: 5 * 60_000,
           });
           if (data.length < PAGE_SIZE) break;
           page++;
         }
+        clearTimeout(timeoutId);
+        jobsPrefetch.set("success");
       } catch (err) {
+        clearTimeout(timeoutId);
+        if (controller.signal.aborted) return;
         console.error("[Talentra] jobs prefetch failed:", err);
+        const cached = queryClient.getQueryData(["jobs", emptySearch, 1]);
+        if (!cached) queryClient.setQueryData(["jobs", emptySearch, 1], []);
+        jobsPrefetch.set("error");
       }
     })();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [queryClient]);
+
 
   return (
     <QueryClientProvider client={queryClient}>
