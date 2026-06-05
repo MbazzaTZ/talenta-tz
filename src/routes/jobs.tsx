@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { SiteHeader, SiteFooter, MobileBottomNav } from "@/components/site-chrome";
 import { JobCard, JobCardSkeleton, type JobCardData } from "@/components/job-card";
 import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
+import { useJobsPrefetchStatus } from "@/lib/jobs-prefetch";
+
 import {
   REGIONS,
   INDUSTRIES,
