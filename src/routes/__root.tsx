@@ -9,6 +9,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { supabase, supabaseConfigured } from "@/integrations/supabase/client";
+import { jobsPrefetch } from "@/lib/jobs-prefetch";
+
+
 
 
 import appCss from "../styles.css?url";
